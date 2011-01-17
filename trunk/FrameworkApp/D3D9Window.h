@@ -18,6 +18,8 @@ public: //Public methods
 	void CleanupDevice();
 	void Render(Game*);
 
+	HRESULT ResetDevice();
+
 	LPDIRECT3DDEVICE9 getDevice() { return g_pd3dDevice; }
 
 public: //Public members

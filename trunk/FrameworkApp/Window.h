@@ -36,6 +36,10 @@ private: //Private members
 	const int sWindowHeight;
 
 	int WindowWidth, WindowHeight;
+
+protected:
+
+
 };
 
 #endif
