@@ -28,13 +28,6 @@ NetworkState CurrentNetworkState = SERVER;
 //--------------------------------------------------------------------------------------
 int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow )
 {	
-
-	if(MessageBox(NULL, "Run in server mode?", "Network Mode", MB_YESNO)==IDYES)
-		CurrentNetworkState = SERVER;
-	else
-		CurrentNetworkState = CLIENT;
-
-
 	bool bFirst = true;
 
 	pWindow = new D3D9Window();
@@ -59,47 +52,8 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
         pWindow->CleanupDevice();
         return 0;
     }
-
-	switch(CurrentNetworkState)
-	{
-	case SERVER:
-		{
-			//Instantiate the server
-			pServer = new Server();
-			//If the server can't be initialised
-			if(!pServer->InitialiseNetworking())
-			{
-				//TELL ME IT CAN'T BE INITIALISED
-				::MessageBox(pWindow->g_hWnd, "Server was not initialised correctly", "Network error", 0);
-				return WM_QUIT;
-			}
-			//Instantiate the game with the server's queues
-			pGame = new Game(pWindow->getDevice(), pServer->GetMutex(), pServer->GetUDPReceiveQ(), pServer->GetUDPSendQ());
-		}
-		break;
 	
-	case CLIENT:
-		{
-			//Instantiate the client
-			pClient = new Client();
-			//If the initialising fails
-			if(!pClient->InitialiseNetworking())
-			{
-				//Cut out and shout about it
-				::MessageBox(pWindow->g_hWnd, "Client was not initialised correctly", "Network error", 0);
-				return WM_QUIT;
-			}
-			//Instantiate the game with the client's queues
-			pGame = new Game(pWindow->getDevice(), pClient->GetMutex(), pClient->GetUDPReceiveQ(), pClient->GetUDPSendQ());
-		}
-		break;
-
-	default: 
-		::MessageBox(pWindow->g_hWnd, "Network mode was not initialised correctly", "Network error", 0);
-		break;
-	}
-	
-	//pGame = new Game(pWindow->getDevice());
+	pGame = new Game(pWindow->getDevice());
 
 	//Do any initialising before the game loop begins
 	if(!pGame->Initialise())
@@ -114,9 +68,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 	{
 		MessageBoxA(pWindow->g_hWnd, "Game loading failed", "Error", 0);
 		return 0;
-	}    	
-
-	
+	}  
 
     // Main message loop
     MSG msg = {0};
@@ -139,60 +91,16 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 				//Multiply by 0.001f to get it into seconds
 				pGame->setDeltaTime((float)(endTime - startTime)*0.001f);
 				pGame->RecordWindowSize((float)pWindow->getWindowWidth(),(float)pWindow->getWindowHeight());
-
-				switch(CurrentNetworkState)
-				{
-				case SERVER:
-					{
-						pServer->UpdateNetworking();
-						pGame->SetConnectionStatus(pServer->GetConnectionStatus());
-					}
-					break;
-				
-				case CLIENT:
-					{
-						pClient->UpdateNetworking();
-					}
-					break;
-
-				default: 
-					::MessageBox(pWindow->g_hWnd, "Network mode was incorrect at runtime", "Network error", 0);
-					break;
-				}	
-
 				pGame->HandleInput();
 				pGame->Update();
 				pWindow->Render(pGame);
 			}
-        }
-
-		
-    }
-
-	switch(CurrentNetworkState)
-	{
-	case SERVER:
-		{
-			pServer->CleanUp();
-		}
-		break;
-	
-	case CLIENT:
-		{
-			pClient->CleanUp();
-		}
-		break;
-
-	default: 
-		::MessageBox(pWindow->g_hWnd, "Network mode was incorrect upon exiting", "Network error", 0);
-		break;
-	}	
-	
+        }		
+    }		
 	
     pWindow->CleanupDevice();
 	pGame->Unload();
 	
-
     return ( int )msg.wParam;
 	delete pWindow;
 	delete pGame;

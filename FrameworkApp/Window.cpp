@@ -103,8 +103,8 @@ HRESULT Window::InitWindow( HINSTANCE hInstance, int nCmdShow )
 	g_hWnd = CreateWindowEx(	WS_EX_APPWINDOW | WS_EX_WINDOWEDGE,
 							"WindowClass", 
 							"Direct3D 9 Window", 
-							//WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 
-							WS_EX_TOPMOST,
+							WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 
+							//WS_EX_TOPMOST,
 							0, 
 							0,
 							rc.right  - rc.left,
@@ -146,9 +146,10 @@ LRESULT CALLBACK Window::WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 		case WM_KEYDOWN:
 			//Quit the application when the escape key is pressed
-			if(wParam == VK_ESCAPE)				
-				QuitApplication = true;
-				//PostQuitMessage(0);
+			if(wParam == VK_ESCAPE)	
+				PostQuitMessage(0);
+				//QuitApplication = true;
+				
 			break;
 
 		case WM_SIZE:
