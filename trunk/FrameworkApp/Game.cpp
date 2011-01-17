@@ -168,38 +168,10 @@ void Game::Update()
 
 	CalculateMatrices();
 	
-	switch(m_CurrentNetworkState)
-	{
-	case SERVER:
 		m_ServerDwarf->Update(serverDwarfVelocity, 0.0f);
 		m_KeyboardDwarf->Update();
 		m_RandomDwarf->Update(randomDwarfVelocity, 0.0f);
-		if(ConnectionStatus)
-		{
-			SetPacketVariables();
-			SendPacket();
-		}
-		break;
-	case CLIENT: 
-		if(!ReceiveQ->empty())
-		{
-			m_ServerDwarf->UpdateDeadReckoning(m_DeltaTime, 
-				ReceiveQ->front().m_ServerDwarf.GetPosition(), 
-				ReceiveQ->front().m_ServerDwarf.GetVelocity());
 
-			m_KeyboardDwarf->UpdateDeadReckoning(m_DeltaTime, 
-				ReceiveQ->front().m_KeyboardDwarf.GetPosition(), 
-				ReceiveQ->front().m_KeyboardDwarf.GetVelocity());
-
-			m_RandomDwarf->UpdateDeadReckoning(m_DeltaTime, 
-				ReceiveQ->front().m_RandomDwarf.GetPosition(), 
-				ReceiveQ->front().m_RandomDwarf.GetVelocity());
-
-			ReceiveQ->pop();
-		}
-		break;
-	default: ::MessageBox(0, "Network state was corrupted", "Network error", 0); break;
-	}	
 
 	m_Font->Update(m_DeltaTime, m_WindowWidth, m_WindowHeight);	
 }
@@ -241,16 +213,7 @@ void Game::Draw()
 
 void Game::Unload()
 {
-	m_KeyboardDwarf->Release();
-	m_ServerDwarf->Release();
 
-	delete m_LightingInterface;
-	delete m_Font;
-	delete m_Model;
-	delete m_KeyboardDwarf;
-	delete m_ServerDwarf;
-
-	ConnectionStatus = false;
 }
 
 void Game::CalculateMatrices()
@@ -294,33 +257,10 @@ void Game::SetShaderVariables()
 
 void Game::SetPacketVariables()
 {
-	//Set the buffer to identify this as the server sending the packet
-	sprintf_s(m_ModelPacket.Buffer, sizeof(m_ModelPacket.Buffer), "Server position packet");
 	
-	//This is to identify which packet it is
-	//Checked to ensure it doesn't run over
-	if(m_ModelPacket.ID < 10)
-		m_ModelPacket.ID++;
-
-	m_ModelPacket.m_ServerDwarf = *m_ServerDwarf;
-	m_ModelPacket.m_KeyboardDwarf = *m_KeyboardDwarf;
-	m_ModelPacket.m_RandomDwarf = *m_RandomDwarf;
 }
 
 void Game::SendPacket()
 {
-	//Wait for the mutex
-	WaitForSingleObject(mutexHandle, 16);
-	{
-		//If enough time has elapsed
-		if(m_PacketTicker > 0.1f)
-		{
-			//Send the packet
-			SendQ->push(m_ModelPacket);
-			//Reset the ticker
-			m_PacketTicker = 0.0f;
-		}
-	}
-	//Release the handle so other threads can use it
-	ReleaseMutex(mutexHandle);
+	
 }
