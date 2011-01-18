@@ -47,3 +47,9 @@ void BasicLightingInterface::UpdateHandles(BasicLighting* input)
 
 	m_Effect->CommitChanges();
 }
+
+void BasicLightingInterface::Release()
+{
+	m_Effect->Release();
+	//m_Error->Release();
+}

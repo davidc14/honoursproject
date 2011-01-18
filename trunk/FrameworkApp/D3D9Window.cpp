@@ -59,45 +59,6 @@ HRESULT D3D9Window::InitDevice()
     return S_OK;
 }
 
-HRESULT D3D9Window::ResetDevice()
-{
-	// Create the D3D object, which is needed to create the D3DDevice.
-    if( NULL == ( g_pD3D = Direct3DCreate9( D3D_SDK_VERSION ) ) )
-        return E_FAIL;
-
-    // Set up the structure used to create the D3DDevice. Most parameters are
-    // zeroed out. We set Windowed to TRUE, since we want to do D3D in a
-    // window, and then set the SwapEffect to "discard", which is the most
-    // efficient method of presenting the back buffer to the display.  And 
-    // we request a back buffer format that matches the current desktop display 
-    // format.
-    D3DPRESENT_PARAMETERS d3dpp;
-    ZeroMemory( &d3dpp, sizeof( d3dpp ) );
-    d3dpp.Windowed = TRUE;
-    d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-    d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;
-	d3dpp.BackBufferWidth = getWindowWidth();
-	d3dpp.BackBufferHeight = getWindowHeight();	
-    d3dpp.EnableAutoDepthStencil = TRUE;
-    d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
-
-    // Create the Direct3D device. Here we are using the default adapter (most
-    // systems only have one, unless they have multiple graphics hardware cards
-    // installed) and requesting the HAL (which is saying we want the hardware
-    // device rather than a software one). Software vertex processing is 
-    // specified since we know it will work on all cards. On cards that support 
-    // hardware vertex processing, though, we would see a big performance gain 
-    // by specifying hardware vertex processing.
-	if( FAILED( g_pd3dDevice->Reset(&d3dpp) ))
-    {
-        return E_FAIL;
-    }
-
-    // Device state would normally be set here
-
-    return S_OK;
-}
-
 void D3D9Window::CleanupDevice()
 {
 	if( g_pd3dDevice != NULL )

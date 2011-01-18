@@ -21,6 +21,8 @@ public:
 
 	void UpdateHandles(BasicLighting* input);
 
+	void Release();
+
 	ID3DXEffect* GetEffect() { return m_Effect; }
 	D3DXHANDLE GetTextureHandle() { return m_hTexture; }
 

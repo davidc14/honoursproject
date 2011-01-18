@@ -10,15 +10,15 @@
 
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
 
-D3DXMATRIXA16 matWorld, matView, matProj, matWorldInverseTranspose;
+D3DXMATRIXA16 matView, matProj, matWorldInverseTranspose;
 D3DXVECTOR4 vViewVector;
-
-XModel *m_Model;
 
 D3DFont* m_Font;
 
 BasicLightingInterface* m_LightingInterface;
 BasicLighting m_LightingContainer;
+
+XModel* m_Model;
 
 Dwarf* m_KeyboardDwarf;
 Dwarf* m_ServerDwarf;
@@ -213,7 +213,14 @@ void Game::Draw()
 
 void Game::Unload()
 {
+	m_Model->Release();
 
+	m_Font->Release();
+
+	m_LightingInterface->Release();
+	m_KeyboardDwarf->Release();
+	m_ServerDwarf->Release();
+	m_RandomDwarf->Release();
 }
 
 void Game::CalculateMatrices()
