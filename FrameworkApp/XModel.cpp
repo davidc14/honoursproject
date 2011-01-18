@@ -109,6 +109,9 @@ bool XModel::SetModel(char* filePath, char* fileName)
 	//Set the file path back to prevent errors
 	::SetCurrentDirectory(buffer);
 
+	bufMeshMaterial->Release();
+	adjBuffer->Release();
+
 	return true;
 }
 
@@ -184,4 +187,6 @@ void XModel::Release()
 {
 	//Release the model
 	m_Mesh->Release();
+
+	pDevice->Release();
 }

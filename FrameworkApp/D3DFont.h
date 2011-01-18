@@ -14,6 +14,8 @@ public:
 	void Update(float deltaTime, float width, float height);
 
 	void Draw();
+
+	void Release();
 	
 private:
 	
