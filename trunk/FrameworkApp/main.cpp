@@ -54,6 +54,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
     }
 	
 	pGame = new Game(pWindow->getDevice());
+	pGame->RecordWindowSize((float)pWindow->getWindowWidth(),(float)pWindow->getWindowHeight());
 
 	//Do any initialising before the game loop begins
 	if(!pGame->Initialise())

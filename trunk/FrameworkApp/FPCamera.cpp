@@ -21,12 +21,12 @@ FPCamera::FPCamera()
 	zoomFirst = true;
 }
 
-FPCamera::FPCamera(D3DXVECTOR3 position, D3DXVECTOR3 lookAt, D3DXVECTOR3 up)
+FPCamera::FPCamera(D3DXVECTOR3 position, D3DXVECTOR3 lookAt, D3DXVECTOR3 up, int WindowWidth, int WindowHeight)
 {
 	m_Pitch = m_Roll = m_Yaw = 0.0f;
 
-	/*this->m_WindowWidth = 800;
-	this->m_WindowHeight = 600;*/
+	m_WindowWidth = WindowWidth;
+	m_WindowHeight = WindowHeight;
 
 	m_Mouse = new Mouse();
 	m_mousePos = new POINT();
@@ -211,9 +211,9 @@ void FPCamera::mouseMove(Mouse *MousePos, POINT mousePos, int window_width, int 
 		if(!angleTest(MousePos))	
 		{
 			//Else allow movement
-			m_Pitch += (MousePos->drag_y*0.05f);	
+			m_Pitch -= (MousePos->drag_y*0.05f);	
 		}
-		m_Yaw -= (MousePos->drag_x*0.05f);
+		m_Yaw += (MousePos->drag_x*0.05f);
 	}
 	else
 		first = false;
@@ -248,9 +248,9 @@ void FPCamera::mouseMove()
 		if(!angleTest(m_Mouse))	
 		{
 			//Else allow movement
-			m_Pitch += (m_Mouse->drag_y*0.05f);	
+			m_Pitch -= (m_Mouse->drag_y*0.05f);	
 		}
-		m_Yaw -= (m_Mouse->drag_x*0.05f);
+		m_Yaw += (m_Mouse->drag_x*0.05f);
 	}
 	else
 		first = false;

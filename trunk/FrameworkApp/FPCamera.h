@@ -13,7 +13,7 @@ public:
 	//Default constructor
 	FPCamera();
 	//Defining constructor
-	FPCamera(D3DXVECTOR3 position, D3DXVECTOR3 lookAt, D3DXVECTOR3 up);
+	FPCamera(D3DXVECTOR3 position, D3DXVECTOR3 lookAt, D3DXVECTOR3 up, int WindowWidth, int WindowHeight);
 	~FPCamera();
 
 	//Release the FPCamera from memory
