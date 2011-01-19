@@ -222,6 +222,26 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Maths"
+				>
+				<File
+					RelativePath=".\CustomMath.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CustomMath.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Vector.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Vector.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Window Framework"
@@ -311,14 +331,30 @@
 			<Filter
 				Name="Objects"
 				>
-				<File
-					RelativePath=".\Dwarf.cpp"
+				<Filter
+					Name="Render Objects"
 					>
-				</File>
-				<File
-					RelativePath=".\Dwarf.h"
+					<File
+						RelativePath=".\Dwarf.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Dwarf.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Non Render Objects"
 					>
-				</File>
+					<File
+						RelativePath=".\FPCamera.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\FPCamera.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Network"
