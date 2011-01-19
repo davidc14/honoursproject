@@ -1,7 +1,7 @@
 #include "FPCamera.h"
 
 
-Camera::Camera()
+FPCamera::FPCamera()
 {
 	m_Pitch = m_Roll = m_Yaw = 0.0f;
 
@@ -21,12 +21,12 @@ Camera::Camera()
 	this->zoomFirst = true;
 }
 
-Camera::Camera(Vector3* position, Vector3* lookAt, Vector3* up)
+FPCamera::FPCamera(Vector3* position, Vector3* lookAt, Vector3* up)
 {
 	m_Pitch = m_Roll = m_Yaw = 0.0f;
 
-	this->m_WindowWidth = 800;
-	this->m_WindowHeight = 600;
+	/*this->m_WindowWidth = 800;
+	this->m_WindowHeight = 600;*/
 
 	this->m_Mouse = new Mouse();
 	this->m_mousePos = new POINT();
@@ -43,14 +43,14 @@ Camera::Camera(Vector3* position, Vector3* lookAt, Vector3* up)
 	this->zoomFirst = true;
 }
 
-Camera::~Camera()
+FPCamera::~FPCamera()
 {
 }
 
-void Camera::Update(const float dtSeconds, int windowWidth, int windowHeight)
+void FPCamera::Update(const float dtSeconds, int windowWidth, int windowHeight)
 {
-	if(GetAsyncKeyState(VK_SPACE))
-		m_Zoom = 45.0f;
+	/*if(GetAsyncKeyState(VK_SPACE))
+		m_Zoom = 45.0f;*/
 	
 	////Make sure and do this before modifying gluPerspective
 	//glMatrixMode(GL_PROJECTION);
@@ -69,7 +69,9 @@ void Camera::Update(const float dtSeconds, int windowWidth, int windowHeight)
 	//	m_LookAt->m_x, m_LookAt->m_y, m_LookAt->m_z,
 	//	m_Up->m_x, m_Up->m_y, m_Up->m_z); 
 
-	//Camera is the object (class) created to store the 
+	
+
+	//FPCamera is the object (class) created to store the 
 	//variables and vectors needed to manipulate
 	//the gluLookAt() function
 	cosYaw = cosf(m_Yaw*Pi/180);
@@ -84,7 +86,7 @@ void Camera::Update(const float dtSeconds, int windowWidth, int windowHeight)
 	m_Forward->m_y = sinPitch*360;
 	m_Forward->m_z = cosPitch * -cosYaw*360;
 
-	//These update the look direction of the camera
+	//These update the look direction of the FPCamera
 	m_LookAt->m_x = m_Position->m_x + m_Forward->m_x;
 	m_LookAt->m_y = m_Position->m_y + m_Forward->m_y;
 	m_LookAt->m_z = m_Position->m_z + m_Forward->m_z;
@@ -104,7 +106,7 @@ void Camera::Update(const float dtSeconds, int windowWidth, int windowHeight)
 	if(m_Roll < 0) m_Roll = 359;*/
 }
 
-void Camera::Update(const float dtSeconds)
+void FPCamera::Update(const float dtSeconds)
 {
 	cosYaw = cosPitch = cosRoll = sinYaw = sinPitch = sinRoll = 0;
 	// Where we are, What we look at, and which way is up
@@ -112,7 +114,7 @@ void Camera::Update(const float dtSeconds)
 		m_LookAt->m_x, m_LookAt->m_y, m_LookAt->m_z,
 		m_Up->m_x, m_Up->m_y, m_Up->m_z); */
 
-	//Camera is the object (class) created to store the 
+	//FPCamera is the object (class) created to store the 
 	//variables and vectors needed to manipulate
 	//the gluLookAt() function
 	cosYaw = cosf(m_Yaw*Pi/180);
@@ -127,7 +129,7 @@ void Camera::Update(const float dtSeconds)
 	m_Forward->m_y = sinPitch*360;
 	m_Forward->m_z = cosPitch * -cosYaw*360;
 
-	//These update the look direction of the camera
+	//These update the look direction of the FPCamera
 	m_LookAt->m_x = m_Position->m_x + m_Forward->m_x;
 	m_LookAt->m_y = m_Position->m_y + m_Forward->m_y;
 	m_LookAt->m_z = m_Position->m_z + m_Forward->m_z;
@@ -138,9 +140,9 @@ void Camera::Update(const float dtSeconds)
 	m_Up->m_z = -sinYaw * sinRoll - sinPitch * cosRoll * -cosYaw;
 }
 
-void Camera::Move(Vector3* acceleration)
+void FPCamera::Move(Vector3* acceleration)
 {
-	//Adding the forward vector to the Position vector moves the camera
+	//Adding the forward vector to the Position vector moves the FPCamera
 	//The multipliers at the end of the calculation define speed
 	//I.E. The larger the multiplier the faster it goes
 	m_Position->m_x += m_Forward->m_x * acceleration->m_x;
@@ -148,11 +150,11 @@ void Camera::Move(Vector3* acceleration)
 	m_Position->m_z += m_Forward->m_z * acceleration->m_z;
 }
 	
-void Camera::Strafe(Vector3* acceleration)
+void FPCamera::Strafe(Vector3* acceleration)
 {
 	*m_Right = crossProduct(*m_Forward, *m_Up);
 
-	//Adding the right vector to the Position vector moves the camera
+	//Adding the right vector to the Position vector moves the FPCamera
 	//The multipliers at the end of the calculation define speed
 	//I.E. The larger the multiplier the faster it goes
 	m_Position->m_x += m_Right->m_x * acceleration->m_x;
@@ -160,9 +162,9 @@ void Camera::Strafe(Vector3* acceleration)
 	m_Position->m_z += m_Right->m_z * acceleration->m_z;
 }
 
-void Camera::Move(float x, float y, float z)
+void FPCamera::Move(float x, float y, float z)
 {
-	//Adding the forward vector to the Position vector moves the camera
+	//Adding the forward vector to the Position vector moves the FPCamera
 	//The multipliers at the end of the calculation define speed
 	//I.E. The larger the multiplier the faster it goes
 	m_Position->m_x += m_Forward->m_x * x;
@@ -170,11 +172,11 @@ void Camera::Move(float x, float y, float z)
 	m_Position->m_z += m_Forward->m_z * z;
 }
 
-void Camera::Strafe(float x, float y, float z)
+void FPCamera::Strafe(float x, float y, float z)
 {
 	*m_Right = crossProduct(*m_Forward, *m_Up);
 
-	//Adding the right vector to the Position vector moves the camera
+	//Adding the right vector to the Position vector moves the FPCamera
 	//The multipliers at the end of the calculation define speed
 	//I.E. The larger the multiplier the faster it goes
 	m_Position->m_x += m_Right->m_x * x;
@@ -182,7 +184,7 @@ void Camera::Strafe(float x, float y, float z)
 	m_Position->m_z += m_Right->m_z * z;
 }
 
-void Camera::mouseMove(Mouse *MousePos, POINT mousePos, int window_width, int window_height)
+void FPCamera::mouseMove(Mouse *MousePos, POINT mousePos, int window_width, int window_height)
 {
 	//Turning off the cursor
 	//ShowCursor(false);
@@ -219,7 +221,7 @@ void Camera::mouseMove(Mouse *MousePos, POINT mousePos, int window_width, int wi
 		first = false;
 }
 
-void Camera::mouseMove()
+void FPCamera::mouseMove()
 {
 	//Turning off the cursor
 	//ShowCursor(false);
@@ -256,7 +258,7 @@ void Camera::mouseMove()
 		first = false;
 }
 
-void Camera::mouseZoom(int windowWidth, int windowHeight)
+void FPCamera::mouseZoom(int windowWidth, int windowHeight)
 {
 	const float topRange = 90.0f;
 	const float bottomRange = 15.0f;
@@ -307,8 +309,8 @@ void Camera::mouseZoom(int windowWidth, int windowHeight)
 		zoomFirst = false;
 }
 
-//The angle test to stop the camera doing barrel rolls
-bool Camera::angleTest(Mouse *MousePos)
+//The angle test to stop the FPCamera doing barrel rolls
+bool FPCamera::angleTest(Mouse *MousePos)
 {
 	if((m_Pitch > 90.0f || MousePos->drag_y < 0) && (m_Pitch < -90.0f || MousePos->drag_y > 0))
 		return true;
@@ -316,17 +318,17 @@ bool Camera::angleTest(Mouse *MousePos)
 	return false;
 }
 
-Vector3 Camera::getPosition()
+Vector3 FPCamera::getPosition()
 {
 	return *m_Position;
 }
 
-Vector3 Camera::getForward()
+Vector3 FPCamera::getForward()
 {
 	return *m_Forward;
 }
 
-void Camera::release()
+void FPCamera::release()
 {
 	delete m_Position, 
 		m_Mouse, 

@@ -7,6 +7,7 @@
 #include "BasicLightingInterface.h"
 #include "Dwarf.h"
 #include "DirectInput.h"
+#include "FPCamera.h"
 
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
 
@@ -26,6 +27,8 @@ Dwarf* m_ServerDwarf;
 Dwarf* m_RandomDwarf;
 
 DirectInput* m_DInput;
+
+FPCamera* m_Camera;
 
 // A structure for our custom vertex type
 struct CUSTOMVERTEX
@@ -109,6 +112,14 @@ bool Game::LoadContent()
 
 	ConnectionStatus = false;
 
+	m_Camera = new FPCamera(new Vector3(-5.0f, 10.0f, -12.5f),
+		new Vector3(0.0f, 0.0f, 0.0f), 
+		new Vector3(0.0f, 1.0f, 0.0f));
+
+		/*D3DXVECTOR3 vEyePt( -5.0f, 10.0f,-12.5f );
+    D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
+    D3DXVECTOR3 vUpVec( 0.0f, 1.0f, 0.0f );*/
+
 	return true;
 }
 
@@ -151,6 +162,8 @@ D3DXVECTOR3 serverDwarfVelocity;
 D3DXVECTOR3 randomDwarfVelocity;
 void Game::Update()
 {
+	m_Camera->Update(m_DeltaTime);
+
 	fAngle += 1.0f;
 	m_PacketTicker += m_DeltaTime;
 	randomDwarfTicker += m_DeltaTime;

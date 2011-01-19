@@ -1,5 +1,5 @@
-#ifndef _CAMERA_H
-#define _CAMERA_H
+#ifndef _FPCamera_H
+#define _FPCamera_H
 
 #include "D3D9Window.h"
 #include "CustomMath.h"
@@ -7,40 +7,40 @@
 //Pi
 static const float Pi = 3.1415f;
 
-class Camera
+class FPCamera
 {
 public:
 	//Default constructor
-	Camera();
+	FPCamera();
 	//Defining constructor
-	Camera(Vector3*, Vector3*, Vector3*);
-	~Camera();
+	FPCamera(Vector3* position, Vector3* lookAt, Vector3* up);
+	~FPCamera();
 
-	//Release the camera from memory
+	//Release the FPCamera from memory
 	void release();
 
 	//The update function
 	void Update(const float dtSeconds);
-	void Update(const float, int, int);
+	void Update(const float dtSeconds, int windowWidth, int windowHeight);
 
 	//Returns the value of the position vector
 	Vector3 getPosition();
 	Vector3 getForward();
 
-	//The move and strafe functions for the camera
-	void Move(Vector3*);
-	void Strafe(Vector3*);
-	void Move(float, float, float);
-	void Strafe(float, float, float);
+	//The move and strafe functions for the FPCamera
+	void Move(Vector3* acceleration);
+	void Strafe(Vector3* acceleration);
+	void Move(float xAcceleration, float yAcceleration, float zAcceleration);
+	void Strafe(float xAcceleration, float yAcceleration, float zAcceleration);
 
 	//The mouse movement functions
-	void mouseMove(Mouse*, POINT, int, int);
+	void mouseMove(Mouse *MousePos, POINT mousePos, int window_width, int window_height);
 	void mouseMove();
 	//The angle test collision detection test
-	bool angleTest(Mouse*);
+	bool angleTest(Mouse* MousePos);
 
 	//The mouse zoom function
-	void mouseZoom(int, int);
+	void mouseZoom(int windowWidth, int windowHeight);
 
 	//The first frame get and set functions
 	void First(bool value){ first = value; }
@@ -55,10 +55,10 @@ public:
 	void WIndowHeight (int value) { m_WindowHeight = value; }
 
 private:
-	//The associated vectors of the camera
+	//The associated vectors of the FPCamera
 	Vector3* m_Position,* m_LookAt,* m_Forward,* m_Up,* m_Right;
 
-	//The angles of the camera
+	//The angles of the FPCamera
 	float m_Pitch, m_Roll, m_Yaw;
 
 	//variables created for
@@ -70,7 +70,7 @@ private:
 	float m_Zoom;
 
 	//Bools used for mouse movement so that 
-	//the camera doesn't move whilst the mouse
+	//the FPCamera doesn't move whilst the mouse
 	//is set into the correct position
 	bool first, zoomFirst;
 
