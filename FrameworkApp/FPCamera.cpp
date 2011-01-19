@@ -5,42 +5,42 @@ FPCamera::FPCamera()
 {
 	m_Pitch = m_Roll = m_Yaw = 0.0f;
 
-	this->m_WindowWidth = 800;
-	this->m_WindowHeight = 600;
+	m_WindowWidth = 800;
+	m_WindowHeight = 600;
 
-	this->m_Mouse = new Mouse();
-	this->m_mousePos = new POINT();
+	m_Mouse = new Mouse();
+	m_mousePos = new POINT();
 
-	this->m_Zoom = 45.0f;
-	this->m_Position = new Vector3();
-	this->m_LookAt = new Vector3();
-	this->m_Up = new Vector3();
-	this->m_Forward = new Vector3();
-	this->m_Right = new Vector3();
-	this->first = true;
-	this->zoomFirst = true;
+	m_Zoom = 45.0f;
+	m_Position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_LookAt = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Up = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Forward = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Right = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	first = true;
+	zoomFirst = true;
 }
 
-FPCamera::FPCamera(Vector3* position, Vector3* lookAt, Vector3* up)
+FPCamera::FPCamera(D3DXVECTOR3 position, D3DXVECTOR3 lookAt, D3DXVECTOR3 up)
 {
 	m_Pitch = m_Roll = m_Yaw = 0.0f;
 
 	/*this->m_WindowWidth = 800;
 	this->m_WindowHeight = 600;*/
 
-	this->m_Mouse = new Mouse();
-	this->m_mousePos = new POINT();
+	m_Mouse = new Mouse();
+	m_mousePos = new POINT();
 
-	this->m_Zoom = 45.0f;
-	this->m_Position = position;
-	this->m_LookAt = lookAt;
-	this->m_Up = up;
-	//this->m_Forward = m_LookAt;
-	this->m_Forward = new Vector3();
-	this->m_Right = new Vector3();
-	*this->m_Right = crossProduct(*m_Forward, *m_Up);
-	this->first = true;
-	this->zoomFirst = true;
+	m_Zoom = 45.0f;
+	m_Position = position;
+	m_LookAt = lookAt;
+	m_Up = up;
+	//m_Forward = m_LookAt;
+	m_Forward = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Right = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVec3Cross(&m_Right, &m_Forward, &m_Up);
+	first = true;
+	zoomFirst = true;
 }
 
 FPCamera::~FPCamera()
@@ -65,11 +65,9 @@ void FPCamera::Update(const float dtSeconds, int windowWidth, int windowHeight)
 	//glLoadIdentity();// Reset The Modelview Matrix
 
 	//// Where we are, What we look at, and which way is up
-	//gluLookAt(m_Position->m_x, m_Position->m_y, m_Position->m_z,
-	//	m_LookAt->m_x, m_LookAt->m_y, m_LookAt->m_z,
-	//	m_Up->m_x, m_Up->m_y, m_Up->m_z); 
-
-	
+	//gluLookAt(m_Position.x, m_Position.y, m_Position.z,
+	//	m_LookAt.x, m_LookAt.y, m_LookAt.z,
+	//	m_Up.x, m_Up.y, m_Up.z); 
 
 	//FPCamera is the object (class) created to store the 
 	//variables and vectors needed to manipulate
@@ -82,19 +80,19 @@ void FPCamera::Update(const float dtSeconds, int windowWidth, int windowHeight)
 	sinRoll = sinf(m_Roll*Pi/180);
 	
 	//Updating the forward vector
-	m_Forward->m_x = sinYaw * cosPitch*360;
-	m_Forward->m_y = sinPitch*360;
-	m_Forward->m_z = cosPitch * -cosYaw*360;
+	m_Forward.x = sinYaw * cosPitch*360;
+	m_Forward.y = sinPitch*360;
+	m_Forward.z = cosPitch * -cosYaw*360;
 
 	//These update the look direction of the FPCamera
-	m_LookAt->m_x = m_Position->m_x + m_Forward->m_x;
-	m_LookAt->m_y = m_Position->m_y + m_Forward->m_y;
-	m_LookAt->m_z = m_Position->m_z + m_Forward->m_z;
+	m_LookAt.x = m_Position.x + m_Forward.x;
+	m_LookAt.y = m_Position.y + m_Forward.y;
+	m_LookAt.z = m_Position.z + m_Forward.z;
 
 	//Up Vector
-	m_Up->m_x = -cosYaw * sinRoll - sinYaw * sinPitch * cosRoll;
-	m_Up->m_y = cosPitch * cosRoll;
-	m_Up->m_z = -sinYaw * sinRoll - sinPitch * cosRoll * -cosYaw;
+	m_Up.x = -cosYaw * sinRoll - sinYaw * sinPitch * cosRoll;
+	m_Up.y = cosPitch * cosRoll;
+	m_Up.z = -sinYaw * sinRoll - sinPitch * cosRoll * -cosYaw;
 
 	/*if(m_Pitch > 360) m_Pitch = 1;
 	if(m_Pitch < 0) m_Pitch = 359;
@@ -110,9 +108,9 @@ void FPCamera::Update(const float dtSeconds)
 {
 	cosYaw = cosPitch = cosRoll = sinYaw = sinPitch = sinRoll = 0;
 	// Where we are, What we look at, and which way is up
-	/*gluLookAt(m_Position->m_x, m_Position->m_y, m_Position->m_z,
-		m_LookAt->m_x, m_LookAt->m_y, m_LookAt->m_z,
-		m_Up->m_x, m_Up->m_y, m_Up->m_z); */
+	/*gluLookAt(m_Position.x, m_Position.y, m_Position.z,
+		m_LookAt.x, m_LookAt.y, m_LookAt.z,
+		m_Up.x, m_Up.y, m_Up.z); */
 
 	//FPCamera is the object (class) created to store the 
 	//variables and vectors needed to manipulate
@@ -125,41 +123,41 @@ void FPCamera::Update(const float dtSeconds)
 	sinRoll = sinf(m_Roll*Pi/180);
 	
 	//Updating the forward vector
-	m_Forward->m_x = sinYaw * cosPitch*360;
-	m_Forward->m_y = sinPitch*360;
-	m_Forward->m_z = cosPitch * -cosYaw*360;
+	m_Forward.x = sinYaw * cosPitch*360;
+	m_Forward.y = sinPitch*360;
+	m_Forward.z = cosPitch * -cosYaw*360;
 
 	//These update the look direction of the FPCamera
-	m_LookAt->m_x = m_Position->m_x + m_Forward->m_x;
-	m_LookAt->m_y = m_Position->m_y + m_Forward->m_y;
-	m_LookAt->m_z = m_Position->m_z + m_Forward->m_z;
+	m_LookAt.x = m_Position.x - m_Forward.x;
+	m_LookAt.y = m_Position.y - m_Forward.y;
+	m_LookAt.z = m_Position.z - m_Forward.z;
 
 	//Up Vector
-	m_Up->m_x = -cosYaw * sinRoll - sinYaw * sinPitch * cosRoll;
-	m_Up->m_y = cosPitch * cosRoll;
-	m_Up->m_z = -sinYaw * sinRoll - sinPitch * cosRoll * -cosYaw;
+	m_Up.x = -cosYaw * sinRoll - sinYaw * sinPitch * cosRoll;
+	m_Up.y = cosPitch * cosRoll;
+	m_Up.z = -sinYaw * sinRoll - sinPitch * cosRoll * -cosYaw;
 }
 
-void FPCamera::Move(Vector3* acceleration)
+void FPCamera::Move(D3DXVECTOR3 acceleration)
 {
 	//Adding the forward vector to the Position vector moves the FPCamera
 	//The multipliers at the end of the calculation define speed
 	//I.E. The larger the multiplier the faster it goes
-	m_Position->m_x += m_Forward->m_x * acceleration->m_x;
-	m_Position->m_y += m_Forward->m_y * acceleration->m_y;
-	m_Position->m_z += m_Forward->m_z * acceleration->m_z;
+	m_Position.x -= m_Forward.x * acceleration.x;
+	m_Position.y -= m_Forward.y * acceleration.y;
+	m_Position.z -= m_Forward.z * acceleration.z;
 }
 	
-void FPCamera::Strafe(Vector3* acceleration)
+void FPCamera::Strafe(D3DXVECTOR3 acceleration)
 {
-	*m_Right = crossProduct(*m_Forward, *m_Up);
+	D3DXVec3Cross(&m_Right, &m_Forward, &m_Up);
 
 	//Adding the right vector to the Position vector moves the FPCamera
 	//The multipliers at the end of the calculation define speed
 	//I.E. The larger the multiplier the faster it goes
-	m_Position->m_x += m_Right->m_x * acceleration->m_x;
-	m_Position->m_y += m_Right->m_y * acceleration->m_y;
-	m_Position->m_z += m_Right->m_z * acceleration->m_z;
+	m_Position.x -= m_Right.x * acceleration.x;
+	m_Position.y -= m_Right.y * acceleration.y;
+	m_Position.z -= m_Right.z * acceleration.z;
 }
 
 void FPCamera::Move(float x, float y, float z)
@@ -167,21 +165,21 @@ void FPCamera::Move(float x, float y, float z)
 	//Adding the forward vector to the Position vector moves the FPCamera
 	//The multipliers at the end of the calculation define speed
 	//I.E. The larger the multiplier the faster it goes
-	m_Position->m_x += m_Forward->m_x * x;
-	m_Position->m_y += m_Forward->m_y * y;
-	m_Position->m_z += m_Forward->m_z * z;
+	m_Position.x -= m_Forward.x * x;
+	m_Position.y -= m_Forward.y * y;
+	m_Position.z -= m_Forward.z * z;
 }
 
 void FPCamera::Strafe(float x, float y, float z)
 {
-	*m_Right = crossProduct(*m_Forward, *m_Up);
+	D3DXVec3Cross(&m_Right, &m_Forward, &m_Up);
 
 	//Adding the right vector to the Position vector moves the FPCamera
 	//The multipliers at the end of the calculation define speed
 	//I.E. The larger the multiplier the faster it goes
-	m_Position->m_x += m_Right->m_x * x;
-	m_Position->m_y += m_Right->m_y * y;
-	m_Position->m_z += m_Right->m_z * z;
+	m_Position.x -= m_Right.x * x;
+	m_Position.y -= m_Right.y * y;
+	m_Position.z -= m_Right.z * z;
 }
 
 void FPCamera::mouseMove(Mouse *MousePos, POINT mousePos, int window_width, int window_height)
@@ -318,14 +316,24 @@ bool FPCamera::angleTest(Mouse *MousePos)
 	return false;
 }
 
-Vector3 FPCamera::getPosition()
+D3DXVECTOR3* FPCamera::getForwardDX()
 {
-	return *m_Position;
+	return &m_Forward;
 }
 
-Vector3 FPCamera::getForward()
+D3DXVECTOR3* FPCamera::getLookAtDX()
 {
-	return *m_Forward;
+	return &m_LookAt;
+}
+
+D3DXVECTOR3* FPCamera::getUpDX()
+{
+	return &m_Up;
+}
+
+D3DXVECTOR3* FPCamera::getPositionDX()
+{
+	return &m_Position;
 }
 
 void FPCamera::release()

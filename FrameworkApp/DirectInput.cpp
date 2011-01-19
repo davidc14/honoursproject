@@ -14,7 +14,12 @@ void DirectInput::Update()
 	//obtain the current keyboard state and pack it into the keybuffer 
 	bool DeviceState = SUCCEEDED(DIKeyboardDevice->GetDeviceState(sizeof(KeyBuffer),
 								(LPVOID)&KeyBuffer));
+
+	bool mouse_DeviceState = SUCCEEDED (
+		DIMouseDevice->GetDeviceState(sizeof(DIMOUSESTATE),(LPVOID)&mouseState));
+
 	assert(DeviceState);
+	assert(mouse_DeviceState);
 
 	//Map key inputs to Control maps here
 	//the control maps are part of the base class and
@@ -53,6 +58,16 @@ void DirectInput::Update()
 		DigitalControlMap[6]=true;
 	else
 		DigitalControlMap[6]=false;
+
+	if(mouseState.rgbButtons[0] & 0x80)
+		MouseControlMap[0] = true;
+	else
+		MouseControlMap[0] = false;
+
+	if(mouseState.rgbButtons[1] & 0x80)
+		MouseControlMap[1] = true;
+	else
+		MouseControlMap[1] = false;
 }
 
 
@@ -81,6 +96,9 @@ DirectInput::DirectInput()
 	{
 		AnalogueControlMap[i] = 0.0f;
 	}
+
+	for(int i = 0; i < 4; i++)
+		MouseControlMap[i] = false;
 }
 
 	
@@ -158,6 +176,20 @@ bool DirectInput::GetDevices()
 	{	
 		return false;
 	}
+
+	if(FAILED(DIObject->CreateDevice(GUID_SysMouse, 
+		&DIMouseDevice, NULL)))
+		return false;
+
+	if(FAILED(DIMouseDevice->SetCooperativeLevel(NULL, 
+		DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)))
+		return false;
+
+	if(FAILED(DIMouseDevice->SetDataFormat(&c_dfDIMouse)))
+		return false;
+
+	if(FAILED(DIMouseDevice->Acquire()))
+		return false;
 
 	return true;
 

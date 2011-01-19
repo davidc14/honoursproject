@@ -20,6 +20,7 @@ public:
 	virtual void Update();
 
 	bool GetKeyState(int KeyMapIndex) { return DigitalControlMap[KeyMapIndex]; }
+	bool GetMouseState(int MouseMapIndex) { return MouseControlMap[MouseMapIndex]; }
 
 private:
 
@@ -31,7 +32,7 @@ private:
 
 public: 
 
-	
+	DIMOUSESTATE MouseState() { return mouseState; }
 
 private:
 
@@ -41,7 +42,11 @@ private:
 
 	//make sure to initalise these in the constructor of the inheriting class.
 	bool	DigitalControlMap [DIGITALCONTROLMAPS];
-	float	AnalogueControlMap[ANALOGUECONTROLMAPS];	
+	float	AnalogueControlMap[ANALOGUECONTROLMAPS];
+	bool	MouseControlMap[4];
+
+	LPDIRECTINPUTDEVICE8	DIMouseDevice;			//Mouse device.
+	DIMOUSESTATE			mouseState;				//The mouse state
 };
 
 
