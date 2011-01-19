@@ -112,9 +112,11 @@ bool Game::LoadContent()
 
 	ConnectionStatus = false;
 
-	m_Camera = new FPCamera(new Vector3(-5.0f, 10.0f, -12.5f),
-		new Vector3(0.0f, 0.0f, 0.0f), 
-		new Vector3(0.0f, 1.0f, 0.0f));
+	D3DXVECTOR3 vEyePt( 0.0f, 5.0f,-20.0f );
+    D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
+    D3DXVECTOR3 vUpVec( 0.0f, 1.0f, 0.0f );
+
+	m_Camera = new FPCamera(vEyePt,	vLookatPt, vUpVec);
 
 		/*D3DXVECTOR3 vEyePt( -5.0f, 10.0f,-12.5f );
     D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
@@ -129,7 +131,17 @@ void Game::HandleInput()
 	//Update direct input
 	m_DInput->Update();
 
-	if(m_CurrentNetworkState == SERVER)
+	/*if(m_DInput->GetMouseState(0))		
+		m_Camera->mouseMove();		
+	else
+		m_Camera->First(true);
+
+	if(m_DInput->GetMouseState(1))
+		m_Camera->mouseZoom((int)m_WindowWidth, (int)m_WindowHeight);
+	else
+		m_Camera->ZoomFirst(true);*/
+
+	//if(m_CurrentNetworkState == SERVER)
 	{
 		//Zero the velocity every frame
 		KeyboardDwarfVelocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -248,7 +260,8 @@ void Game::CalculateMatrices()
 	D3DXMATRIX mViewTransform; 
 	D3DXMatrixRotationY(&mViewTransform, 0);
 	D3DXVec3Transform(&vViewVector, &(vLookatPt - vEyePt), &mViewTransform );
-    D3DXMatrixLookAtLH( &matView, &vEyePt, &vLookatPt, &vUpVec );
+    //D3DXMatrixLookAtLH( &matView, &vEyePt, &vLookatPt, &vUpVec );
+	D3DXMatrixLookAtLH( &matView, m_Camera->getPositionDX(), m_Camera->getLookAtDX(), m_Camera->getUpDX() );
     //pDevice->SetTransform( D3DTS_VIEW, &matView );
 
     // For the projection matrix, we set up a perspective transform (which

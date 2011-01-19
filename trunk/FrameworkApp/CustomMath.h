@@ -3,6 +3,7 @@
 
 #include "Vector.h"
 #include <math.h>
+#include <d3dx9.h>
 
 Vector3 crossProduct(Vector3, Vector3);
 void normalise(Vector3&);

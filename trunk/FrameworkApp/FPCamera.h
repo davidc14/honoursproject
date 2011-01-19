@@ -13,7 +13,7 @@ public:
 	//Default constructor
 	FPCamera();
 	//Defining constructor
-	FPCamera(Vector3* position, Vector3* lookAt, Vector3* up);
+	FPCamera(D3DXVECTOR3 position, D3DXVECTOR3 lookAt, D3DXVECTOR3 up);
 	~FPCamera();
 
 	//Release the FPCamera from memory
@@ -23,13 +23,20 @@ public:
 	void Update(const float dtSeconds);
 	void Update(const float dtSeconds, int windowWidth, int windowHeight);
 
-	//Returns the value of the position vector
+	//Returns the value of the vectors
 	Vector3 getPosition();
+	Vector3 getLookAt();
+	Vector3 getUp();
 	Vector3 getForward();
 
+	D3DXVECTOR3* getPositionDX();
+	D3DXVECTOR3* getLookAtDX();
+	D3DXVECTOR3* getUpDX();
+	D3DXVECTOR3* getForwardDX();
+
 	//The move and strafe functions for the FPCamera
-	void Move(Vector3* acceleration);
-	void Strafe(Vector3* acceleration);
+	void Move(D3DXVECTOR3 acceleration);
+	void Strafe(D3DXVECTOR3 acceleration);
 	void Move(float xAcceleration, float yAcceleration, float zAcceleration);
 	void Strafe(float xAcceleration, float yAcceleration, float zAcceleration);
 
@@ -56,7 +63,10 @@ public:
 
 private:
 	//The associated vectors of the FPCamera
-	Vector3* m_Position,* m_LookAt,* m_Forward,* m_Up,* m_Right;
+	
+	D3DXVECTOR3 m_Position, m_LookAt, m_Forward, m_Up, m_Right;
+
+	void UpdateDXVectors();
 
 	//The angles of the FPCamera
 	float m_Pitch, m_Roll, m_Yaw;
