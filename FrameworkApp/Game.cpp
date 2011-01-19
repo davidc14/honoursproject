@@ -116,7 +116,7 @@ bool Game::LoadContent()
     D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
     D3DXVECTOR3 vUpVec( 0.0f, 1.0f, 0.0f );
 
-	m_Camera = new FPCamera(vEyePt,	vLookatPt, vUpVec);
+	m_Camera = new FPCamera(vEyePt,	vLookatPt, vUpVec, (int)m_WindowWidth, (int)m_WindowHeight);
 
 		/*D3DXVECTOR3 vEyePt( -5.0f, 10.0f,-12.5f );
     D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
@@ -126,46 +126,39 @@ bool Game::LoadContent()
 }
 
 D3DXVECTOR3 KeyboardDwarfVelocity(0.0f, 0.0f, 0.0f);
+const float camSpeed = 0.1f;
 void Game::HandleInput()
 {
 	//Update direct input
 	m_DInput->Update();
 
-	/*if(m_DInput->GetMouseState(0))		
+	if(m_DInput->GetMouseState(0))		
 		m_Camera->mouseMove();		
 	else
 		m_Camera->First(true);
 
-	if(m_DInput->GetMouseState(1))
-		m_Camera->mouseZoom((int)m_WindowWidth, (int)m_WindowHeight);
-	else
-		m_Camera->ZoomFirst(true);*/
+	//Zero the velocity every frame
+	KeyboardDwarfVelocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-	//if(m_CurrentNetworkState == SERVER)
-	{
-		//Zero the velocity every frame
-		KeyboardDwarfVelocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	//Check the key presses
+	//W
+	if(m_DInput->GetKeyState(1))
+		m_Camera->Move(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
+	
+	//S
+	if(m_DInput->GetKeyState(2))
+		m_Camera->Move(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);
 
-		//Check the key presses
-		//W
-		if(m_DInput->GetKeyState(1))
-			KeyboardDwarfVelocity.z = (2.0f * m_DeltaTime);	
-		
-		//S
-		if(m_DInput->GetKeyState(2))
-			KeyboardDwarfVelocity.z = (-2.0f * m_DeltaTime);
+	//A
+	if(m_DInput->GetKeyState(3))
+		m_Camera->Strafe(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
 
-		//A
-		if(m_DInput->GetKeyState(3))
-			KeyboardDwarfVelocity.x = (-2.0f * m_DeltaTime);	
-
-		//D
-		if(m_DInput->GetKeyState(4))
-			KeyboardDwarfVelocity.x = (2.0f * m_DeltaTime);
-		
-		//Update the velocity based on the values of the key presses
-		m_KeyboardDwarf->SetVelocity(KeyboardDwarfVelocity);
-	}
+	//D
+	if(m_DInput->GetKeyState(4))
+		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);			
+	
+	//Update the velocity based on the values of the key presses
+	m_KeyboardDwarf->SetVelocity(KeyboardDwarfVelocity);
 }
 
 float fAngle = 0.0f;
@@ -260,7 +253,6 @@ void Game::CalculateMatrices()
 	D3DXMATRIX mViewTransform; 
 	D3DXMatrixRotationY(&mViewTransform, 0);
 	D3DXVec3Transform(&vViewVector, &(vLookatPt - vEyePt), &mViewTransform );
-    //D3DXMatrixLookAtLH( &matView, &vEyePt, &vLookatPt, &vUpVec );
 	D3DXMatrixLookAtLH( &matView, m_Camera->getPositionDX(), m_Camera->getLookAtDX(), m_Camera->getUpDX() );
     //pDevice->SetTransform( D3DTS_VIEW, &matView );
 
