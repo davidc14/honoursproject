@@ -8,6 +8,7 @@
 #include "Dwarf.h"
 #include "DirectInput.h"
 #include "FPCamera.h"
+#include "DrawableTex2D.h"
 
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
 
@@ -32,6 +33,29 @@ FPCamera* m_Camera;
 
 IDirect3DTexture9* pTarget;
 IDirect3DSurface9* pTexSurf;
+
+// The texture we draw into.
+	DrawableTex2D* mRadarMap;
+	bool mAutoGenMips;
+
+	IDirect3DVertexBuffer9* mRadarVB;
+
+	//===============================================================
+struct VertexPT
+{
+	VertexPT()
+		:pos(0.0f, 0.0f, 0.0f),
+		tex0(0.0f, 0.0f){}
+	VertexPT(float x, float y, float z, 
+		float u, float v):pos(x,y,z), tex0(u,v){}
+	VertexPT(const D3DXVECTOR3& v, const D3DXVECTOR2& uv)
+		:pos(v), tex0(uv){}
+
+	D3DXVECTOR3 pos;
+	D3DXVECTOR2 tex0;
+
+	static IDirect3DVertexDeclaration9* Decl;
+};
             
             //pd3dDevice->SetRenderTarget( 0, pTexSurf );
 
@@ -129,6 +153,26 @@ bool Game::LoadContent()
     D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
     D3DXVECTOR3 vUpVec( 0.0f, 1.0f, 0.0f );*/
 	
+	// Viewport is entire texture.
+	D3DVIEWPORT9 vp = {0, 0, 256, 256, 0.0f, 1.0f};
+	mRadarMap = new DrawableTex2D(pDevice, 256, 256, 0, D3DFMT_X8R8G8B8, true, D3DFMT_D24X8, vp, mAutoGenMips);
+	pDevice->CreateVertexBuffer(6*sizeof(VertexPT), D3DUSAGE_WRITEONLY,
+		0, D3DPOOL_MANAGED, &mRadarVB, 0);
+
+	// Radar quad takes up quadrant IV.  Note that we specify coordinate directly in
+	// normalized device coordinates.  I.e., world, view, projection matrices are all
+	// identity.
+	VertexPT* v = 0;
+	mRadarVB->Lock(0, 0, (void**)&v, 0);
+	v[0] = VertexPT(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[1] = VertexPT(1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	v[2] = VertexPT(0.0f, -1.0f, 0.0f, 0.0f, 1.0f);
+	v[3] = VertexPT(0.0f, -1.0f, 0.0f, 0.0f, 1.0f);
+	v[4] = VertexPT(1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	v[5] = VertexPT(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);
+	mRadarVB->Unlock();
+
+	D3DXCreateTextureFromFile(pDevice, "wood.jpg", &pTarget);
 
 	return true;
 }
@@ -204,14 +248,15 @@ void Game::Update()
 
 void Game::Draw()
 { 
-	pDevice->SetRenderTarget( 0, pTexSurf );
-
     // Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
 
-    // Begin the scene
+	// Begin the scene
     if( SUCCEEDED( pDevice->BeginScene() ) )
     {
+    //mRadarMap->beginScene();
+	//pDevice->Clear(0, 0, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, 0xff000000, 1.0f, 0);
+
 		//Draw the scene
 		UINT numberOfPasses = 1;
 		m_LightingInterface->GetEffect()->Begin(&numberOfPasses, 0);
@@ -241,6 +286,20 @@ void Game::Draw()
 		//End the pass
 		m_LightingInterface->GetEffect()->EndPass();
 		m_LightingInterface->GetEffect()->End();
+
+	//mRadarMap->endScene();	
+
+		pDevice->SetStreamSource(0, mRadarVB, 0, sizeof(VertexPT));
+
+		pDevice->SetTexture(0, pTarget);
+		
+		// Turn on D3D lighting, since we are providing our own vertex colors
+    pDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+
+		pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 2);
+
+		// Turn on D3D lighting, since we are providing our own vertex colors
+    pDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
 	    
 		m_Font->Draw();	
 
