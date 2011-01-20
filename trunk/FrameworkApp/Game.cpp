@@ -59,6 +59,11 @@ struct VertexPT
             
             //pd3dDevice->SetRenderTarget( 0, pTexSurf );
 
+LPDIRECT3DTEXTURE9 pRenderTexture = NULL;
+LPDIRECT3DSURFACE9 pRenderSurface = NULL,pBackBuffer = NULL;
+ID3DXRenderToSurface *pRenderToSurface;
+D3DXMATRIX matProjection,matOldProjection;
+
 // A structure for our custom vertex type
 struct CUSTOMVERTEX
 {
@@ -172,6 +177,24 @@ bool Game::LoadContent()
 	v[5] = VertexPT(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);
 	mRadarVB->Unlock();
 
+	pDevice->CreateTexture(256,
+                             256,
+                             1,
+                             D3DUSAGE_RENDERTARGET,
+                             D3DFMT_A8R8G8B8,
+                             D3DPOOL_DEFAULT,
+                             &pRenderTexture,
+                             NULL);
+
+	/*D3DXCreateRenderToSurface (pDevice, 256, 256, D3DFMT_A8R8G8B8,
+    true, D3DFMT_D24X8, &pRTS);*/
+
+	pRenderTexture->GetSurfaceLevel(0,&pRenderSurface);
+
+	D3DXMatrixPerspectiveFovLH(&matProj,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight ,1,100);
+
+	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f,1,1,100);
+
 	D3DXCreateTextureFromFile(pDevice, "wood.jpg", &pTarget);
 
 	return true;
@@ -247,12 +270,14 @@ void Game::Update()
 }
 
 void Game::Draw()
-{ 
-   
-	
-	
-    mRadarMap->beginScene();
-	//pDevice->Clear(0, 0, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, 0xff000000, 1.0f, 0);
+{ 	
+    //pDevice->SetTransform(D3DTS_PROJECTION, &matProj);
+	pDevice->GetTransform(D3DTS_PROJECTION,&matOldProjection);
+	pDevice->GetRenderTarget(0,&pBackBuffer);
+
+	pDevice->SetRenderTarget(0, pRenderSurface);
+
+	pDevice->BeginScene();
 
 	// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
@@ -287,18 +312,32 @@ void Game::Draw()
 		m_LightingInterface->GetEffect()->EndPass();
 		m_LightingInterface->GetEffect()->End();
 
-	mRadarMap->endScene();	
+
+	pDevice->EndScene();
+
+	//render scene with texture
+  //set back buffer
+  pDevice->SetRenderTarget(0,pBackBuffer);
+  pDevice->Clear(0,
+                           NULL,
+                           D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
+                           D3DCOLOR_XRGB(0,0,255),
+                           1.0f,
+                           0);
+
+ if( SUCCEEDED( pDevice->BeginScene() ) )
+    {
 		
 		// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
 
-		// Begin the scene
-    if( SUCCEEDED( pDevice->BeginScene() ) )
-    {
 		pDevice->SetStreamSource(0, mRadarVB, 0, sizeof(VertexPT));
 		pDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
 
-		pDevice->SetTexture(0, mRadarMap->d3dTex());
+		pDevice->SetTransform(D3DTS_PROJECTION,&matOldProjection);
+
+		//pDevice->SetTexture(0, mRadarMap->d3dTex());
+		pDevice->SetTexture(0, pRenderTexture);
 		
 		// Turn on D3D lighting, since we are providing our own vertex colors
     pDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
@@ -312,11 +351,11 @@ void Game::Draw()
 
 	        // End the scene
         pDevice->EndScene();
-    }
+ }
 
     // Present the backbuffer contents to the display
     pDevice->Present( NULL, NULL, NULL, NULL );
-}
+	}
 
 void Game::Unload()
 {
