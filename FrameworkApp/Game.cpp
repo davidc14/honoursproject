@@ -155,7 +155,7 @@ bool Game::LoadContent()
 	
 	// Viewport is entire texture.
 	D3DVIEWPORT9 vp = {0, 0, 256, 256, 0.0f, 1.0f};
-	mRadarMap = new DrawableTex2D(pDevice, 256, 256, 0, D3DFMT_X8R8G8B8, true, D3DFMT_D24X8, vp, mAutoGenMips);
+	mRadarMap = new DrawableTex2D(pDevice, 256, 256, 0, D3DFMT_A8R8G8B8, true, D3DFMT_D24X8, vp, mAutoGenMips);
 	pDevice->CreateVertexBuffer(6*sizeof(VertexPT), D3DUSAGE_WRITEONLY,
 		0, D3DPOOL_MANAGED, &mRadarVB, 0);
 
@@ -248,14 +248,14 @@ void Game::Update()
 
 void Game::Draw()
 { 
-    // Clear the backbuffer to a blue color
-    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
-
-	// Begin the scene
-    if( SUCCEEDED( pDevice->BeginScene() ) )
-    {
-    //mRadarMap->beginScene();
+   
+	
+	
+    mRadarMap->beginScene();
 	//pDevice->Clear(0, 0, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, 0xff000000, 1.0f, 0);
+
+	// Clear the backbuffer to a blue color
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
 
 		//Draw the scene
 		UINT numberOfPasses = 1;
@@ -287,12 +287,18 @@ void Game::Draw()
 		m_LightingInterface->GetEffect()->EndPass();
 		m_LightingInterface->GetEffect()->End();
 
-	//mRadarMap->endScene();	
+	mRadarMap->endScene();	
+		
+		// Clear the backbuffer to a blue color
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
 
+		// Begin the scene
+    if( SUCCEEDED( pDevice->BeginScene() ) )
+    {
 		pDevice->SetStreamSource(0, mRadarVB, 0, sizeof(VertexPT));
 		pDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
 
-		pDevice->SetTexture(0, pTarget);
+		pDevice->SetTexture(0, mRadarMap->d3dTex());
 		
 		// Turn on D3D lighting, since we are providing our own vertex colors
     pDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
