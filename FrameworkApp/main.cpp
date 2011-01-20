@@ -36,16 +36,18 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 	
     /*UNREFERENCED_PARAMETER( hPrevInstance );
     UNREFERENCED_PARAMETER( lpCmdLine );*/
+
+	#ifdef _DEBUG
+	//Load a console window for debuggin
+	ShowWin32Console();
+	printf("Begun debug window\n");
+#endif
 	
 	if( FAILED( pWindow->InitWindow( hInstance, nCmdShow ) ) )
         return 0;
 
 	//Remind me to take this out
-#ifdef _DEBUG
-	//Load a console window for debuggin
-	ShowWin32Console();
-	printf("Begun debug window\n");
-#endif
+
 
     if( FAILED( pWindow->InitDevice() ) )
     {
