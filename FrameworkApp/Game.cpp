@@ -30,6 +30,11 @@ DirectInput* m_DInput;
 
 FPCamera* m_Camera;
 
+IDirect3DTexture9* pTarget;
+IDirect3DSurface9* pTexSurf;
+            
+            //pd3dDevice->SetRenderTarget( 0, pTexSurf );
+
 // A structure for our custom vertex type
 struct CUSTOMVERTEX
 {
@@ -118,9 +123,12 @@ bool Game::LoadContent()
 
 	m_Camera = new FPCamera(vEyePt,	vLookatPt, vUpVec, (int)m_WindowWidth, (int)m_WindowHeight);
 
+	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI / 4, m_WindowWidth/m_WindowHeight, 1.0f, 100.0f );
+
 		/*D3DXVECTOR3 vEyePt( -5.0f, 10.0f,-12.5f );
     D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
     D3DXVECTOR3 vUpVec( 0.0f, 1.0f, 0.0f );*/
+	
 
 	return true;
 }
@@ -196,44 +204,45 @@ void Game::Update()
 
 void Game::Draw()
 { 
+	pDevice->SetRenderTarget( 0, pTexSurf );
+
     // Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
 
     // Begin the scene
     if( SUCCEEDED( pDevice->BeginScene() ) )
     {
-      
-	//Draw the scene
-	UINT numberOfPasses = 1;
-	m_LightingInterface->GetEffect()->Begin(&numberOfPasses, 0);
-	m_LightingInterface->GetEffect()->BeginPass(0);
+		//Draw the scene
+		UINT numberOfPasses = 1;
+		m_LightingInterface->GetEffect()->Begin(&numberOfPasses, 0);
+		m_LightingInterface->GetEffect()->BeginPass(0);
 
-	//Update the world matrix for the object
-	m_KeyboardDwarf->UpdateShaderVariables(&m_LightingContainer);
-	//Set the variables - This is essentially my version of CommitChanges()
-	SetShaderVariables();
-	//Draw the model
-	m_KeyboardDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
+		//Update the world matrix for the object
+		m_KeyboardDwarf->UpdateShaderVariables(&m_LightingContainer);
+		//Set the variables - This is essentially my version of CommitChanges()
+		SetShaderVariables();
+		//Draw the model
+		m_KeyboardDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
 
-	//Update the world matrix for the object
-	m_ServerDwarf->UpdateShaderVariables(&m_LightingContainer);
-	//Set the variables
-	SetShaderVariables();
-	//Draw the model - You get the picture
-	m_ServerDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
+		//Update the world matrix for the object
+		m_ServerDwarf->UpdateShaderVariables(&m_LightingContainer);
+		//Set the variables
+		SetShaderVariables();
+		//Draw the model - You get the picture
+		m_ServerDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
 
-	//Update the world matrix for the object
-	m_RandomDwarf->UpdateShaderVariables(&m_LightingContainer);
-	//Set the variables
-	SetShaderVariables();
-	//Draw the model - You get the picture
-	m_RandomDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
+		//Update the world matrix for the object
+		m_RandomDwarf->UpdateShaderVariables(&m_LightingContainer);
+		//Set the variables
+		SetShaderVariables();
+		//Draw the model - You get the picture
+		m_RandomDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
 
-	//End the pass
-	m_LightingInterface->GetEffect()->EndPass();
-	m_LightingInterface->GetEffect()->End();
-    
-	m_Font->Draw();	
+		//End the pass
+		m_LightingInterface->GetEffect()->EndPass();
+		m_LightingInterface->GetEffect()->End();
+	    
+		m_Font->Draw();	
 
 	        // End the scene
         pDevice->EndScene();
@@ -278,7 +287,7 @@ void Game::CalculateMatrices()
     // what distances geometry should be no longer be rendered).
 
 	
-    D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI / 4, m_WindowWidth/m_WindowHeight, 1.0f, 100.0f );
+
     //pDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 }
 
