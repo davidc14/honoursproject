@@ -177,8 +177,8 @@ bool Game::LoadContent()
 	v[5] = VertexPT(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);
 	mRadarVB->Unlock();
 
-	pDevice->CreateTexture(256,
-                             256,
+	pDevice->CreateTexture(m_WindowWidth,
+                             m_WindowHeight,
                              1,
                              D3DUSAGE_RENDERTARGET,
                              D3DFMT_A8R8G8B8,
@@ -193,7 +193,7 @@ bool Game::LoadContent()
 
 	D3DXMatrixPerspectiveFovLH(&matProj,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight ,1,100);
 
-	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f,1,1,100);
+	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f,m_WindowWidth/m_WindowHeight,1,100);
 
 	D3DXCreateTextureFromFile(pDevice, "wood.jpg", &pTarget);
 
