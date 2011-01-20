@@ -67,7 +67,7 @@ struct CUSTOMVERTEX
 };
 
 // Our custom FVF, which describes our custom vertex structure
-#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZ|D3DFVF_NORMAL|D3DFVF_DIFFUSE)
+#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZ|D3DFVF_TEX1)
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -290,6 +290,7 @@ void Game::Draw()
 	//mRadarMap->endScene();	
 
 		pDevice->SetStreamSource(0, mRadarVB, 0, sizeof(VertexPT));
+		pDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
 
 		pDevice->SetTexture(0, pTarget);
 		
