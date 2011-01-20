@@ -460,6 +460,18 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="Render Targets"
+				>
+				<File
+					RelativePath=".\DrawableTex2D.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DrawableTex2D.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

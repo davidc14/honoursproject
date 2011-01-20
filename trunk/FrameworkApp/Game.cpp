@@ -196,6 +196,13 @@ void Game::Update()
 
 void Game::Draw()
 { 
+    // Clear the backbuffer to a blue color
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
+
+    // Begin the scene
+    if( SUCCEEDED( pDevice->BeginScene() ) )
+    {
+      
 	//Draw the scene
 	UINT numberOfPasses = 1;
 	m_LightingInterface->GetEffect()->Begin(&numberOfPasses, 0);
@@ -227,6 +234,13 @@ void Game::Draw()
 	m_LightingInterface->GetEffect()->End();
     
 	m_Font->Draw();	
+
+	        // End the scene
+        pDevice->EndScene();
+    }
+
+    // Present the backbuffer contents to the display
+    pDevice->Present( NULL, NULL, NULL, NULL );
 }
 
 void Game::Unload()
