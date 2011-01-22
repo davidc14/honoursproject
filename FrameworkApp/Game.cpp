@@ -56,8 +56,6 @@ struct VertexPT
 
 	static IDirect3DVertexDeclaration9* Decl;
 };
-            
-            //pd3dDevice->SetRenderTarget( 0, pTexSurf );
 
 LPDIRECT3DTEXTURE9 pRenderTexture = NULL;
 LPDIRECT3DSURFACE9 pRenderSurface = NULL,pBackBuffer = NULL;
@@ -169,11 +167,18 @@ bool Game::LoadContent()
 	// identity.
 	VertexPT* v = 0;
 	mRadarVB->Lock(0, 0, (void**)&v, 0);
-	v[0] = VertexPT(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	/*v[0] = VertexPT(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	v[1] = VertexPT(1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 	v[2] = VertexPT(0.0f, -1.0f, 0.0f, 0.0f, 1.0f);
 	v[3] = VertexPT(0.0f, -1.0f, 0.0f, 0.0f, 1.0f);
 	v[4] = VertexPT(1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	v[5] = VertexPT(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);*/
+
+	v[0] = VertexPT(-1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+	v[1] = VertexPT(1.0f, 1.0f, 0.0f, 1.0f, 0.0f);
+	v[2] = VertexPT(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f);
+	v[3] = VertexPT(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f);
+	v[4] = VertexPT(1.0f, 1.0f, 0.0f, 1.0f, 0.0f);
 	v[5] = VertexPT(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);
 	mRadarVB->Unlock();
 
