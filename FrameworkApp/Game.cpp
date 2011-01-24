@@ -14,7 +14,7 @@
 
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
 
-D3DXMATRIXA16 matView, matProj, matWorldInverseTranspose;
+D3DXMATRIXA16 matWorld, matView, matProj, matWorldInverseTranspose;
 D3DXVECTOR4 vViewVector;
 
 D3DFont* m_Font;
@@ -33,7 +33,7 @@ DirectInput* m_DInput;
 
 FPCamera* m_Camera;
 
-IDirect3DTexture9* pTarget;
+
 IDirect3DSurface9* pTexSurf;
 
 // The texture we draw into.
@@ -68,6 +68,9 @@ SkinnedMesh* m_SkinnedMesh;
 
 D3DXHANDLE mhTech,mhWVP,mhWorldInvTrans ,mhFinalXForms,mhMtrl,mhLight,mhEyePos,mhWorld,mhTex ;
 ID3DXEffect* mFX;
+DirLight mLight;
+Mtrl     mWhiteMtrl;
+IDirect3DTexture9* pTarget;
 
 // A structure for our custom vertex type
 struct CUSTOMVERTEX
@@ -221,6 +224,18 @@ bool Game::LoadContent()
 	mhWorld           = mFX->GetParameterByName(0, "gWorld");
 	mhTex             = mFX->GetParameterByName(0, "gTex");
 
+	mLight.dirW    = D3DXVECTOR3(1.0f, 1.0f, 2.0f);
+	D3DXVec3Normalize(&mLight.dirW, &mLight.dirW);
+	mLight.ambient = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
+	mLight.diffuse = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
+	mLight.spec    = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
+
+	mWhiteMtrl.ambient = WHITE*0.9f;
+	mWhiteMtrl.diffuse = WHITE*0.6f;
+	mWhiteMtrl.spec    = WHITE*0.6f;
+	mWhiteMtrl.specPower = 48.0f;
+
+
 	return true;
 }
 
@@ -321,23 +336,47 @@ void Game::Draw()
 		//Draw the model
 		m_KeyboardDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
 
-		//Update the world matrix for the object
-		m_ServerDwarf->UpdateShaderVariables(&m_LightingContainer);
-		//Set the variables
-		SetShaderVariables();
-		//Draw the model - You get the picture
-		m_ServerDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
+		////Update the world matrix for the object
+		//m_ServerDwarf->UpdateShaderVariables(&m_LightingContainer);
+		////Set the variables
+		//SetShaderVariables();
+		////Draw the model - You get the picture
+		//m_ServerDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
 
-		//Update the world matrix for the object
-		m_RandomDwarf->UpdateShaderVariables(&m_LightingContainer);
-		//Set the variables
-		SetShaderVariables();
-		//Draw the model - You get the picture
-		m_RandomDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
+		////Update the world matrix for the object
+		//m_RandomDwarf->UpdateShaderVariables(&m_LightingContainer);
+		////Set the variables
+		//SetShaderVariables();
+		////Draw the model - You get the picture
+		//m_RandomDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
 
 		//End the pass
 		m_LightingInterface->GetEffect()->EndPass();
-		m_LightingInterface->GetEffect()->End();
+		m_LightingInterface->GetEffect()->End();	
+
+		//D3DXMatrixTranslation(&matWorld, 0.0f, 0.0f, 0.0f);
+		D3DXMatrixScaling(&matWorld, 0.1f, 0.1f, 0.1f);
+
+		HR(mFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones()));
+		HR(mFX->SetValue(mhLight, &mLight, sizeof(DirLight)));
+		HR(mFX->SetMatrix(mhWVP, &(matWorld*matView*matProjection)));
+		D3DXMATRIX worldInvTrans;
+		D3DXMatrixInverse(&worldInvTrans, 0, &matWorld);
+		D3DXMatrixTranspose(&worldInvTrans, &worldInvTrans);
+		HR(mFX->SetMatrix(mhWorldInvTrans, &worldInvTrans));
+		HR(mFX->SetMatrix(mhWorld, &matWorld));
+		HR(mFX->SetValue(mhMtrl, &mWhiteMtrl, sizeof(Mtrl)));
+		HR(mFX->SetTexture(mhTex, pTarget));
+		
+		HR(mFX->SetTechnique(mhTech));
+		UINT numPasses = 0;
+		HR(mFX->Begin(&numPasses, 0));
+		HR(mFX->BeginPass(0));
+
+		m_SkinnedMesh->draw();
+
+		HR(mFX->EndPass());
+		HR(mFX->End());
 
 
 	pDevice->EndScene();
