@@ -270,6 +270,9 @@ void Game::Update()
 
 
 	m_Font->Update(m_DeltaTime, m_WindowWidth, m_WindowHeight);	
+
+	// Animate the skinned mesh.
+	m_SkinnedMesh->update(m_DeltaTime);
 }
 
 void Game::Draw()
