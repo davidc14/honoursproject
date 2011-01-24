@@ -66,6 +66,9 @@ D3DXMATRIX matProjection,matOldProjection;
 
 SkinnedMesh* m_SkinnedMesh;
 
+D3DXHANDLE mhTech,mhWVP,mhWorldInvTrans ,mhFinalXForms,mhMtrl,mhLight,mhEyePos,mhWorld,mhTex ;
+ID3DXEffect* mFX;
+
 // A structure for our custom vertex type
 struct CUSTOMVERTEX
 {
@@ -199,6 +202,24 @@ bool Game::LoadContent()
 	D3DXCreateTextureFromFile(pDevice, "wood.jpg", &pTarget);
 
 	m_SkinnedMesh = new SkinnedMesh(pDevice, "tiny.x");
+
+	// Create the FX from a .fx file.
+	ID3DXBuffer* errors = 0;
+	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/vblend2.fx", 
+		0, 0, D3DXSHADER_DEBUG, 0, &mFX, &errors));
+	if( errors )
+		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
+
+	// Obtain handles.
+	mhTech            = mFX->GetTechniqueByName("VBlend2Tech");
+	mhWVP             = mFX->GetParameterByName(0, "gWVP");
+	mhWorldInvTrans   = mFX->GetParameterByName(0, "gWorldInvTrans");
+	mhFinalXForms     = mFX->GetParameterByName(0, "gFinalXForms");
+	mhMtrl            = mFX->GetParameterByName(0, "gMtrl");
+	mhLight           = mFX->GetParameterByName(0, "gLight");
+	mhEyePos          = mFX->GetParameterByName(0, "gEyePosW");
+	mhWorld           = mFX->GetParameterByName(0, "gWorld");
+	mhTex             = mFX->GetParameterByName(0, "gTex");
 
 	return true;
 }
