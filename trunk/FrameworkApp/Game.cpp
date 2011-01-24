@@ -9,6 +9,8 @@
 #include "DirectInput.h"
 #include "FPCamera.h"
 #include "DrawableTex2D.h"
+#include "App Framework\Animation\Vertex.h"
+#include "App Framework\Animation\SkinnedMesh.h"
 
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
 
@@ -62,6 +64,8 @@ LPDIRECT3DSURFACE9 pRenderSurface = NULL,pBackBuffer = NULL;
 ID3DXRenderToSurface *pRenderToSurface;
 D3DXMATRIX matProjection,matOldProjection;
 
+SkinnedMesh* m_SkinnedMesh;
+
 // A structure for our custom vertex type
 struct CUSTOMVERTEX
 {
@@ -101,6 +105,8 @@ Game::~Game()
 bool Game::Initialise()
 {
 	//CalculateMatrices();
+	InitAllVertexDeclarations(pDevice);
+
 
 	// Turn off culling, so we see the front and back of the triangle
     pDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
@@ -118,7 +124,6 @@ bool Game::Initialise()
 bool Game::LoadContent()
 {
 	m_Model = new XModel(pDevice);
-	//m_Model->SetModel("Models/Dwarf", "Dwarf.x");
 	if(!m_Model->SetModel("Models/SpaceShip", "SpaceShip.x"))
 	{
 		::MessageBox(0, "Model loading failed", "Model loading error", 0);
@@ -128,8 +133,6 @@ bool Game::LoadContent()
 	m_Font = new D3DFont(pDevice);
 
 	m_LightingInterface = new BasicLightingInterface(pDevice);
-	/*m_LightingInterface->LoadShader();
-	m_LightingInterface->SetupHandles();*/
 
 	//Load our objects, this constructor handles model loading
 	m_KeyboardDwarf = new Dwarf(pDevice);
@@ -151,10 +154,6 @@ bool Game::LoadContent()
 	m_Camera = new FPCamera(vEyePt,	vLookatPt, vUpVec, (int)m_WindowWidth, (int)m_WindowHeight);
 
 	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI / 4, m_WindowWidth/m_WindowHeight, 1.0f, 100.0f );
-
-		/*D3DXVECTOR3 vEyePt( -5.0f, 10.0f,-12.5f );
-    D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
-    D3DXVECTOR3 vUpVec( 0.0f, 1.0f, 0.0f );*/
 	
 	// Viewport is entire texture.
 	D3DVIEWPORT9 vp = {0, 0, 256, 256, 0.0f, 1.0f};
@@ -182,17 +181,14 @@ bool Game::LoadContent()
 	v[5] = VertexPT(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);
 	mRadarVB->Unlock();
 
-	pDevice->CreateTexture(m_WindowWidth,
-                             m_WindowHeight,
+	pDevice->CreateTexture((UINT)m_WindowWidth,
+                             (UINT)m_WindowHeight,
                              1,
                              D3DUSAGE_RENDERTARGET,
                              D3DFMT_A8R8G8B8,
                              D3DPOOL_DEFAULT,
                              &pRenderTexture,
                              NULL);
-
-	/*D3DXCreateRenderToSurface (pDevice, 256, 256, D3DFMT_A8R8G8B8,
-    true, D3DFMT_D24X8, &pRTS);*/
 
 	pRenderTexture->GetSurfaceLevel(0,&pRenderSurface);
 
@@ -201,6 +197,8 @@ bool Game::LoadContent()
 	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f,m_WindowWidth/m_WindowHeight,1,100);
 
 	D3DXCreateTextureFromFile(pDevice, "wood.jpg", &pTarget);
+
+	m_SkinnedMesh = new SkinnedMesh(pDevice, "tiny.x");
 
 	return true;
 }

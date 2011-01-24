@@ -242,6 +242,34 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Animation"
+				>
+				<File
+					RelativePath=".\App Framework\Animation\AllocMeshHierarchy.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App Framework\Animation\AllocMeshHierarchy.h"
+					>
+				</File>
+				<File
+					RelativePath=".\App Framework\Animation\SkinnedMesh.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App Framework\Animation\SkinnedMesh.h"
+					>
+				</File>
+				<File
+					RelativePath=".\App Framework\Animation\Vertex.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App Framework\Animation\Vertex.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Window Framework"
