@@ -8,7 +8,7 @@
 #include "Dwarf.h"
 #include "DirectInput.h"
 #include "FPCamera.h"
-#include "DrawableTex2D.h"
+#include "App\Objects\Render Objects\Citadel.h"
 #include "App Framework\Animation\Vertex.h"
 #include "App Framework\Animation\SkinnedMesh.h"
 
@@ -22,19 +22,19 @@ D3DFont* m_Font;
 BasicLightingInterface* m_LightingInterface;
 BasicLighting m_LightingContainer;
 
-XModel* m_Model;
+//XModel* m_Model;
 
-Dwarf* m_KeyboardDwarf;
-Dwarf* m_ServerDwarf;
+//Dwarf* m_KeyboardDwarf;
+//Dwarf* m_ServerDwarf;
+//Dwarf* m_RandomDwarf;
 
-Dwarf* m_RandomDwarf;
+Citadel* m_Citadel;
 
 DirectInput* m_DInput;
 
 FPCamera* m_Camera;
 
-
-	IDirect3DVertexBuffer9* mRadarVB;
+IDirect3DVertexBuffer9* mRadarVB;
 
 	//===============================================================
 struct VertexPT
@@ -122,25 +122,26 @@ bool Game::Initialise()
 
 bool Game::LoadContent()
 {
-	m_Model = new XModel(pDevice);
+	/*m_Model = new XModel(pDevice);
 	if(!m_Model->SetModel("Models/SpaceShip", "SpaceShip.x"))
 	{
 		::MessageBox(0, "Model loading failed", "Model loading error", 0);
 		return false;
-	}
+	}*/
 
 	m_Font = new D3DFont(pDevice);
 
 	m_LightingInterface = new BasicLightingInterface(pDevice);
 
 	//Load our objects, this constructor handles model loading
-	m_KeyboardDwarf = new Dwarf(pDevice);
+	/*m_KeyboardDwarf = new Dwarf(pDevice);
 	m_ServerDwarf = new Dwarf(pDevice);
-	m_RandomDwarf = new Dwarf(pDevice);
+	m_RandomDwarf = new Dwarf(pDevice);*/
+	m_Citadel = new Citadel(pDevice);
 
-	m_KeyboardDwarf->MoveToLocation(D3DXVECTOR3(0.0f, 0.0f, -5.0f));
+	/*m_KeyboardDwarf->MoveToLocation(D3DXVECTOR3(0.0f, 0.0f, -5.0f));
 	m_ServerDwarf->MoveToLocation(D3DXVECTOR3(0.0f, 0.0f, 5.0f));
-	m_RandomDwarf->MoveToLocation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	m_RandomDwarf->MoveToLocation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));*/
 
 	m_DInput = new DirectInput();
 
@@ -226,7 +227,6 @@ bool Game::LoadContent()
 	mWhiteMtrl.spec    = WHITE*0.6f;
 	mWhiteMtrl.specPower = 48.0f;
 
-
 	return true;
 }
 
@@ -262,8 +262,8 @@ void Game::HandleInput()
 	if(m_DInput->GetKeyState(4))
 		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);			
 	
-	//Update the velocity based on the values of the key presses
-	m_KeyboardDwarf->SetVelocity(KeyboardDwarfVelocity);
+	////Update the velocity based on the values of the key presses
+	//m_KeyboardDwarf->SetVelocity(KeyboardDwarfVelocity);
 }
 
 float fAngle = 0.0f;
@@ -291,9 +291,11 @@ void Game::Update()
 
 	CalculateMatrices();
 	
-		m_ServerDwarf->Update(serverDwarfVelocity, 0.0f);
+		/*m_ServerDwarf->Update(serverDwarfVelocity, 0.0f);
 		m_KeyboardDwarf->Update();
-		m_RandomDwarf->Update(randomDwarfVelocity, 0.0f);
+		m_RandomDwarf->Update(randomDwarfVelocity, 0.0f);*/
+
+		m_Citadel->Update();
 
 	m_Font->Update(m_DeltaTime, m_WindowWidth, m_WindowHeight);	
 
@@ -320,11 +322,11 @@ void Game::Draw()
 		m_LightingInterface->GetEffect()->BeginPass(0);
 
 		//Update the world matrix for the object
-		m_KeyboardDwarf->UpdateShaderVariables(&m_LightingContainer);
+		m_Citadel->UpdateShaderVariables(&m_LightingContainer);
 		//Set the variables - This is essentially my version of CommitChanges()
 		SetShaderVariables();
 		//Draw the model
-		m_KeyboardDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
+		m_Citadel->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
 
 		////Update the world matrix for the object
 		//m_ServerDwarf->UpdateShaderVariables(&m_LightingContainer);
@@ -415,14 +417,14 @@ void Game::Draw()
 
 void Game::Unload()
 {
-	m_Model->Release();
+	//m_Model->Release();
 
 	m_Font->Release();
 
 	m_LightingInterface->Release();
-	m_KeyboardDwarf->Release();
+	/*m_KeyboardDwarf->Release();
 	m_ServerDwarf->Release();
-	m_RandomDwarf->Release();
+	m_RandomDwarf->Release();*/
 
 	m_SkinnedMesh->Release();
 
