@@ -191,9 +191,9 @@ bool Game::LoadContent()
 
 	D3DXMatrixPerspectiveFovLH(&matProj,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight ,1,100);
 
-	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f,m_WindowWidth/m_WindowHeight,1,100);
+	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight,1,100);
 
-	D3DXCreateTextureFromFile(pDevice, "wood.jpg", &pTarget);
+	D3DXCreateTextureFromFile(pDevice, "Models/Tiny/Tiny_skin.bmp", &pTarget);
 
 	m_SkinnedMesh = new SkinnedMesh(pDevice, "Models/Tiny", "tiny.x");
 
