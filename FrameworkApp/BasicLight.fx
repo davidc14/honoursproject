@@ -20,8 +20,8 @@ sampler2D textureSampler = sampler_state {
     Texture = (ModelTexture);
     MinFilter = Linear;
     MagFilter = Linear;
-    AddressU = Clamp;
-    AddressV = Clamp;
+    AddressU = Wrap;
+    AddressV = Wrap;
 };
  
 struct VertexShaderInput

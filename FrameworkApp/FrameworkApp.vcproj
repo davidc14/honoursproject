@@ -363,11 +363,11 @@
 					Name="Render Objects"
 					>
 					<File
-						RelativePath=".\Citadel.cpp"
+						RelativePath=".\App\Objects\Render Objects\Citadel.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\Citadel.h"
+						RelativePath=".\App\Objects\Render Objects\Citadel.h"
 						>
 					</File>
 					<File

@@ -1,4 +1,5 @@
 #include "XModel.h"
+#include <cassert>
 
 XModel::XModel(LPDIRECT3DDEVICE9 Device)
 {
@@ -71,9 +72,16 @@ bool XModel::SetModel(char* filePath, char* fileName)
 
 	//Clone the mesh with vertex format as specified by D3DFVF_CUSTOMVERTEX
 	LPD3DXMESH temp=0;
-	m_Mesh->CloneMeshFVF( 0, D3DFVF_MODELVERTEX, pDevice, &temp);
+	HRESULT hr = 0;
+	hr = m_Mesh->CloneMeshFVF( D3DPOOL_MANAGED, D3DFVF_MODELVERTEX, pDevice, &temp);
+	if( hr == D3DERR_INVALIDCALL)
+	{
+		return false;
+	}
 	m_Mesh->Release();
 	m_Mesh = temp;	
+
+	assert(temp != NULL);
 
 	//Generate normals using averaging technique
 	D3DXComputeNormals(m_Mesh, 0);
