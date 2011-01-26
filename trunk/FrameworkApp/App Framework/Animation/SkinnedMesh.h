@@ -25,6 +25,7 @@ public:
 
 	void update(float deltaTime);
 	void draw();
+	void Release();
 
 protected:
 	D3DXFRAME* findNodeWithMesh(D3DXFRAME* frame);

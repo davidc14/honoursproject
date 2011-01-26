@@ -34,12 +34,6 @@ DirectInput* m_DInput;
 FPCamera* m_Camera;
 
 
-IDirect3DSurface9* pTexSurf;
-
-// The texture we draw into.
-	DrawableTex2D* mRadarMap;
-	bool mAutoGenMips;
-
 	IDirect3DVertexBuffer9* mRadarVB;
 
 	//===============================================================
@@ -61,7 +55,6 @@ struct VertexPT
 
 LPDIRECT3DTEXTURE9 pRenderTexture = NULL;
 LPDIRECT3DSURFACE9 pRenderSurface = NULL,pBackBuffer = NULL;
-ID3DXRenderToSurface *pRenderToSurface;
 D3DXMATRIX matProjection,matOldProjection;
 
 SkinnedMesh* m_SkinnedMesh;
@@ -162,8 +155,6 @@ bool Game::LoadContent()
 	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI / 4, m_WindowWidth/m_WindowHeight, 1.0f, 100.0f );
 	
 	// Viewport is entire texture.
-	D3DVIEWPORT9 vp = {0, 0, 256, 256, 0.0f, 1.0f};
-	mRadarMap = new DrawableTex2D(pDevice, 256, 256, 0, D3DFMT_A8R8G8B8, true, D3DFMT_D24X8, vp, mAutoGenMips);
 	pDevice->CreateVertexBuffer(6*sizeof(VertexPT), D3DUSAGE_WRITEONLY,
 		0, D3DPOOL_MANAGED, &mRadarVB, 0);
 
@@ -304,7 +295,6 @@ void Game::Update()
 		m_KeyboardDwarf->Update();
 		m_RandomDwarf->Update(randomDwarfVelocity, 0.0f);
 
-
 	m_Font->Update(m_DeltaTime, m_WindowWidth, m_WindowHeight);	
 
 	// Animate the skinned mesh.
@@ -355,7 +345,7 @@ void Game::Draw()
 		m_LightingInterface->GetEffect()->End();	
 
 		//D3DXMatrixTranslation(&matWorld, 0.0f, 0.0f, 0.0f);
-		D3DXMatrixScaling(&matWorld, 0.1f, 0.1f, 0.1f);
+		D3DXMatrixScaling(&matWorld, 0.01f, 0.01f, 0.01f);
 
 		HR(mFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones()));
 		HR(mFX->SetValue(mhLight, &mLight, sizeof(DirLight)));
@@ -433,6 +423,10 @@ void Game::Unload()
 	m_KeyboardDwarf->Release();
 	m_ServerDwarf->Release();
 	m_RandomDwarf->Release();
+
+	m_SkinnedMesh->Release();
+
+	mFX->Release();
 }
 
 void Game::CalculateMatrices()
