@@ -195,7 +195,7 @@ bool Game::LoadContent()
 
 	D3DXCreateTextureFromFile(pDevice, "wood.jpg", &pTarget);
 
-	m_SkinnedMesh = new SkinnedMesh(pDevice, "tiny.x");
+	m_SkinnedMesh = new SkinnedMesh(pDevice, "Models/Tiny", "tiny.x");
 
 	// Create the FX from a .fx file.
 	ID3DXBuffer* errors = 0;

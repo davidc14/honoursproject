@@ -6,8 +6,20 @@
 #include "AllocMeshHierarchy.h"
 #include "Vertex.h"
 
-SkinnedMesh::SkinnedMesh(IDirect3DDevice9* gd3dDevice, std::string XFilename)
+SkinnedMesh::SkinnedMesh(IDirect3DDevice9* gd3dDevice, std::string filePath, std::string XFilename)
 {
+	//Before anything is done, get the current directory
+	TCHAR buffer[MAX_PATH];
+	DWORD dwRet;
+
+	dwRet = GetCurrentDirectory(MAX_PATH, buffer);
+
+	//Set the directory of the file
+	if(filePath != "")
+	{
+		::SetCurrentDirectory(filePath.c_str());
+	}
+
 	AllocMeshHierarchy allocMeshHierarchy;
 	HR(D3DXLoadMeshHierarchyFromX(XFilename.c_str(), D3DXMESH_SYSTEMMEM,
 		gd3dDevice, &allocMeshHierarchy, 0, /* ignore user data */ 
@@ -27,6 +39,9 @@ SkinnedMesh::SkinnedMesh(IDirect3DDevice9* gd3dDevice, std::string XFilename)
 	
 	buildSkinnedMesh(gd3dDevice, meshContainer->MeshData.pMesh);
 	buildToRootXFormPtrArray();
+
+	//Set the file path back to prevent errors
+	::SetCurrentDirectory(buffer);
 }
 
 SkinnedMesh::~SkinnedMesh()
