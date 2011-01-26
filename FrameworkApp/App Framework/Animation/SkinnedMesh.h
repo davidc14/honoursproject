@@ -15,7 +15,7 @@ struct FrameEx : public D3DXFRAME
 class SkinnedMesh
 {
 public:
-	SkinnedMesh(IDirect3DDevice9* gd3dDevice, std::string XFilename);
+	SkinnedMesh(IDirect3DDevice9* gd3dDevice, std::string filePath, std::string XFilename);
 	~SkinnedMesh();
 
 	UINT numVertices();
