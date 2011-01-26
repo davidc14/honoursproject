@@ -93,6 +93,24 @@ void SkinnedMesh::draw()
 	HR(mSkinnedMesh->DrawSubset(0));
 }
 
+void SkinnedMesh::Release()
+{
+	if( mRoot )
+	{
+		AllocMeshHierarchy allocMeshHierarchy;
+		HR(D3DXFrameDestroy(mRoot, &allocMeshHierarchy));
+		mRoot = 0;
+	}
+
+	ReleaseCOM(mSkinnedMesh);
+	ReleaseCOM(mSkinInfo);
+	ReleaseCOM(mAnimCtrl);
+
+	/*mSkinnedMesh->Release();
+	mSkinInfo->Release();
+	mAnimCtrl->Release();*/
+}
+
 D3DXFRAME* SkinnedMesh::findNodeWithMesh(D3DXFRAME* frame)
 {
 	if( frame->pMeshContainer )

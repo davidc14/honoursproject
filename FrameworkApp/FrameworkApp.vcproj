@@ -363,6 +363,14 @@
 					Name="Render Objects"
 					>
 					<File
+						RelativePath=".\Citadel.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Citadel.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Dwarf.cpp"
 						>
 					</File>

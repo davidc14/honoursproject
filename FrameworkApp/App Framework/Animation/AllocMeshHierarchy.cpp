@@ -11,7 +11,7 @@ void CopyString(const char* input, char** output)
 	{
 		UINT length = (UINT)::strlen(input) + 1; // add 1 for terminating null charater.
 		*output = new char[length];
-		::strcpy(*output, input);
+		::strcpy_s(*output, length, input);
 	}
 	else
 	{
