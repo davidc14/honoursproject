@@ -45,7 +45,7 @@ DrawableTex2D::DrawableTex2D(IDirect3DDevice9* Device, UINT m_WindowWidth, UINT 
 
 	pRenderTexture->GetSurfaceLevel(0,&pRenderSurface);
 
-	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight, 1.0f, 1000.0f);
+	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f, (float)m_WindowWidth/m_WindowHeight, 1.0f, 1000.0f);
 }
 
 void DrawableTex2D::Draw()
@@ -53,11 +53,11 @@ void DrawableTex2D::Draw()
 	pDevice->SetStreamSource(0, mRadarVB, 0, sizeof(VertexPT));
 	pDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
 
-	pDevice->SetTransform(D3DTS_PROJECTION,&matOldProjection);
+	pDevice->SetTransform(D3DTS_PROJECTION, getOldProjectionPointer());
 
-	//pDevice->SetTexture(0, mRadarMap->d3dTex());
-	pDevice->SetTexture(0, pRenderTexture);
-
+	//pDevice->SetTexture(0, pRenderTexture);
+	pDevice->SetTexture(0, getRenderTexture());
+	
 	// Turn on D3D lighting, since we are providing our own vertex colors
 	pDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
 
@@ -65,5 +65,4 @@ void DrawableTex2D::Draw()
 
 	// Turn on D3D lighting, since we are providing our own vertex colors
 	pDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
-	
 }
