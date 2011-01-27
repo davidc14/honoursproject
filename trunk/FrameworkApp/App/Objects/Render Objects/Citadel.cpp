@@ -168,7 +168,6 @@ bool Citadel::LoadModel()
 	//("Models/Citadel", "Citadel.x")
 	//("Models/SpaceShip", "SpaceShip.x")
 	//Attempt to load the model
-	//if(!m_Model->SetModel("Models/Dwarf", "Dwarf.X"))
 	if(!m_Model->SetModel("Models/Atrium", "sponza.X"))
 		//Freak out if it fails
 		return false;

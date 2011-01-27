@@ -11,7 +11,7 @@ typedef struct PhongLighting
 	Mtrl m_Material;
 	DirLight m_Light;
 	D3DXVECTOR3 m_EyePosW;
-	IDirect3DTexture9* m_Texture;
+	//IDirect3DTexture9* m_Texture;
 
 }PhongLighting;
 
