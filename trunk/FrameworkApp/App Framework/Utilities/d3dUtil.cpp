@@ -3,7 +3,7 @@
 //=============================================================================
 
 #include "d3dUtil.h"
-#include "Vertex.h"
+#include "..\Animation\Vertex.h"
 
 void GenTriGrid(int numVertRows, int numVertCols,
 				float dx, float dz, 
@@ -81,7 +81,7 @@ void GenTriGrid(int numVertRows, int numVertCols,
 	}
 }
 
-void LoadXFile(
+void LoadXFile(IDirect3DDevice9* gd3dDevice,
 	const std::string& filename, 
 	ID3DXMesh** meshOut,
 	std::vector<Mtrl>& mtrls, 

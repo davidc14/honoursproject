@@ -3,7 +3,7 @@
 //=============================================================================
 
 #include "Vertex.h"
-#include "d3dUtil.h"
+#include "..\Utilities\d3dUtil.h"
 
 // Initialize static variables.
 IDirect3DVertexDeclaration9* VertexPos::Decl = 0;

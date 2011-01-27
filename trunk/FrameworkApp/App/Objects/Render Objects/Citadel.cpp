@@ -24,6 +24,11 @@ Citadel::Citadel()
 	m_ID = 0;
 
 	m_DeadReckoningTicker = 0.0f;
+
+	mWhiteMtrl.ambient = WHITE*0.9f;
+	mWhiteMtrl.diffuse = WHITE*0.6f;
+	mWhiteMtrl.spec    = WHITE*0.6f;
+	mWhiteMtrl.specPower = 48.0f;
 }
 
 Citadel::Citadel(IDirect3DDevice9* Device)
@@ -70,6 +75,11 @@ Citadel::Citadel(IDirect3DDevice9* Device)
 	m_ID = 0;
 
 	m_DeadReckoningTicker = 0.0f;
+
+	mWhiteMtrl.ambient = WHITE*0.9f;
+	mWhiteMtrl.diffuse = WHITE*0.6f;
+	mWhiteMtrl.spec    = WHITE*0.6f;
+	mWhiteMtrl.specPower = 48.0f;
 }
 
 Citadel::~Citadel()
@@ -203,6 +213,14 @@ void Citadel::UpdateShaderVariables(BasicLighting* LightingContainer)
 {
 	LightingContainer->matWorld = m_matWorld;
 	LightingContainer->matWorldInverseTranspose = m_matWorldInverseTranspose;
+}
+
+//This is seperate from the standard update, because of the DX9 state machine
+void Citadel::UpdateShaderVariables(PhongLighting* LightingContainer)
+{
+	LightingContainer->m_World = m_matWorld;
+	LightingContainer->m_WorldInvTrans = m_matWorldInverseTranspose;
+	LightingContainer->m_Material = mWhiteMtrl;
 }
 
 D3DXVECTOR3 Citadel::GetPosition()

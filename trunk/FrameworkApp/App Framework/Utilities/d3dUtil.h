@@ -28,7 +28,7 @@
 // Globals for convenient access.
 class D3DApp;
 extern D3DApp* gd3dApp;
-extern IDirect3DDevice9* gd3dDevice;
+//extern IDirect3DDevice9* gd3dDevice;
 
 //===============================================================
 // Clean up
@@ -76,7 +76,7 @@ struct DirLight
 //===============================================================
 // .X Files
 
-void LoadXFile(
+void LoadXFile(IDirect3DDevice9* gd3dDevice,
 	const std::string& filename, 
 	ID3DXMesh** meshOut, 
 	std::vector<Mtrl>& mtrls, 

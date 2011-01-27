@@ -221,6 +221,14 @@
 					RelativePath=".\BasicLightingInterface.h"
 					>
 				</File>
+				<File
+					RelativePath=".\App Framework\Shader Interface\PhongLightingInterface.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App Framework\Shader Interface\PhongLightingInterface.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Maths"
@@ -267,6 +275,18 @@
 				</File>
 				<File
 					RelativePath=".\App Framework\Animation\Vertex.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Utilities"
+				>
+				<File
+					RelativePath=".\App Framework\Utilities\d3dUtil.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App Framework\Utilities\d3dUtil.h"
 					>
 				</File>
 			</Filter>
@@ -348,14 +368,6 @@
 				RelativePath=".\Game.h"
 				>
 			</File>
-			<Filter
-				Name="Shaders"
-				>
-				<File
-					RelativePath=".\BasicLight.fx"
-					>
-				</File>
-			</Filter>
 			<Filter
 				Name="Objects"
 				>
@@ -508,6 +520,22 @@
 					>
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="Models"
+			>
+		</Filter>
+		<Filter
+			Name="Shaders"
+			>
+			<File
+				RelativePath=".\Shaders\PhongDirLtTex.fx"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\vblend2.fx"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

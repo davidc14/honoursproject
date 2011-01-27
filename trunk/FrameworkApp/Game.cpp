@@ -8,6 +8,7 @@
 #include "Dwarf.h"
 #include "DirectInput.h"
 #include "FPCamera.h"
+#include "App Framework\Shader Interface\PhongLightingInterface.h"
 #include "App\Objects\Render Objects\Citadel.h"
 #include "App Framework\Animation\Vertex.h"
 #include "App Framework\Animation\SkinnedMesh.h"
@@ -21,6 +22,9 @@ D3DFont* m_Font;
 
 BasicLightingInterface* m_LightingInterface;
 BasicLighting m_LightingContainer;
+
+PhongLightingInterface* m_PhongInterface;
+PhongLighting m_PhongContainer;
 
 //XModel* m_Model;
 
@@ -63,7 +67,11 @@ D3DXHANDLE mhTech,mhWVP,mhWorldInvTrans ,mhFinalXForms,mhMtrl,mhLight,mhEyePos,m
 ID3DXEffect* mFX;
 DirLight mLight;
 Mtrl     mWhiteMtrl;
-IDirect3DTexture9* pTarget;
+IDirect3DTexture9* pTinyTexture;
+
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
 
 // A structure for our custom vertex type
 struct CUSTOMVERTEX
@@ -106,7 +114,6 @@ bool Game::Initialise()
 	//CalculateMatrices();
 	InitAllVertexDeclarations(pDevice);
 
-
 	// Turn off culling, so we see the front and back of the triangle
     pDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
 
@@ -132,6 +139,7 @@ bool Game::LoadContent()
 	m_Font = new D3DFont(pDevice);
 
 	m_LightingInterface = new BasicLightingInterface(pDevice);
+	m_PhongInterface = new PhongLightingInterface(pDevice);
 
 	//Load our objects, this constructor handles model loading
 	/*m_KeyboardDwarf = new Dwarf(pDevice);
@@ -194,7 +202,7 @@ bool Game::LoadContent()
 
 	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight,1,100);
 
-	D3DXCreateTextureFromFile(pDevice, "Models/Tiny/Tiny_skin.bmp", &pTarget);
+	D3DXCreateTextureFromFile(pDevice, "Models/Tiny/Tiny_skin.bmp", &pTinyTexture);
 
 	m_SkinnedMesh = new SkinnedMesh(pDevice, "Models/Tiny", "tiny.x");
 
@@ -318,33 +326,21 @@ void Game::Draw()
 
 		//Draw the scene
 		UINT numberOfPasses = 1;
-		m_LightingInterface->GetEffect()->Begin(&numberOfPasses, 0);
-		m_LightingInterface->GetEffect()->BeginPass(0);
+		m_PhongInterface->GetEffect()->Begin(&numberOfPasses, 0);
+		m_PhongInterface->GetEffect()->BeginPass(0);
 
-		//Update the world matrix for the object
-		m_Citadel->UpdateShaderVariables(&m_LightingContainer);
-		//Set the variables - This is essentially my version of CommitChanges()
-		SetShaderVariables();
+		////Update the world matrix for the object
+		m_Citadel->UpdateShaderVariables(&m_PhongContainer);
+		////Set the variables - This is essentially my version of CommitChanges()
+		SetPhongShaderVariables();
 		//Draw the model
-		m_Citadel->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
+		m_Citadel->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());
 
-		////Update the world matrix for the object
-		//m_ServerDwarf->UpdateShaderVariables(&m_LightingContainer);
-		////Set the variables
-		//SetShaderVariables();
-		////Draw the model - You get the picture
-		//m_ServerDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
-
-		////Update the world matrix for the object
-		//m_RandomDwarf->UpdateShaderVariables(&m_LightingContainer);
-		////Set the variables
-		//SetShaderVariables();
-		////Draw the model - You get the picture
-		//m_RandomDwarf->Draw(m_LightingInterface->GetEffect(), m_LightingInterface->GetTextureHandle());
+		
 
 		//End the pass
-		m_LightingInterface->GetEffect()->EndPass();
-		m_LightingInterface->GetEffect()->End();	
+		m_PhongInterface->GetEffect()->EndPass();
+		m_PhongInterface->GetEffect()->End();	
 
 		//D3DXMatrixTranslation(&matWorld, 0.0f, 0.0f, 0.0f);
 		D3DXMatrixScaling(&matWorld, 0.01f, 0.01f, 0.01f);
@@ -358,7 +354,7 @@ void Game::Draw()
 		HR(mFX->SetMatrix(mhWorldInvTrans, &worldInvTrans));
 		HR(mFX->SetMatrix(mhWorld, &matWorld));
 		HR(mFX->SetValue(mhMtrl, &mWhiteMtrl, sizeof(Mtrl)));
-		HR(mFX->SetTexture(mhTex, pTarget));
+		HR(mFX->SetTexture(mhTex, pTinyTexture));
 		
 		HR(mFX->SetTechnique(mhTech));
 		UINT numPasses = 0;
@@ -422,6 +418,7 @@ void Game::Unload()
 	m_Font->Release();
 
 	m_LightingInterface->Release();
+	m_PhongInterface->Release();
 	/*m_KeyboardDwarf->Release();
 	m_ServerDwarf->Release();
 	m_RandomDwarf->Release();*/
@@ -443,7 +440,7 @@ void Game::CalculateMatrices()
 	D3DXMATRIX mViewTransform; 
 	D3DXMatrixRotationY(&mViewTransform, 0);
 	D3DXVec3Transform(&vViewVector, &(vLookatPt - vEyePt), &mViewTransform );
-	D3DXMatrixLookAtLH( &matView, m_Camera->getPositionDX(), m_Camera->getLookAtDX(), m_Camera->getUpDX() );
+	D3DXMatrixLookAtLH( &matView, m_Camera->getPosition(), m_Camera->getLookAt(), m_Camera->getUp() );
     //pDevice->SetTransform( D3DTS_VIEW, &matView );
 
     // For the projection matrix, we set up a perspective transform (which
@@ -468,6 +465,17 @@ void Game::SetShaderVariables()
 	m_LightingContainer.vViewVector = vViewVector;
 	//Pass it in the lighting interface
 	m_LightingInterface->UpdateHandles(&m_LightingContainer);
+}
+
+void Game::SetPhongShaderVariables()
+{
+	//Update the view and projection matrices in the container
+	m_PhongContainer.m_WVP = m_Citadel->GetWorld() * matView * matProjection;
+	m_PhongContainer.m_EyePosW = *m_Camera->getPosition();
+	m_PhongContainer.m_Light = mLight;
+	
+	//Pass it in the lighting interface
+	m_PhongInterface->UpdateHandles(&m_PhongContainer);
 }
 
 void Game::SetPacketVariables()

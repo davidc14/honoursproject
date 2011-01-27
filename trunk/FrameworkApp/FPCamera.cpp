@@ -316,22 +316,22 @@ bool FPCamera::angleTest(Mouse *MousePos)
 	return false;
 }
 
-D3DXVECTOR3* FPCamera::getForwardDX()
+D3DXVECTOR3* FPCamera::getForward()
 {
 	return &m_Forward;
 }
 
-D3DXVECTOR3* FPCamera::getLookAtDX()
+D3DXVECTOR3* FPCamera::getLookAt()
 {
 	return &m_LookAt;
 }
 
-D3DXVECTOR3* FPCamera::getUpDX()
+D3DXVECTOR3* FPCamera::getUp()
 {
 	return &m_Up;
 }
 
-D3DXVECTOR3* FPCamera::getPositionDX()
+D3DXVECTOR3* FPCamera::getPosition()
 {
 	return &m_Position;
 }
