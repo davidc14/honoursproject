@@ -9,9 +9,11 @@
 #include "DirectInput.h"
 #include "FPCamera.h"
 #include "App Framework\Shader Interface\PhongLightingInterface.h"
-#include "App\Objects\Render Objects\Citadel.h"
+
 #include "App Framework\Animation\Vertex.h"
 #include "App Framework\Animation\SkinnedMesh.h"
+#include "App\Render Targets\DrawableTex2D.h"
+#include "App\Objects\Render Objects\Citadel.h"
 
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
 
@@ -41,21 +43,21 @@ FPCamera* m_Camera;
 IDirect3DVertexBuffer9* mRadarVB;
 
 	//===============================================================
-struct VertexPT
-{
-	VertexPT()
-		:pos(0.0f, 0.0f, 0.0f),
-		tex0(0.0f, 0.0f){}
-	VertexPT(float x, float y, float z, 
-		float u, float v):pos(x,y,z), tex0(u,v){}
-	VertexPT(const D3DXVECTOR3& v, const D3DXVECTOR2& uv)
-		:pos(v), tex0(uv){}
-
-	D3DXVECTOR3 pos;
-	D3DXVECTOR2 tex0;
-
-	static IDirect3DVertexDeclaration9* Decl;
-};
+//struct VertexPT
+//{
+//	VertexPT()
+//		:pos(0.0f, 0.0f, 0.0f),
+//		tex0(0.0f, 0.0f){}
+//	VertexPT(float x, float y, float z, 
+//		float u, float v):pos(x,y,z), tex0(u,v){}
+//	VertexPT(const D3DXVECTOR3& v, const D3DXVECTOR2& uv)
+//		:pos(v), tex0(uv){}
+//
+//	D3DXVECTOR3 pos;
+//	D3DXVECTOR2 tex0;
+//
+//	static IDirect3DVertexDeclaration9* Decl;
+//};
 
 LPDIRECT3DTEXTURE9 pRenderTexture = NULL;
 LPDIRECT3DSURFACE9 pRenderSurface = NULL,pBackBuffer = NULL;
@@ -69,10 +71,6 @@ DirLight mLight;
 Mtrl     mWhiteMtrl;
 IDirect3DTexture9* pTinyTexture;
 
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-
 // A structure for our custom vertex type
 struct CUSTOMVERTEX
 {
@@ -82,6 +80,8 @@ struct CUSTOMVERTEX
 
 // Our custom FVF, which describes our custom vertex structure
 #define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZ|D3DFVF_TEX1)
+
+DrawableTex2D* m_RenderTarget;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -235,6 +235,8 @@ bool Game::LoadContent()
 	mWhiteMtrl.spec    = WHITE*0.6f;
 	mWhiteMtrl.specPower = 48.0f;
 
+	m_RenderTarget = new DrawableTex2D(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
+
 	return true;
 }
 
@@ -312,12 +314,11 @@ void Game::Update()
 }
 
 void Game::Draw()
-{ 	
-    //pDevice->SetTransform(D3DTS_PROJECTION, &matProj);
-	pDevice->GetTransform(D3DTS_PROJECTION,&matOldProjection);
-	pDevice->GetRenderTarget(0,&pBackBuffer);
+{
+	pDevice->GetTransform(D3DTS_PROJECTION, m_RenderTarget->getOldProjectionPointer());
+	pDevice->GetRenderTarget(0, m_RenderTarget->getBackBufferPointer());
 
-	pDevice->SetRenderTarget(0, pRenderSurface);
+	pDevice->SetRenderTarget(0, m_RenderTarget->getRenderSurface());
 
 	pDevice->BeginScene();
 
@@ -364,50 +365,29 @@ void Game::Draw()
 		HR(mFX->EndPass());
 		HR(mFX->End());
 
-
 	pDevice->EndScene();
 
 	//render scene with texture
-  //set back buffer
-  pDevice->SetRenderTarget(0,pBackBuffer);
-  pDevice->Clear(0,
-                           NULL,
-                           D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
-                           D3DCOLOR_XRGB(0,0,255),
-                           1.0f,
-                           0);
+	//set back buffer
+	pDevice->SetRenderTarget(0, m_RenderTarget->getBackBuffer());
+	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
 
- if( SUCCEEDED( pDevice->BeginScene() ) )
+	if( SUCCEEDED( pDevice->BeginScene() ) )
     {
-		
 		// Clear the backbuffer to a blue color
-    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
+		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
 
-		pDevice->SetStreamSource(0, mRadarVB, 0, sizeof(VertexPT));
-		pDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
+		m_RenderTarget->Draw();
 
-		pDevice->SetTransform(D3DTS_PROJECTION,&matOldProjection);
-
-		//pDevice->SetTexture(0, mRadarMap->d3dTex());
-		pDevice->SetTexture(0, pRenderTexture);
-		
-		// Turn on D3D lighting, since we are providing our own vertex colors
-    pDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
-
-		pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 2);
-
-		// Turn on D3D lighting, since we are providing our own vertex colors
-    pDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
-	    
 		m_Font->Draw();	
 
-	        // End the scene
-        pDevice->EndScene();
- }
+		// End the scene
+		pDevice->EndScene();
+	}
 
     // Present the backbuffer contents to the display
     pDevice->Present( NULL, NULL, NULL, NULL );
-	}
+}
 
 void Game::Unload()
 {

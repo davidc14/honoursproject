@@ -40,38 +40,13 @@ public:
 
 	void Release();
 
-	D3DXMATRIX* getProjection() 
-	{ 
-		return &matProjection; 
-	}
-	D3DXMATRIX* getOldProjection() 
-	{ 
-		return &matOldProjection; 
-	}
-
-	LPDIRECT3DTEXTURE9 getRenderTexture() 
-	{ 
-		return pRenderTexture; 
-	}
-	LPDIRECT3DSURFACE9 getRenderSurface()
-	{
-		return pRenderSurface;
-	}
-
-	LPDIRECT3DSURFACE9* getBackBufferPointer()
-	{
-		return &pBackBuffer;
-	}
-
-	LPDIRECT3DSURFACE9 getBackBuffer()
-	{
-		return pBackBuffer;
-	}
-
-	void setBackBuffer(LPDIRECT3DSURFACE9 backBuffer)
-	{
-		pBackBuffer = backBuffer;
-	}
+	D3DXMATRIX* getProjectionPointer(){return &matProjection;}
+	D3DXMATRIX* getOldProjectionPointer() {return &matOldProjection;}
+	LPDIRECT3DTEXTURE9 getRenderTexture() {return pRenderTexture;}
+	LPDIRECT3DSURFACE9 getRenderSurface(){return pRenderSurface;}
+	LPDIRECT3DSURFACE9* getBackBufferPointer(){ return &pBackBuffer; }
+	LPDIRECT3DSURFACE9 getBackBuffer() {return pBackBuffer;}
+	void setBackBuffer(LPDIRECT3DSURFACE9 backBuffer){ pBackBuffer = backBuffer; }
 
 public:
 
