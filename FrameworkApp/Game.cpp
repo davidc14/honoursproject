@@ -161,7 +161,7 @@ bool Game::LoadContent()
 
 	m_Camera = new FPCamera(vEyePt,	vLookatPt, vUpVec, (int)m_WindowWidth, (int)m_WindowHeight);
 
-	D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI / 4, m_WindowWidth/m_WindowHeight, 1.0f, 100.0f );
+	//D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI / 4, m_WindowWidth/m_WindowHeight, 1.0f, 100.0f );
 	
 	// Viewport is entire texture.
 	pDevice->CreateVertexBuffer(6*sizeof(VertexPT), D3DUSAGE_WRITEONLY,
@@ -198,9 +198,9 @@ bool Game::LoadContent()
 
 	pRenderTexture->GetSurfaceLevel(0,&pRenderSurface);
 
-	D3DXMatrixPerspectiveFovLH(&matProj,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight ,1,100);
+	D3DXMatrixPerspectiveFovLH(&matProj,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, 1.0f);
 
-	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight,1,100);
+	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight, 1.0f, 1000.0f);
 
 	D3DXCreateTextureFromFile(pDevice, "Models/Tiny/Tiny_skin.bmp", &pTinyTexture);
 
@@ -299,11 +299,11 @@ void Game::Update()
 
 	CalculateMatrices();
 	
-		/*m_ServerDwarf->Update(serverDwarfVelocity, 0.0f);
-		m_KeyboardDwarf->Update();
-		m_RandomDwarf->Update(randomDwarfVelocity, 0.0f);*/
+	/*m_ServerDwarf->Update(serverDwarfVelocity, 0.0f);
+	m_KeyboardDwarf->Update();
+	m_RandomDwarf->Update(randomDwarfVelocity, 0.0f);*/
 
-		m_Citadel->Update();
+	m_Citadel->Update();
 
 	m_Font->Update(m_DeltaTime, m_WindowWidth, m_WindowHeight);	
 
@@ -334,9 +334,7 @@ void Game::Draw()
 		////Set the variables - This is essentially my version of CommitChanges()
 		SetPhongShaderVariables();
 		//Draw the model
-		m_Citadel->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());
-
-		
+		m_Citadel->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());		
 
 		//End the pass
 		m_PhongInterface->GetEffect()->EndPass();
@@ -448,9 +446,7 @@ void Game::CalculateMatrices()
     // a perspective divide making objects smaller in the distance). To build
     // a perpsective transform, we need the field of view (1/4 pi is common),
     // the aspect ratio, and the near and far clipping planes (which define at
-    // what distances geometry should be no longer be rendered).
-
-	
+    // what distances geometry should be no longer be rendered).	
 
     //pDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 }
