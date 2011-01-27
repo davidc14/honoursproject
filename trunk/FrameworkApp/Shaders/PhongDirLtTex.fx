@@ -98,7 +98,7 @@ float4 PhongDirLtTexPS(float3 normalW : TEXCOORD0, float3 toEyeW  : TEXCOORD1, f
 	float4 texColor = tex2D(TexS, tex0);
 	
 	// Combine the color from lighting with the texture color.
-	float3 color = (ambient + diffuse)*texColor.rgb + spec;
+	float3 color = (ambient + diffuse)*texColor.rgb;// + spec;
 		
 	// Sum all the terms together and copy over the diffuse alpha.
     return float4(color, gMtrl.diffuse.a*texColor.a);
