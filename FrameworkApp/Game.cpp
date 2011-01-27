@@ -42,27 +42,6 @@ FPCamera* m_Camera;
 
 IDirect3DVertexBuffer9* mRadarVB;
 
-	//===============================================================
-//struct VertexPT
-//{
-//	VertexPT()
-//		:pos(0.0f, 0.0f, 0.0f),
-//		tex0(0.0f, 0.0f){}
-//	VertexPT(float x, float y, float z, 
-//		float u, float v):pos(x,y,z), tex0(u,v){}
-//	VertexPT(const D3DXVECTOR3& v, const D3DXVECTOR2& uv)
-//		:pos(v), tex0(uv){}
-//
-//	D3DXVECTOR3 pos;
-//	D3DXVECTOR2 tex0;
-//
-//	static IDirect3DVertexDeclaration9* Decl;
-//};
-
-LPDIRECT3DTEXTURE9 pRenderTexture = NULL;
-LPDIRECT3DSURFACE9 pRenderSurface = NULL,pBackBuffer = NULL;
-D3DXMATRIX matProjection,matOldProjection;
-
 SkinnedMesh* m_SkinnedMesh;
 
 D3DXHANDLE mhTech,mhWVP,mhWorldInvTrans ,mhFinalXForms,mhMtrl,mhLight,mhEyePos,mhWorld,mhTex ;
@@ -77,9 +56,6 @@ struct CUSTOMVERTEX
     FLOAT x, y, z; // The transformed position for the vertex
     DWORD color;        // The vertex color
 };
-
-// Our custom FVF, which describes our custom vertex structure
-#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZ|D3DFVF_TEX1)
 
 DrawableTex2D* m_RenderTarget;
 
@@ -163,44 +139,9 @@ bool Game::LoadContent()
 
 	//D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI / 4, m_WindowWidth/m_WindowHeight, 1.0f, 100.0f );
 	
-	// Viewport is entire texture.
-	pDevice->CreateVertexBuffer(6*sizeof(VertexPT), D3DUSAGE_WRITEONLY,
-		0, D3DPOOL_MANAGED, &mRadarVB, 0);
-
-	// Radar quad takes up quadrant IV.  Note that we specify coordinate directly in
-	// normalized device coordinates.  I.e., world, view, projection matrices are all
-	// identity.
-	VertexPT* v = 0;
-	mRadarVB->Lock(0, 0, (void**)&v, 0);
-	/*v[0] = VertexPT(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	v[1] = VertexPT(1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	v[2] = VertexPT(0.0f, -1.0f, 0.0f, 0.0f, 1.0f);
-	v[3] = VertexPT(0.0f, -1.0f, 0.0f, 0.0f, 1.0f);
-	v[4] = VertexPT(1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	v[5] = VertexPT(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);*/
-
-	v[0] = VertexPT(-1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
-	v[1] = VertexPT(1.0f, 1.0f, 0.0f, 1.0f, 0.0f);
-	v[2] = VertexPT(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f);
-	v[3] = VertexPT(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f);
-	v[4] = VertexPT(1.0f, 1.0f, 0.0f, 1.0f, 0.0f);
-	v[5] = VertexPT(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);
-	mRadarVB->Unlock();
-
-	pDevice->CreateTexture((UINT)m_WindowWidth,
-                             (UINT)m_WindowHeight,
-                             1,
-                             D3DUSAGE_RENDERTARGET,
-                             D3DFMT_A8R8G8B8,
-                             D3DPOOL_DEFAULT,
-                             &pRenderTexture,
-                             NULL);
-
-	pRenderTexture->GetSurfaceLevel(0,&pRenderSurface);
+	
 
 	D3DXMatrixPerspectiveFovLH(&matProj,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, 1.0f);
-
-	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight, 1.0f, 1000.0f);
 
 	D3DXCreateTextureFromFile(pDevice, "Models/Tiny/Tiny_skin.bmp", &pTinyTexture);
 
@@ -346,7 +287,7 @@ void Game::Draw()
 
 		HR(mFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones()));
 		HR(mFX->SetValue(mhLight, &mLight, sizeof(DirLight)));
-		HR(mFX->SetMatrix(mhWVP, &(matWorld*matView*matProjection)));
+		HR(mFX->SetMatrix(mhWVP, &(matWorld*matView* *m_RenderTarget->getProjectionPointer())));
 		D3DXMATRIX worldInvTrans;
 		D3DXMatrixInverse(&worldInvTrans, 0, &matWorld);
 		D3DXMatrixTranspose(&worldInvTrans, &worldInvTrans);
@@ -446,7 +387,7 @@ void Game::SetShaderVariables()
 void Game::SetPhongShaderVariables()
 {
 	//Update the view and projection matrices in the container
-	m_PhongContainer.m_WVP = m_Citadel->GetWorld() * matView * matProjection;
+	m_PhongContainer.m_WVP = m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer();
 	m_PhongContainer.m_EyePosW = *m_Camera->getPosition();
 	m_PhongContainer.m_Light = mLight;
 	
