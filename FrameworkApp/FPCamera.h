@@ -23,16 +23,16 @@ public:
 	void Update(const float dtSeconds);
 	void Update(const float dtSeconds, int windowWidth, int windowHeight);
 
-	//Returns the value of the vectors
-	Vector3 getPosition();
-	Vector3 getLookAt();
-	Vector3 getUp();
-	Vector3 getForward();
+	////Returns the value of the vectors
+	//Vector3 getPosition();
+	//Vector3 getLookAt();
+	//Vector3 getUp();
+	//Vector3 getForward();
 
-	D3DXVECTOR3* getPositionDX();
-	D3DXVECTOR3* getLookAtDX();
-	D3DXVECTOR3* getUpDX();
-	D3DXVECTOR3* getForwardDX();
+	D3DXVECTOR3* getPosition();
+	D3DXVECTOR3* getLookAt();
+	D3DXVECTOR3* getUp();
+	D3DXVECTOR3* getForward();
 
 	//The move and strafe functions for the FPCamera
 	void Move(D3DXVECTOR3 acceleration);

@@ -5,7 +5,7 @@
 #ifndef SKINNED_MESH_H
 #define SKINNED_MESH_H
 
-#include "d3dUtil.h"
+#include "..\Utilities\d3dUtil.h"
 
 struct FrameEx : public D3DXFRAME
 {

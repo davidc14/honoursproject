@@ -33,7 +33,7 @@ void BasicLightingInterface::SetupHandles()
 	m_hView = m_Effect->GetParameterByName(0, "View");
 	m_hProjection = m_Effect->GetParameterByName(0, "Projection");
 	m_hWorldInverseTranspose = m_Effect->GetParameterByName(0, "WorldInverseTranspose");
-	m_hTexture = m_Effect->GetParameterByName(0, "ModelTexture");
+	//m_hTexture = m_Effect->GetParameterByName(0, "ModelTexture");
 	m_hViewVector = m_Effect->GetParameterByName(0, "ViewVector");
 }
 

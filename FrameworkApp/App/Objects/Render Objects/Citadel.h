@@ -5,6 +5,8 @@
 #include <d3dx9.h>
 #include "../../../XModel.h"
 #include "../../../BasicLightingInterface.h"
+#include "../../../App Framework/Shader Interface/PhongLightingInterface.h"
+#include "../../../App Framework/Utilities/d3dUtil.h"
 
 class Citadel
 {
@@ -23,6 +25,7 @@ public: //Public methods
 	void UpdateDeadReckoning(float deltaTime, D3DXVECTOR3 position, D3DXVECTOR3 velocity);
 	//Update the shader variables
 	void UpdateShaderVariables(BasicLighting* LightingContainer);
+	void UpdateShaderVariables(PhongLighting* LightingContainer);
 
 	void SetVelocity(D3DXVECTOR3 newVelocity){ UpdateVelocity(newVelocity); }
 	void SetAngularVelocity(float newAngularVelocity) { UpdateAngularVelocity(newAngularVelocity); }
@@ -55,6 +58,8 @@ private: //Private member variables
 	D3DXMATRIX m_matScale, m_matRotationY, m_matTranslation;
 	//The Citadel ID in the game world
 	int m_ID;
+	//The material
+	Mtrl mWhiteMtrl;
 
 	//Values for Dead Reckoning
 	D3DXVECTOR3 ResultVelocity;
