@@ -22,9 +22,6 @@ D3DXVECTOR4 vViewVector;
 
 D3DFont* m_Font;
 
-BasicLightingInterface* m_LightingInterface;
-BasicLighting m_LightingContainer;
-
 PhongLightingInterface* m_PhongInterface;
 PhongLighting m_PhongContainer;
 
@@ -114,32 +111,19 @@ bool Game::LoadContent()
 
 	m_Font = new D3DFont(pDevice);
 
-	m_LightingInterface = new BasicLightingInterface(pDevice);
 	m_PhongInterface = new PhongLightingInterface(pDevice);
-
-	//Load our objects, this constructor handles model loading
-	/*m_KeyboardDwarf = new Dwarf(pDevice);
-	m_ServerDwarf = new Dwarf(pDevice);
-	m_RandomDwarf = new Dwarf(pDevice);*/
-	m_Citadel = new Citadel(pDevice);
-
-	/*m_KeyboardDwarf->MoveToLocation(D3DXVECTOR3(0.0f, 0.0f, -5.0f));
-	m_ServerDwarf->MoveToLocation(D3DXVECTOR3(0.0f, 0.0f, 5.0f));
-	m_RandomDwarf->MoveToLocation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));*/
 
 	m_DInput = new DirectInput();
 
 	ConnectionStatus = false;
+	
+	m_Citadel = new Citadel(pDevice);
 
 	D3DXVECTOR3 vEyePt( 0.0f, 5.0f,-20.0f );
     D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
     D3DXVECTOR3 vUpVec( 0.0f, 1.0f, 0.0f );
 
-	m_Camera = new FPCamera(vEyePt,	vLookatPt, vUpVec, (int)m_WindowWidth, (int)m_WindowHeight);
-
-	//D3DXMatrixPerspectiveFovLH( &matProj, D3DX_PI / 4, m_WindowWidth/m_WindowHeight, 1.0f, 100.0f );
-	
-	
+	m_Camera = new FPCamera(vEyePt,	vLookatPt, vUpVec, (int)m_WindowWidth, (int)m_WindowHeight);	
 
 	D3DXMatrixPerspectiveFovLH(&matProj,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, 1.0f);
 
@@ -336,13 +320,14 @@ void Game::Unload()
 
 	m_Font->Release();
 
-	m_LightingInterface->Release();
 	m_PhongInterface->Release();
 	/*m_KeyboardDwarf->Release();
 	m_ServerDwarf->Release();
 	m_RandomDwarf->Release();*/
 
 	m_SkinnedMesh->Release();
+
+	m_Citadel->Release();
 
 	mFX->Release();
 }
@@ -374,14 +359,14 @@ void Game::CalculateMatrices()
 
 void Game::SetShaderVariables()
 {
-	//Update the view and projection matrices in the container
-	m_LightingContainer.matProj = matProj;
-	m_LightingContainer.matView = matView;	
-	
-	//Update the view vector
-	m_LightingContainer.vViewVector = vViewVector;
-	//Pass it in the lighting interface
-	m_LightingInterface->UpdateHandles(&m_LightingContainer);
+	////Update the view and projection matrices in the container
+	//m_LightingContainer.matProj = matProj;
+	//m_LightingContainer.matView = matView;	
+	//
+	////Update the view vector
+	//m_LightingContainer.vViewVector = vViewVector;
+	////Pass it in the lighting interface
+	//m_LightingInterface->UpdateHandles(&m_LightingContainer);
 }
 
 void Game::SetPhongShaderVariables()
