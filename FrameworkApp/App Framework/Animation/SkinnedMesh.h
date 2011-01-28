@@ -6,6 +6,7 @@
 #define SKINNED_MESH_H
 
 #include "..\Utilities\d3dUtil.h"
+#include "..\Shader Interface\Animated\AnimatedInterface.h"
 
 struct FrameEx : public D3DXFRAME
 {
@@ -15,7 +16,7 @@ struct FrameEx : public D3DXFRAME
 class SkinnedMesh
 {
 public:
-	SkinnedMesh(IDirect3DDevice9* gd3dDevice, std::string filePath, std::string XFilename);
+	SkinnedMesh(IDirect3DDevice9* gd3dDevice, std::string filePath, std::string XFilename, std::string TextureFilename);
 	~SkinnedMesh();
 
 	UINT numVertices();
@@ -23,9 +24,12 @@ public:
 	UINT numBones();
 	const D3DXMATRIX* getFinalXFormArray();
 
-	void update(float deltaTime);
-	void draw();
+	void Update(float deltaTime);
+	void UpdateWorldMatrix();
+	void Draw();
 	void Release();
+
+	void UpdateShaderVariables(AnimatedContainer* input);
 
 protected:
 	D3DXFRAME* findNodeWithMesh(D3DXFRAME* frame);
@@ -46,6 +50,8 @@ protected:
 	DWORD          mNumBones;
 	ID3DXSkinInfo* mSkinInfo;
 	ID3DXAnimationController* mAnimCtrl;  
+	IDirect3DTexture9* m_Texture;
+	D3DXMATRIXA16 m_World;
 	
 	std::vector<D3DXMATRIX>  mFinalXForms;
 	std::vector<D3DXMATRIX*> mToRootXFormPtrs;

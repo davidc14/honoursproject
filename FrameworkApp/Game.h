@@ -49,6 +49,7 @@ public:
 	void CalculateMatrices();
 	void SetShaderVariables();
 	void SetPhongShaderVariables();
+	void SetAnimatedInterfaceVariables();
 
 	void setDeltaTime(float DeltaTime) { m_DeltaTime = DeltaTime; }
 	float getDeltaTime() { return m_DeltaTime; }
