@@ -35,11 +35,8 @@ IDirect3DVertexBuffer9* mRadarVB;
 
 SkinnedMesh* m_SkinnedMesh;
 
-D3DXHANDLE mhTech,mhWVP,mhWorldInvTrans ,mhFinalXForms,mhMtrl,mhLight,mhEyePos,mhWorld,mhTex ;
-ID3DXEffect* mFX;
 DirLight mLight;
 Mtrl     mWhiteMtrl;
-IDirect3DTexture9* pTinyTexture;
 
 DrawableTex2D* m_RenderTarget;
 
@@ -110,27 +107,7 @@ bool Game::LoadContent()
 
 	D3DXMatrixPerspectiveFovLH(&matProj,D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, 1.0f);
 
-	D3DXCreateTextureFromFile(pDevice, "Models/Tiny/Tiny_skin.bmp", &pTinyTexture);
-
 	m_SkinnedMesh = new SkinnedMesh(pDevice, "Models/Tiny", "tiny.x", "Tiny_skin.bmp");
-
-	// Create the FX from a .fx file.
-	ID3DXBuffer* errors = 0;
-	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/vblend2.fx", 
-		0, 0, D3DXSHADER_DEBUG, 0, &mFX, &errors));
-	if( errors )
-		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
-
-	// Obtain handles.
-	mhTech            = mFX->GetTechniqueByName("VBlend2Tech");
-	mhWVP             = mFX->GetParameterByName(0, "gWVP");
-	mhWorldInvTrans   = mFX->GetParameterByName(0, "gWorldInvTrans");
-	mhFinalXForms     = mFX->GetParameterByName(0, "gFinalXForms");
-	mhMtrl            = mFX->GetParameterByName(0, "gMtrl");
-	mhLight           = mFX->GetParameterByName(0, "gLight");
-	mhEyePos          = mFX->GetParameterByName(0, "gEyePosW");
-	mhWorld           = mFX->GetParameterByName(0, "gWorld");
-	mhTex             = mFX->GetParameterByName(0, "gTex");
 
 	mLight.dirW    = D3DXVECTOR3(1.0f, 1.0f, 2.0f);
 	D3DXVec3Normalize(&mLight.dirW, &mLight.dirW);
@@ -181,9 +158,6 @@ void Game::HandleInput()
 	//D
 	if(m_DInput->GetKeyState(4))
 		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);			
-	
-	////Update the velocity based on the values of the key presses
-	//m_KeyboardDwarf->SetVelocity(KeyboardDwarfVelocity);
 }
 
 float fAngle = 0.0f;
@@ -210,10 +184,6 @@ void Game::Update()
 	}
 
 	CalculateMatrices();
-	
-	/*m_ServerDwarf->Update(serverDwarfVelocity, 0.0f);
-	m_KeyboardDwarf->Update();
-	m_RandomDwarf->Update(randomDwarfVelocity, 0.0f);*/
 
 	m_Citadel->Update();
 
@@ -251,29 +221,6 @@ void Game::Draw()
 		m_PhongInterface->GetEffect()->EndPass();
 		m_PhongInterface->GetEffect()->End();	
 
-		///////////////////////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		////D3DXMatrixTranslation(&matWorld, 0.0f, 0.0f, 0.0f);
-		//D3DXMatrixScaling(&matWorld, 0.01f, 0.01f, 0.01f);
-
-		//HR(mFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones()));
-		//HR(mFX->SetValue(mhLight, &mLight, sizeof(DirLight)));
-		//HR(mFX->SetMatrix(mhWVP, &(matWorld*matView* *m_RenderTarget->getProjectionPointer())));
-		//D3DXMATRIX worldInvTrans;
-		//D3DXMatrixInverse(&worldInvTrans, 0, &matWorld);
-		//D3DXMatrixTranspose(&worldInvTrans, &worldInvTrans);
-		//HR(mFX->SetMatrix(mhWorldInvTrans, &worldInvTrans));
-		//HR(mFX->SetMatrix(mhWorld, &matWorld));
-		//HR(mFX->SetValue(mhMtrl, &mWhiteMtrl, sizeof(Mtrl)));
-		//HR(mFX->SetTexture(mhTex, pTinyTexture));
-		//
-		//HR(mFX->SetTechnique(mhTech));
-		//UINT numPasses = 0;
-		//HR(mFX->Begin(&numPasses, 0));
-		//HR(mFX->BeginPass(0));
-
 		UINT numPasses = 0;
 		m_AnimatedInterface->GetEffect()->Begin(&numPasses, 0);
 		m_AnimatedInterface->GetEffect()->BeginPass(0);
@@ -286,9 +233,6 @@ void Game::Draw()
 
 		m_AnimatedInterface->GetEffect()->EndPass();
 		m_AnimatedInterface->GetEffect()->End();
-
-		/*HR(mFX->EndPass());
-		HR(mFX->End());*/
 
 	pDevice->EndScene();
 
@@ -329,8 +273,6 @@ void Game::Unload()
 	m_SkinnedMesh->Release();
 
 	m_Citadel->Release();
-
-	mFX->Release();
 }
 
 void Game::CalculateMatrices()
