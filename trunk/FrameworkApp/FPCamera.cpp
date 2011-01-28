@@ -245,7 +245,7 @@ void FPCamera::mouseMove()
 		m_Mouse->drag_y = (m_Mouse->old_y - m_Mouse->y);
 
 		//Use the result to calculate the angle
-		if(!angleTest(m_Mouse))	
+		if(angleTest(m_Mouse))	
 		{
 			//Else allow movement
 			m_Pitch -= (m_Mouse->drag_y*0.05f);	
@@ -310,7 +310,7 @@ void FPCamera::mouseZoom(int windowWidth, int windowHeight)
 //The angle test to stop the FPCamera doing barrel rolls
 bool FPCamera::angleTest(Mouse *MousePos)
 {
-	if((m_Pitch > 90.0f || MousePos->drag_y < 0) && (m_Pitch < -90.0f || MousePos->drag_y > 0))
+	if((m_Pitch < 90.0f || MousePos->drag_y > 0) && (m_Pitch > -90.0f || MousePos->drag_y < 0))
 		return true;
 
 	return false;
