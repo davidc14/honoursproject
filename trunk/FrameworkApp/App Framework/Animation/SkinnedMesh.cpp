@@ -6,7 +6,7 @@
 #include "AllocMeshHierarchy.h"
 #include "Vertex.h"
 
-SkinnedMesh::SkinnedMesh(IDirect3DDevice9* gd3dDevice, std::string filePath, std::string XFilename)
+SkinnedMesh::SkinnedMesh(IDirect3DDevice9* gd3dDevice, std::string filePath, std::string XFilename, std::string TextureFilename)
 {
 	//Before anything is done, get the current directory
 	TCHAR buffer[MAX_PATH];
@@ -39,6 +39,8 @@ SkinnedMesh::SkinnedMesh(IDirect3DDevice9* gd3dDevice, std::string filePath, std
 	
 	buildSkinnedMesh(gd3dDevice, meshContainer->MeshData.pMesh);
 	buildToRootXFormPtrArray();
+
+	D3DXCreateTextureFromFile(gd3dDevice, TextureFilename.c_str(), &m_Texture);
 
 	//Set the file path back to prevent errors
 	::SetCurrentDirectory(buffer);
@@ -78,7 +80,7 @@ const D3DXMATRIX* SkinnedMesh::getFinalXFormArray()
 	return &mFinalXForms[0];
 }
 
-void SkinnedMesh::update(float deltaTime)
+void SkinnedMesh::Update(float deltaTime)
 {
 	// Animate the mesh.  The AnimationController has pointers to the  hierarchy frame
 	// transform matrices.  The AnimationController updates these matrices to reflect 
@@ -101,9 +103,23 @@ void SkinnedMesh::update(float deltaTime)
 		toRootTemp = *mToRootXFormPtrs[i];
 		mFinalXForms[i] = offsetTemp * toRootTemp;
 	}
+
+	UpdateWorldMatrix();
 }
 
-void SkinnedMesh::draw()
+void SkinnedMesh::UpdateShaderVariables(AnimatedContainer* input)
+{
+	input->m_World = m_World;
+	input->m_Tex = m_Texture;
+}
+
+void SkinnedMesh::UpdateWorldMatrix()
+{
+	//D3DXMatrixTranslation(&matWorld, 0.0f, 0.0f, 0.0f);
+	D3DXMatrixScaling(&m_World, 0.01f, 0.01f, 0.01f);
+}
+
+void SkinnedMesh::Draw()
 {
 	HR(mSkinnedMesh->DrawSubset(0));
 }

@@ -9,7 +9,7 @@
 #include "DirectInput.h"
 #include "FPCamera.h"
 #include "App Framework\Shader Interface\PhongLightingInterface.h"
-
+#include "App Framework\Shader Interface\Animated\AnimatedInterface.h"
 #include "App Framework\Animation\Vertex.h"
 #include "App Framework\Animation\SkinnedMesh.h"
 #include "App\Render Targets\DrawableTex2D.h"
@@ -24,12 +24,6 @@ D3DFont* m_Font;
 
 PhongLightingInterface* m_PhongInterface;
 PhongLighting m_PhongContainer;
-
-//XModel* m_Model;
-
-//Dwarf* m_KeyboardDwarf;
-//Dwarf* m_ServerDwarf;
-//Dwarf* m_RandomDwarf;
 
 Citadel* m_Citadel;
 
@@ -47,14 +41,10 @@ DirLight mLight;
 Mtrl     mWhiteMtrl;
 IDirect3DTexture9* pTinyTexture;
 
-// A structure for our custom vertex type
-struct CUSTOMVERTEX
-{
-    FLOAT x, y, z; // The transformed position for the vertex
-    DWORD color;        // The vertex color
-};
-
 DrawableTex2D* m_RenderTarget;
+
+AnimatedInterface* m_AnimatedInterface;
+AnimatedContainer m_AnimatedContainer;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -102,13 +92,6 @@ bool Game::Initialise()
 
 bool Game::LoadContent()
 {
-	/*m_Model = new XModel(pDevice);
-	if(!m_Model->SetModel("Models/SpaceShip", "SpaceShip.x"))
-	{
-		::MessageBox(0, "Model loading failed", "Model loading error", 0);
-		return false;
-	}*/
-
 	m_Font = new D3DFont(pDevice);
 
 	m_PhongInterface = new PhongLightingInterface(pDevice);
@@ -129,7 +112,7 @@ bool Game::LoadContent()
 
 	D3DXCreateTextureFromFile(pDevice, "Models/Tiny/Tiny_skin.bmp", &pTinyTexture);
 
-	m_SkinnedMesh = new SkinnedMesh(pDevice, "Models/Tiny", "tiny.x");
+	m_SkinnedMesh = new SkinnedMesh(pDevice, "Models/Tiny", "tiny.x", "Tiny_skin.bmp");
 
 	// Create the FX from a .fx file.
 	ID3DXBuffer* errors = 0;
@@ -161,6 +144,8 @@ bool Game::LoadContent()
 	mWhiteMtrl.specPower = 48.0f;
 
 	m_RenderTarget = new DrawableTex2D(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
+
+	m_AnimatedInterface = new AnimatedInterface(pDevice);
 
 	return true;
 }
@@ -235,7 +220,7 @@ void Game::Update()
 	m_Font->Update(m_DeltaTime, m_WindowWidth, m_WindowHeight);	
 
 	// Animate the skinned mesh.
-	m_SkinnedMesh->update(m_DeltaTime);
+	m_SkinnedMesh->Update(m_DeltaTime);
 }
 
 void Game::Draw()
@@ -266,29 +251,33 @@ void Game::Draw()
 		m_PhongInterface->GetEffect()->EndPass();
 		m_PhongInterface->GetEffect()->End();	
 
-		//D3DXMatrixTranslation(&matWorld, 0.0f, 0.0f, 0.0f);
-		D3DXMatrixScaling(&matWorld, 0.01f, 0.01f, 0.01f);
+		///////////////////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		HR(mFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones()));
-		HR(mFX->SetValue(mhLight, &mLight, sizeof(DirLight)));
-		HR(mFX->SetMatrix(mhWVP, &(matWorld*matView* *m_RenderTarget->getProjectionPointer())));
-		D3DXMATRIX worldInvTrans;
-		D3DXMatrixInverse(&worldInvTrans, 0, &matWorld);
-		D3DXMatrixTranspose(&worldInvTrans, &worldInvTrans);
-		HR(mFX->SetMatrix(mhWorldInvTrans, &worldInvTrans));
-		HR(mFX->SetMatrix(mhWorld, &matWorld));
-		HR(mFX->SetValue(mhMtrl, &mWhiteMtrl, sizeof(Mtrl)));
-		HR(mFX->SetTexture(mhTex, pTinyTexture));
-		
-		HR(mFX->SetTechnique(mhTech));
-		UINT numPasses = 0;
-		HR(mFX->Begin(&numPasses, 0));
-		HR(mFX->BeginPass(0));
+		////D3DXMatrixTranslation(&matWorld, 0.0f, 0.0f, 0.0f);
+		//D3DXMatrixScaling(&matWorld, 0.01f, 0.01f, 0.01f);
 
-		m_SkinnedMesh->draw();
+		//HR(mFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones()));
+		//HR(mFX->SetValue(mhLight, &mLight, sizeof(DirLight)));
+		//HR(mFX->SetMatrix(mhWVP, &(matWorld*matView* *m_RenderTarget->getProjectionPointer())));
+		//D3DXMATRIX worldInvTrans;
+		//D3DXMatrixInverse(&worldInvTrans, 0, &matWorld);
+		//D3DXMatrixTranspose(&worldInvTrans, &worldInvTrans);
+		//HR(mFX->SetMatrix(mhWorldInvTrans, &worldInvTrans));
+		//HR(mFX->SetMatrix(mhWorld, &matWorld));
+		//HR(mFX->SetValue(mhMtrl, &mWhiteMtrl, sizeof(Mtrl)));
+		//HR(mFX->SetTexture(mhTex, pTinyTexture));
+		//
+		//HR(mFX->SetTechnique(mhTech));
+		//UINT numPasses = 0;
+		//HR(mFX->Begin(&numPasses, 0));
+		//HR(mFX->BeginPass(0));
 
-		HR(mFX->EndPass());
-		HR(mFX->End());
+		m_SkinnedMesh->Draw();
+
+		/*HR(mFX->EndPass());
+		HR(mFX->End());*/
 
 	pDevice->EndScene();
 
@@ -321,6 +310,7 @@ void Game::Unload()
 	m_Font->Release();
 
 	m_PhongInterface->Release();
+	m_AnimatedInterface->Release();
 	/*m_KeyboardDwarf->Release();
 	m_ServerDwarf->Release();
 	m_RandomDwarf->Release();*/
@@ -378,6 +368,11 @@ void Game::SetPhongShaderVariables()
 	
 	//Pass it in the lighting interface
 	m_PhongInterface->UpdateHandles(&m_PhongContainer);
+}
+
+void Game::SetAnimatedInterfaceVariables()
+{
+
 }
 
 void Game::SetPacketVariables()
