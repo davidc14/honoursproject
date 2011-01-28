@@ -40,7 +40,7 @@ void AnimatedInterface::SetupHandles()
 	mhTex             = mFX->GetParameterByName(0, "gTex");
 }
 
-void AnimatedInterface::UpdateHandles(AnimatedContainer* input, D3DXMATRIX* finalXFormArray, UINT numBones)
+void AnimatedInterface::UpdateHandles(AnimatedContainer* input, const D3DXMATRIX* finalXFormArray, UINT numBones)
 {
 	//HR(mFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones()));
 	HR(mFX->SetMatrixArray(mhFinalXForms, finalXFormArray, numBones));
@@ -53,6 +53,8 @@ void AnimatedInterface::UpdateHandles(AnimatedContainer* input, D3DXMATRIX* fina
 	HR(mFX->SetMatrix(mhWorld, &input->m_World));
 	HR(mFX->SetValue(mhMtrl, &mWhiteMtrl, sizeof(Mtrl)));
 	HR(mFX->SetTexture(mhTex, input->m_Tex));
+
+	mFX->CommitChanges();
 }
 
 void AnimatedInterface::SetupLight()

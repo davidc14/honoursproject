@@ -31,6 +31,8 @@ public:
 
 	void UpdateShaderVariables(AnimatedContainer* input);
 
+	D3DXMATRIX* GetWorld() { return &m_World; }
+
 protected:
 	D3DXFRAME* findNodeWithMesh(D3DXFRAME* frame);
 	bool hasNormals(ID3DXMesh* mesh);

@@ -274,7 +274,18 @@ void Game::Draw()
 		//HR(mFX->Begin(&numPasses, 0));
 		//HR(mFX->BeginPass(0));
 
+		UINT numPasses = 0;
+		m_AnimatedInterface->GetEffect()->Begin(&numPasses, 0);
+		m_AnimatedInterface->GetEffect()->BeginPass(0);
+
+		m_SkinnedMesh->UpdateShaderVariables(&m_AnimatedContainer);
+
+		SetAnimatedInterfaceVariables();
+
 		m_SkinnedMesh->Draw();
+
+		m_AnimatedInterface->GetEffect()->EndPass();
+		m_AnimatedInterface->GetEffect()->End();
 
 		/*HR(mFX->EndPass());
 		HR(mFX->End());*/
@@ -372,7 +383,10 @@ void Game::SetPhongShaderVariables()
 
 void Game::SetAnimatedInterfaceVariables()
 {
+	m_AnimatedContainer.m_EyePos = *m_Camera->getPosition();
+	m_AnimatedContainer.m_WVP = *m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer();
 
+	m_AnimatedInterface->UpdateHandles(&m_AnimatedContainer, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
 }
 
 void Game::SetPacketVariables()

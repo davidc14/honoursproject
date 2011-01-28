@@ -20,16 +20,17 @@ public:
 	~AnimatedInterface();
 
 	void Release();
-	void UpdateHandles(AnimatedContainer* input, D3DXMATRIX* finalXFormArray, UINT numBones);
+	void UpdateHandles(AnimatedContainer* input, const D3DXMATRIX* finalXFormArray, UINT numBones);
+
+	ID3DXEffect* GetEffect() { return mFX; }
+
 private:
 
 	void LoadShader();
 	void SetupHandles();
 	
 	void SetupLight();
-	void SetupMaterial();
-
-	
+	void SetupMaterial();	
 
 	D3DXHANDLE mhTech,mhWVP,mhWorldInvTrans ,mhFinalXForms,mhMtrl,mhLight,mhEyePos,mhWorld,mhTex ;
 	ID3DXEffect* mFX;
