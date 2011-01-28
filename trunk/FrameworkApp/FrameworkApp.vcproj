@@ -213,22 +213,38 @@
 			<Filter
 				Name="Shader Interface"
 				>
-				<File
-					RelativePath=".\BasicLightingInterface.cpp"
+				<Filter
+					Name="Animated"
 					>
-				</File>
-				<File
-					RelativePath=".\BasicLightingInterface.h"
+					<File
+						RelativePath=".\App Framework\Shader Interface\Animated\AnimatedInterface.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\App Framework\Shader Interface\Animated\AnimatedInterface.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Non Animated"
 					>
-				</File>
-				<File
-					RelativePath=".\App Framework\Shader Interface\PhongLightingInterface.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\App Framework\Shader Interface\PhongLightingInterface.h"
-					>
-				</File>
+					<File
+						RelativePath=".\BasicLightingInterface.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\BasicLightingInterface.h"
+						>
+					</File>
+					<File
+						RelativePath=".\App Framework\Shader Interface\PhongLightingInterface.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\App Framework\Shader Interface\PhongLightingInterface.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Maths"
