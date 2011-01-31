@@ -203,43 +203,57 @@ D3DXVECTOR3 m_Up  = D3DXVECTOR3(0,1,0);
 D3DXVECTOR3 m_LightPosition  = D3DXVECTOR3(1.0f,1.0f,2.0f);
 void Game::Draw()
 {
-	//pDevice->GetTransform(D3DTS_PROJECTION, m_ShadowTarget->getOldProjectionPointer());
-	//pDevice->GetRenderTarget(0, m_ShadowTarget->getBackBufferPointer());
+	/*pDevice->GetTransform(D3DTS_PROJECTION, m_ShadowTarget->getOldProjectionPointer());
+	pDevice->GetRenderTarget(0, m_ShadowTarget->getBackBufferPointer());
 
-	//pDevice->SetRenderTarget(0, m_ShadowTarget->getRenderSurface());
+	pDevice->SetRenderTarget(0, m_ShadowTarget->getRenderSurface());
 
-	//pDevice->BeginScene();
+	pDevice->BeginScene();
 
-	//// Clear the backbuffer to a blue color
- //   pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0 );
+	// Clear the backbuffer to a blue color
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0 );
 
-	//D3DXVECTOR3 lightLookAt;
-	//lightLookAt = m_LightPosition - mLight.dirW;
-	//D3DXMatrixLookAtLH( &m_LightView, &m_LightPosition, &lightLookAt, &m_Up);
-	//D3DXMatrixOrthoLH(&m_LightProj, 512, 512, 0, 1000);
-	////D3DXMatrixPerspectiveFovLH(&m_LightProj,D3DX_PI / 4.0f, 1 , 1.0f, 1000.0f);
+	// Animate spot light by rotating it on y-axis with respect to time.
+	D3DXMATRIX lightView;
+	D3DXVECTOR3 lightPosW(125.0f, 50.0f, 0.0f);
+	D3DXVECTOR3 lightTargetW(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 lightUpW(0.0f, 1.0f, 0.0f);
 
-	//m_LightViewProj = m_LightView * m_LightProj;
+	//static float t = 0.0f;
+	//t += dt;
+	//if( t >= 2.0f*D3DX_PI )
+	//	t = 0.0f;
+	//D3DXMATRIX Ry;
+	//D3DXMatrixRotationY(&Ry, t);
+	//D3DXVec3TransformCoord(&lightPosW, &lightPosW, &Ry);
 
-	//m_PhongInterface->GetEffect()->SetTechnique("CreateShadowMap");
-	//UINT numberOfShadowPasses = 1;
-	//m_PhongInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
-	//m_PhongInterface->GetEffect()->BeginPass(0);
+	D3DXMatrixLookAtLH(&lightView, &lightPosW, &lightTargetW, &lightUpW);
+	
+	D3DXMATRIX lightLens;
+	float lightFOV = D3DX_PI*0.25f;
+	D3DXMatrixPerspectiveFovLH(&lightLens, lightFOV, 1.0f, 1.0f, 200.0f);
 
-	//m_Dwarf->UpdateShaderVariables(&m_PhongContainer);
-	//SetPhongShaderVariables(m_Dwarf->GetWorld());
-	//m_Dwarf->DrawToShadowMap(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());
+	m_LightViewProj = lightView * lightLens;
 
-	////End the pass
-	//m_PhongInterface->GetEffect()->EndPass();
-	//m_PhongInterface->GetEffect()->End();	
+	m_PhongInterface->GetEffect()->SetTechnique(m_PhongInterface->GetShadowTechnique());
+	UINT numberOfShadowPasses = 1;
+	m_PhongInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
+	m_PhongInterface->GetEffect()->BeginPass(0);
 
-	//pDevice->EndScene();
+	m_Dwarf->UpdateShaderVariables(&m_PhongContainer);
+	SetPhongShaderVariables(m_Dwarf->GetWorld());
+	m_Dwarf->DrawToShadowMap(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());
 
-	////render scene with texture
-	////set back buffer
-	//pDevice->SetRenderTarget(0, m_ShadowTarget->getBackBuffer());
-	//pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
+	//End the pass
+	m_PhongInterface->GetEffect()->EndPass();
+	m_PhongInterface->GetEffect()->End();	
+
+	pDevice->EndScene();
+
+	//render scene with texture
+	//set back buffer
+	pDevice->SetRenderTarget(0, m_ShadowTarget->getBackBuffer());
+	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);*/
 
 	pDevice->GetTransform(D3DTS_PROJECTION, m_RenderTarget->getOldProjectionPointer());
 	pDevice->GetRenderTarget(0, m_RenderTarget->getBackBufferPointer());
@@ -252,7 +266,7 @@ void Game::Draw()
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
 
 		//Draw the scene
-		m_PhongInterface->GetEffect()->SetTechnique("PhongDirLtTexTech");
+		m_PhongInterface->GetEffect()->SetTechnique(m_PhongInterface->GetTechnique());
 		UINT numberOfPasses = 1;
 		m_PhongInterface->GetEffect()->Begin(&numberOfPasses, 0);
 		m_PhongInterface->GetEffect()->BeginPass(0);

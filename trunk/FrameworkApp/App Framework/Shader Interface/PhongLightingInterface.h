@@ -34,6 +34,9 @@ public:
 	ID3DXEffect* GetEffect() { return m_Effect; }
 	D3DXHANDLE GetTextureHandle() { return m_hTexture; }
 
+	D3DXHANDLE GetTechnique() { return m_hTechnique; }
+	D3DXHANDLE GetShadowTechnique() { return m_hShadowTechnique; }
+
 private:
 
 	//The handles
@@ -48,6 +51,7 @@ private:
 		m_hLightDirection,
 		m_hShadowMap;
 	D3DXHANDLE m_hTechnique;
+	D3DXHANDLE m_hShadowTechnique;
 	
 	//The effect
 	ID3DXEffect	*m_Effect;

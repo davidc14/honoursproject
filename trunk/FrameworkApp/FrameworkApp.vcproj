@@ -545,6 +545,10 @@
 			Name="Shaders"
 			>
 			<File
+				RelativePath=".\Shaders\LightShadow.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\PhongDirLtTex.fx"
 				>
 			</File>
