@@ -116,7 +116,7 @@ bool Game::LoadContent()
 
 	m_Dwarf = new Dwarf(pDevice);
 
-	mLight.dirW    = D3DXVECTOR3(1.0f, 1.0f, 2.0f);
+	mLight.dirW    = D3DXVECTOR3(0.0f, -1.0f, 1.0f);
 	D3DXVec3Normalize(&mLight.dirW, &mLight.dirW);
 	mLight.ambient = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mLight.diffuse = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
@@ -194,13 +194,9 @@ void Game::Update()
 	m_SkinnedMesh->Update(m_DeltaTime);
 }
 
-D3DXMATRIXA16 m_LightView;
-D3DXMATRIXA16 m_LightProj;
+
 D3DXMATRIXA16 m_LightViewProj;
-D3DXVECTOR3 m_Origin = D3DXVECTOR3(0,0,0);
-D3DXVECTOR3 m_ZeroVector = D3DXVECTOR3(0,0,0);
-D3DXVECTOR3 m_Up  = D3DXVECTOR3(0,1,0);
-D3DXVECTOR3 m_LightPosition  = D3DXVECTOR3(1.0f,1.0f,2.0f);
+
 void Game::Draw()
 {
 	pDevice->GetTransform(D3DTS_PROJECTION, m_ShadowTarget->getOldProjectionPointer());
@@ -211,11 +207,11 @@ void Game::Draw()
 	pDevice->BeginScene();
 
 	// Clear the backbuffer to a blue color
-    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0 );
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 
 	// Animate spot light by rotating it on y-axis with respect to time.
 	D3DXMATRIX lightView;
-	D3DXVECTOR3 lightPosW(125.0f, 50.0f, 0.0f);
+	D3DXVECTOR3 lightPosW(115.0f, 0.0f, -115.0f);
 	D3DXVECTOR3 lightTargetW(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 lightUpW(0.0f, 1.0f, 0.0f);
 
@@ -243,6 +239,10 @@ void Game::Draw()
 	m_Dwarf->UpdateShaderVariables(&m_PhongContainer);
 	SetPhongShaderVariables(m_Dwarf->GetWorld());
 	m_Dwarf->DrawToShadowMap(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());
+
+	/*m_Citadel->UpdateShaderVariables(&m_PhongContainer);
+	SetPhongShaderVariables(m_Dwarf->GetWorld());
+	m_Citadel->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());	*/
 
 	//End the pass
 	m_PhongInterface->GetEffect()->EndPass();

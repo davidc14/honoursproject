@@ -176,7 +176,8 @@ float4 PhongDirLtTexPS(OutputVS input) : COLOR
                               lerps.y );
 	
 	// Light/Texture pixel.  Note that shadow coefficient only affects diffuse/spec.
-	float3 litColor = ambient*texColor.rgb + shadowCoeff*(diffuse*texColor.rgb + spec);
+	//float3 litColor = ambient*texColor.rgb + shadowCoeff*(diffuse*texColor.rgb);// + spec);
+	float3 litColor = (ambient + (diffuse*shadowCoeff))*texColor.rgb;// + spec;
 		
 	// Sum all the terms together and copy over the diffuse alpha.
     return float4(litColor, gMtrl.diffuse.a*texColor.a);
