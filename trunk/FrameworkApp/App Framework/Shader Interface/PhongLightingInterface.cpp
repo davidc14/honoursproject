@@ -38,6 +38,12 @@ void PhongLightingInterface::SetupHandles()
 	m_hLight = m_Effect->GetParameterByName(0, "gLight");
 	m_hEyePosW = m_Effect->GetParameterByName(0, "gEyePosW");
 	m_hTexture = m_Effect->GetParameterByName(0, "gTex");
+	m_hLightViewProj = m_Effect->GetParameterByName(0, "LightViewProj");
+	m_hLightDirection = m_Effect->GetParameterByName(0, "LightDirection");
+	m_hShadowMap = m_Effect->GetParameterByName(0, "ShadowMap");
+
+/*	uniform extern float4x4 LightViewProj;
+uniform extern float3 LightDirection;*/
 }
 
 void PhongLightingInterface::UpdateHandles(PhongLighting* input)
@@ -48,7 +54,9 @@ void PhongLightingInterface::UpdateHandles(PhongLighting* input)
 	m_Effect->SetValue(m_hMaterial, &input->m_Material, sizeof(Mtrl));
 	m_Effect->SetValue(m_hLight, &input->m_Light, sizeof(DirLight));
 	m_Effect->SetValue(m_hEyePosW, &input->m_EyePosW, sizeof(D3DXVECTOR3));
-	//m_Effect->SetTexture(m_hTexture, input->m_Texture);
+	m_Effect->SetValue(m_hLightDirection, &input->m_LightDirection, sizeof(D3DXVECTOR3));
+	m_Effect->SetMatrix(m_hLightViewProj, &input->m_LightViewProj);
+	m_Effect->SetTexture(m_hShadowMap, input->m_ShadowMap);
 
 	m_Effect->CommitChanges();
 }

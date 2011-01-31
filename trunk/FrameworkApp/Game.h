@@ -48,7 +48,7 @@ public:
 	//My own functions
 	void CalculateMatrices();
 	void SetShaderVariables();
-	void SetPhongShaderVariables();
+	void SetPhongShaderVariables(D3DXMATRIX World);
 	void SetAnimatedInterfaceVariables();
 
 	void setDeltaTime(float DeltaTime) { m_DeltaTime = DeltaTime; }
