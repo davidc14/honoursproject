@@ -211,7 +211,7 @@ void Game::Draw()
 
 	// Animate spot light by rotating it on y-axis with respect to time.
 	D3DXMATRIX lightView;
-	D3DXVECTOR3 lightPosW(115.0f, 0.0f, -115.0f);
+	D3DXVECTOR3 lightPosW(0.0f, 0.0f, -115.0f);
 	D3DXVECTOR3 lightTargetW(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 lightUpW(0.0f, 1.0f, 0.0f);
 
