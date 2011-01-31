@@ -203,7 +203,7 @@ D3DXVECTOR3 m_Up  = D3DXVECTOR3(0,1,0);
 D3DXVECTOR3 m_LightPosition  = D3DXVECTOR3(1.0f,1.0f,2.0f);
 void Game::Draw()
 {
-	/*pDevice->GetTransform(D3DTS_PROJECTION, m_ShadowTarget->getOldProjectionPointer());
+	pDevice->GetTransform(D3DTS_PROJECTION, m_ShadowTarget->getOldProjectionPointer());
 	pDevice->GetRenderTarget(0, m_ShadowTarget->getBackBufferPointer());
 
 	pDevice->SetRenderTarget(0, m_ShadowTarget->getRenderSurface());
@@ -211,7 +211,7 @@ void Game::Draw()
 	pDevice->BeginScene();
 
 	// Clear the backbuffer to a blue color
-    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0 );
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0 );
 
 	// Animate spot light by rotating it on y-axis with respect to time.
 	D3DXMATRIX lightView;
@@ -231,7 +231,7 @@ void Game::Draw()
 	
 	D3DXMATRIX lightLens;
 	float lightFOV = D3DX_PI*0.25f;
-	D3DXMatrixPerspectiveFovLH(&lightLens, lightFOV, 1.0f, 1.0f, 200.0f);
+	D3DXMatrixPerspectiveFovLH(&lightLens, lightFOV, 1.0f, 1.0f, 1000.0f);
 
 	m_LightViewProj = lightView * lightLens;
 
@@ -253,7 +253,7 @@ void Game::Draw()
 	//render scene with texture
 	//set back buffer
 	pDevice->SetRenderTarget(0, m_ShadowTarget->getBackBuffer());
-	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);*/
+	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
 
 	pDevice->GetTransform(D3DTS_PROJECTION, m_RenderTarget->getOldProjectionPointer());
 	pDevice->GetRenderTarget(0, m_RenderTarget->getBackBufferPointer());
@@ -387,8 +387,7 @@ void Game::SetPhongShaderVariables(D3DXMATRIX World)
 	m_PhongContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
 	m_PhongContainer.m_EyePosW = *m_Camera->getPosition();
 	m_PhongContainer.m_Light = mLight;
-	m_PhongContainer.m_LightViewProj = m_LightViewProj;
-	m_PhongContainer.m_LightDirection = mLight.dirW;
+	m_PhongContainer.m_LightWVP = World * m_LightViewProj;
 	m_PhongContainer.m_ShadowMap = m_ShadowTarget->getRenderTexture();	
 	//m_PhongContainer.m_ShadowMap = m_WhiteTexture;	
 	

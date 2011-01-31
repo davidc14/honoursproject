@@ -202,7 +202,7 @@ void Dwarf::UpdateWorldMatrix()
 {
 	//Zero the matrices
 	//D3DXMatrixIdentity(&m_matWorld);
-	D3DXMatrixScaling(&m_matScale, 1.0f, 1.0f, 1.0f);
+	D3DXMatrixScaling(&m_matScale, 5.0f, 5.0f, 5.0f);
 	D3DXMatrixRotationY(&m_matRotationY, m_Angle);
 	D3DXMatrixTranslation(&m_matTranslation, m_Position.x, m_Position.y + 10.0f, m_Position.z);
 
