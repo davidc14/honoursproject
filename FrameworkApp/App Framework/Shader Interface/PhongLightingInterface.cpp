@@ -31,6 +31,7 @@ bool PhongLightingInterface::LoadShader()
 void PhongLightingInterface::SetupHandles()
 {
 	m_hTechnique = m_Effect->GetTechniqueByName("PhongDirLtTexTech");
+	//m_hShadowTechnique = m_Effect->GetTechniqueByName("BuildShadowMapTech");
 	m_hWorld = m_Effect->GetParameterByName(0, "gWorld");
 	m_hWorldInvTrans = m_Effect->GetParameterByName(0, "gWorldInvTrans");
 	m_hWVP = m_Effect->GetParameterByName(0, "gWVP");

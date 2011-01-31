@@ -65,6 +65,16 @@ struct Mtrl
 	float specPower;
 };
 
+struct SpotLight
+{
+	D3DXCOLOR ambient;
+	D3DXCOLOR diffuse;
+	D3DXCOLOR spec;
+	D3DXVECTOR3 posW;
+	D3DXVECTOR3 dirW;  
+	float  spotPower;
+};
+
 struct DirLight
 {
 	D3DXCOLOR ambient;
