@@ -51,7 +51,7 @@ void PhongLightingInterface::UpdateHandles(PhongLighting* input)
 	m_Effect->SetValue(m_hMaterial, &input->m_Material, sizeof(Mtrl));
 	m_Effect->SetValue(m_hLight, &input->m_Light, sizeof(DirLight));
 	m_Effect->SetValue(m_hEyePosW, &input->m_EyePosW, sizeof(D3DXVECTOR3));
-	m_Effect->SetValue(m_hLightWVP, &input->m_LightWVP, sizeof(D3DXVECTOR3));
+	m_Effect->SetMatrix(m_hLightWVP, &input->m_LightWVP);//, sizeof(D3DXVECTOR3));
 	/*m_Effect->SetValue(m_hLightDirection, &input->m_LightDirection, sizeof(D3DXVECTOR3));
 	m_Effect->SetMatrix(m_hLightViewProj, &input->m_LightViewProj);*/
 	m_Effect->SetTexture(m_hShadowMap, input->m_ShadowMap);
