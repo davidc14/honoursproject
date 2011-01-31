@@ -24,6 +24,11 @@ Dwarf::Dwarf()
 	m_ID = 0;
 
 	m_DeadReckoningTicker = 0.0f;
+
+	mWhiteMtrl.ambient = WHITE*0.9f;
+	mWhiteMtrl.diffuse = WHITE*0.6f;
+	mWhiteMtrl.spec    = WHITE*0.6f;
+	mWhiteMtrl.specPower = 48.0f;
 }
 
 Dwarf::Dwarf(IDirect3DDevice9* Device)
@@ -70,6 +75,11 @@ Dwarf::Dwarf(IDirect3DDevice9* Device)
 	m_ID = 0;
 
 	m_DeadReckoningTicker = 0.0f;
+
+	mWhiteMtrl.ambient = WHITE*0.9f;
+	mWhiteMtrl.diffuse = WHITE*0.6f;
+	mWhiteMtrl.spec    = WHITE*0.6f;
+	mWhiteMtrl.specPower = 48.0f;
 }
 
 Dwarf::~Dwarf()
@@ -90,6 +100,12 @@ void Dwarf::MoveToLocation(D3DXVECTOR3 newPosition)
 
 //Draw the ship
 void Dwarf::Draw(ID3DXEffect* effect, D3DXHANDLE texture)
+{
+	m_Model->Draw(effect, texture);
+}
+
+//Draw the ship
+void Dwarf::DrawToShadowMap(ID3DXEffect* effect, D3DXHANDLE texture)
 {
 	m_Model->Draw(effect, texture);
 }
@@ -188,7 +204,7 @@ void Dwarf::UpdateWorldMatrix()
 	//D3DXMatrixIdentity(&m_matWorld);
 	D3DXMatrixScaling(&m_matScale, 1.0f, 1.0f, 1.0f);
 	D3DXMatrixRotationY(&m_matRotationY, m_Angle);
-	D3DXMatrixTranslation(&m_matTranslation, m_Position.x, m_Position.y, m_Position.z);
+	D3DXMatrixTranslation(&m_matTranslation, m_Position.x, m_Position.y + 10.0f, m_Position.z);
 
 	m_matWorld = m_matScale * m_matRotationY * m_matTranslation;
 
@@ -202,6 +218,14 @@ void Dwarf::UpdateShaderVariables(BasicLighting* LightingContainer)
 {
 	LightingContainer->matWorld = m_matWorld;
 	LightingContainer->matWorldInverseTranspose = m_matWorldInverseTranspose;
+}
+
+//This is seperate from the standard update, because of the DX9 state machine
+void Dwarf::UpdateShaderVariables(PhongLighting* LightingContainer)
+{
+	LightingContainer->m_World = m_matWorld;
+	LightingContainer->m_WorldInvTrans = m_matWorldInverseTranspose;
+	LightingContainer->m_Material = mWhiteMtrl;
 }
 
 D3DXVECTOR3 Dwarf::GetPosition()

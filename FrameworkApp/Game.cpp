@@ -25,6 +25,9 @@ D3DFont* m_Font;
 PhongLightingInterface* m_PhongInterface;
 PhongLighting m_PhongContainer;
 
+AnimatedInterface* m_AnimatedInterface;
+AnimatedContainer m_AnimatedContainer;
+
 Citadel* m_Citadel;
 
 DirectInput* m_DInput;
@@ -35,13 +38,15 @@ IDirect3DVertexBuffer9* mRadarVB;
 
 SkinnedMesh* m_SkinnedMesh;
 
+Dwarf* m_Dwarf;
+
 DirLight mLight;
 Mtrl     mWhiteMtrl;
 
 DrawableTex2D* m_RenderTarget;
+DrawableTex2D* m_ShadowTarget;
 
-AnimatedInterface* m_AnimatedInterface;
-AnimatedContainer m_AnimatedContainer;
+IDirect3DTexture9* m_WhiteTexture;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -109,6 +114,8 @@ bool Game::LoadContent()
 
 	m_SkinnedMesh = new SkinnedMesh(pDevice, "Models/Tiny", "tiny.x", "Tiny_skin.bmp");
 
+	m_Dwarf = new Dwarf(pDevice);
+
 	mLight.dirW    = D3DXVECTOR3(1.0f, 1.0f, 2.0f);
 	D3DXVec3Normalize(&mLight.dirW, &mLight.dirW);
 	mLight.ambient = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
@@ -121,8 +128,11 @@ bool Game::LoadContent()
 	mWhiteMtrl.specPower = 48.0f;
 
 	m_RenderTarget = new DrawableTex2D(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
+	m_ShadowTarget = new DrawableTex2D(pDevice, 512, 512);
 
 	m_AnimatedInterface = new AnimatedInterface(pDevice);
+
+	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_WhiteTexture);
 
 	return true;
 }
@@ -168,24 +178,15 @@ void Game::Update()
 {
 	m_Camera->Update(m_DeltaTime);
 
-	fAngle += 1.0f;
-	m_PacketTicker += m_DeltaTime;
-	randomDwarfTicker += m_DeltaTime;
-
-	serverDwarfVelocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	
-
-	serverDwarfVelocity.x = 0.1f * (sin(fAngle * 0.02f));
-	serverDwarfVelocity.z = 0.1f * (cos(fAngle * 0.02f));
 	
-	if(randomDwarfTicker > 0.75f)
-	{
-		randomDwarfVelocity = D3DXVECTOR3((rand() % 10 - 5) * 0.005f, 0.0f, (rand() % 10 - 5) * 0.005f);
-		randomDwarfTicker = 0.0f;
-	}
+	
+	m_Citadel->Update();
+
+	m_Dwarf->Update();
 
 	CalculateMatrices();
 
-	m_Citadel->Update();
+	
 
 	m_Font->Update(m_DeltaTime, m_WindowWidth, m_WindowHeight);	
 
@@ -193,8 +194,53 @@ void Game::Update()
 	m_SkinnedMesh->Update(m_DeltaTime);
 }
 
+D3DXMATRIXA16 m_LightView;
+D3DXMATRIXA16 m_LightProj;
+D3DXMATRIXA16 m_LightViewProj;
+D3DXVECTOR3 m_Origin = D3DXVECTOR3(0,0,0);
+D3DXVECTOR3 m_ZeroVector = D3DXVECTOR3(0,0,0);
+D3DXVECTOR3 m_Up  = D3DXVECTOR3(0,1,0);
+D3DXVECTOR3 m_LightPosition  = D3DXVECTOR3(1.0f,1.0f,2.0f);
 void Game::Draw()
 {
+	//pDevice->GetTransform(D3DTS_PROJECTION, m_ShadowTarget->getOldProjectionPointer());
+	//pDevice->GetRenderTarget(0, m_ShadowTarget->getBackBufferPointer());
+
+	//pDevice->SetRenderTarget(0, m_ShadowTarget->getRenderSurface());
+
+	//pDevice->BeginScene();
+
+	//// Clear the backbuffer to a blue color
+ //   pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0 );
+
+	//D3DXVECTOR3 lightLookAt;
+	//lightLookAt = m_LightPosition - mLight.dirW;
+	//D3DXMatrixLookAtLH( &m_LightView, &m_LightPosition, &lightLookAt, &m_Up);
+	//D3DXMatrixOrthoLH(&m_LightProj, 512, 512, 0, 1000);
+	////D3DXMatrixPerspectiveFovLH(&m_LightProj,D3DX_PI / 4.0f, 1 , 1.0f, 1000.0f);
+
+	//m_LightViewProj = m_LightView * m_LightProj;
+
+	//m_PhongInterface->GetEffect()->SetTechnique("CreateShadowMap");
+	//UINT numberOfShadowPasses = 1;
+	//m_PhongInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
+	//m_PhongInterface->GetEffect()->BeginPass(0);
+
+	//m_Dwarf->UpdateShaderVariables(&m_PhongContainer);
+	//SetPhongShaderVariables(m_Dwarf->GetWorld());
+	//m_Dwarf->DrawToShadowMap(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());
+
+	////End the pass
+	//m_PhongInterface->GetEffect()->EndPass();
+	//m_PhongInterface->GetEffect()->End();	
+
+	//pDevice->EndScene();
+
+	////render scene with texture
+	////set back buffer
+	//pDevice->SetRenderTarget(0, m_ShadowTarget->getBackBuffer());
+	//pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
+
 	pDevice->GetTransform(D3DTS_PROJECTION, m_RenderTarget->getOldProjectionPointer());
 	pDevice->GetRenderTarget(0, m_RenderTarget->getBackBufferPointer());
 
@@ -206,6 +252,7 @@ void Game::Draw()
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
 
 		//Draw the scene
+		m_PhongInterface->GetEffect()->SetTechnique("PhongDirLtTexTech");
 		UINT numberOfPasses = 1;
 		m_PhongInterface->GetEffect()->Begin(&numberOfPasses, 0);
 		m_PhongInterface->GetEffect()->BeginPass(0);
@@ -213,9 +260,16 @@ void Game::Draw()
 		////Update the world matrix for the object
 		m_Citadel->UpdateShaderVariables(&m_PhongContainer);
 		////Set the variables - This is essentially my version of CommitChanges()
-		SetPhongShaderVariables();
+		SetPhongShaderVariables(m_Citadel->GetWorld());
 		//Draw the model
-		m_Citadel->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());		
+		m_Citadel->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());	
+
+		////Update the world matrix for the object
+		m_Dwarf->UpdateShaderVariables(&m_PhongContainer);
+		////Set the variables - This is essentially my version of CommitChanges()
+		SetPhongShaderVariables(m_Dwarf->GetWorld());
+		//Draw the model
+		m_Dwarf->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());
 
 		//End the pass
 		m_PhongInterface->GetEffect()->EndPass();
@@ -247,6 +301,7 @@ void Game::Draw()
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
 
 		m_RenderTarget->Draw();
+		//m_ShadowTarget->Draw();
 
 		m_Font->Draw();	
 
@@ -266,8 +321,8 @@ void Game::Unload()
 
 	m_PhongInterface->Release();
 	m_AnimatedInterface->Release();
-	/*m_KeyboardDwarf->Release();
-	m_ServerDwarf->Release();
+	m_Dwarf->Release();
+	/*m_ServerDwarf->Release();
 	m_RandomDwarf->Release();*/
 
 	m_SkinnedMesh->Release();
@@ -312,12 +367,16 @@ void Game::SetShaderVariables()
 	//m_LightingInterface->UpdateHandles(&m_LightingContainer);
 }
 
-void Game::SetPhongShaderVariables()
+void Game::SetPhongShaderVariables(D3DXMATRIX World)
 {
 	//Update the view and projection matrices in the container
-	m_PhongContainer.m_WVP = m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer();
+	m_PhongContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
 	m_PhongContainer.m_EyePosW = *m_Camera->getPosition();
 	m_PhongContainer.m_Light = mLight;
+	m_PhongContainer.m_LightViewProj = m_LightViewProj;
+	m_PhongContainer.m_LightDirection = mLight.dirW;
+	m_PhongContainer.m_ShadowMap = m_ShadowTarget->getRenderTexture();	
+	//m_PhongContainer.m_ShadowMap = m_WhiteTexture;	
 	
 	//Pass it in the lighting interface
 	m_PhongInterface->UpdateHandles(&m_PhongContainer);

@@ -5,6 +5,7 @@
 #include <d3dx9.h>
 #include "XModel.h"
 #include "BasicLightingInterface.h"
+#include "App Framework/Shader Interface/PhongLightingInterface.h"
 
 class Dwarf
 {
@@ -17,12 +18,14 @@ public: //Public methods
 	void MoveToLocation(D3DXVECTOR3 newPosition);
 	//Draw the dwarf
 	void Draw(ID3DXEffect* effect, D3DXHANDLE texture);
+	void DrawToShadowMap(ID3DXEffect* effect, D3DXHANDLE texture);
 	//Update the dwarf
 	void Update();
 	void Update(D3DXVECTOR3 newVelocity, float newAngularVelocity);
 	void UpdateDeadReckoning(float deltaTime, D3DXVECTOR3 position, D3DXVECTOR3 velocity);
 	//Update the shader variables
 	void UpdateShaderVariables(BasicLighting* LightingContainer);
+	void UpdateShaderVariables(PhongLighting* LightingContainer);
 
 	void SetVelocity(D3DXVECTOR3 newVelocity){ UpdateVelocity(newVelocity); }
 	void SetAngularVelocity(float newAngularVelocity) { UpdateAngularVelocity(newAngularVelocity); }
@@ -61,6 +64,9 @@ private: //Private member variables
 	D3DXVECTOR3 ResultPosition;
 	D3DXVECTOR3 Acceleration;
 	float m_DeadReckoningTicker;
+
+	//The material
+	Mtrl mWhiteMtrl;
 
 private: //Private methods
 

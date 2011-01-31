@@ -11,7 +11,10 @@ typedef struct PhongLighting
 	Mtrl m_Material;
 	DirLight m_Light;
 	D3DXVECTOR3 m_EyePosW;
-	//IDirect3DTexture9* m_Texture;
+	D3DXVECTOR3 m_LightDirection;
+	D3DXMATRIXA16 m_LightViewProj;
+
+	IDirect3DTexture9* m_ShadowMap;
 
 }PhongLighting;
 
@@ -34,7 +37,16 @@ public:
 private:
 
 	//The handles
-	D3DXHANDLE m_hWorld, m_hWorldInvTrans, m_hWVP, m_hMaterial, m_hLight, m_hEyePosW, m_hTexture;
+	D3DXHANDLE m_hWorld, 
+		m_hWorldInvTrans, 
+		m_hWVP, 
+		m_hMaterial, 
+		m_hLight, 
+		m_hEyePosW, 
+		m_hTexture, 
+		m_hLightViewProj, 
+		m_hLightDirection,
+		m_hShadowMap;
 	D3DXHANDLE m_hTechnique;
 	
 	//The effect
