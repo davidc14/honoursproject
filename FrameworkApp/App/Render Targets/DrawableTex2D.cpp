@@ -38,7 +38,8 @@ DrawableTex2D::DrawableTex2D(IDirect3DDevice9* Device, UINT m_WindowWidth, UINT 
                              m_WindowHeight,
                              1,
                              D3DUSAGE_RENDERTARGET,
-                             D3DFMT_A8R8G8B8,
+                             //D3DFMT_A8R8G8B8,
+							 D3DFMT_X8R8G8B8,
                              D3DPOOL_DEFAULT,
                              &pRenderTexture,
                              NULL);
