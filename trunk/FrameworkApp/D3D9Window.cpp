@@ -34,7 +34,8 @@ HRESULT D3D9Window::InitDevice()
     ZeroMemory( &d3dpp, sizeof( d3dpp ) );
     d3dpp.Windowed = TRUE;
     d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-    d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;
+    //d3dpp.BackBufferFormat = D3DFMT_X8R8G8B8;
+	d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;
 	d3dpp.BackBufferWidth = getWindowWidth();
 	d3dpp.BackBufferHeight = getWindowHeight();	
     d3dpp.EnableAutoDepthStencil = TRUE;

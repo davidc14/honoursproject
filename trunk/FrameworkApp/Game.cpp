@@ -28,7 +28,7 @@ PhongLighting m_PhongContainer;
 AnimatedInterface* m_AnimatedInterface;
 AnimatedContainer m_AnimatedContainer;
 
-Citadel* m_Citadel;
+//Citadel* m_Citadel;
 
 DirectInput* m_DInput;
 
@@ -119,7 +119,7 @@ bool Game::LoadContent()
 
 	ConnectionStatus = false;
 	
-	m_Citadel = new Citadel(pDevice);
+	//m_Citadel = new Citadel(pDevice);
 
 	D3DXVECTOR3 vEyePt( 0.0f, 5.0f,-20.0f );
     D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
@@ -221,7 +221,7 @@ void Game::Update()
 {
 	m_Camera->Update(m_DeltaTime);
 	
-	m_Citadel->Update();
+	//m_Citadel->Update();
 
 	m_Dwarf->Update();
 
@@ -323,23 +323,24 @@ void Game::Draw()
 		mFX->Begin(&numPasses, 0);
 		mFX->BeginPass(0);
 
-		//D3DXHANDLE   mhLightWVP;
-		mFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-		D3DXMATRIX WorldInverseTranspose;
-		D3DXMatrixInverse(&WorldInverseTranspose, NULL, m_Citadel->GetWorldPointer());
-		D3DXMatrixTranspose(&WorldInverseTranspose, &WorldInverseTranspose);
-		mFX->SetMatrix(mhWorldInvTrans, &WorldInverseTranspose);
-		mFX->SetValue(mhEyePosW, m_Camera->getPosition(), sizeof(D3DXVECTOR3));
-		mFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
-		mFX->SetTexture(mhShadowMap, m_ShadowTarget->getRenderTexture());
-		mFX->SetValue(mhMtrl, m_Citadel->GetMaterial(), sizeof(Mtrl));
-		mFX->SetValue(mhLight, &mSpotLight, sizeof(SpotLight));
-		HR(mFX->CommitChanges());
+		////D3DXHANDLE   mhLightWVP;
+		//mFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+		//
+		//D3DXMatrixInverse(&WorldInverseTranspose, NULL, m_Citadel->GetWorldPointer());
+		//D3DXMatrixTranspose(&WorldInverseTranspose, &WorldInverseTranspose);
+		//mFX->SetMatrix(mhWorldInvTrans, &WorldInverseTranspose);
+		//mFX->SetValue(mhEyePosW, m_Camera->getPosition(), sizeof(D3DXVECTOR3));
+		//mFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
+		//mFX->SetTexture(mhShadowMap, m_ShadowTarget->getRenderTexture());
+		//mFX->SetValue(mhMtrl, m_Citadel->GetMaterial(), sizeof(Mtrl));
+		//mFX->SetValue(mhLight, &mSpotLight, sizeof(SpotLight));
+		//HR(mFX->CommitChanges());
 
-		m_Citadel->Draw(mFX, mhTex);
+//	m_Citadel->Draw(mFX, mhTex);
 
 		//D3DXHANDLE   mhLightWVP;
 		mFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+		D3DXMATRIX WorldInverseTranspose;
 		D3DXMATRIX DwarfWorldInverseTranspose;
 		D3DXMatrixInverse(&WorldInverseTranspose, NULL, m_Dwarf->GetWorldPointer());
 		D3DXMatrixTranspose(&WorldInverseTranspose, &WorldInverseTranspose);
@@ -432,7 +433,8 @@ void Game::Unload()
 
 	m_SkinnedMesh->Release();
 
-	m_Citadel->Release();
+	mFX->Release();
+	//m_Citadel->Release();
 }
 
 void Game::CalculateMatrices()
