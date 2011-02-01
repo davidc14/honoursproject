@@ -287,6 +287,11 @@ void Game::Draw()
 
 	m_Dwarf->DrawToShadowMap(mFX, mhTex);
 
+	////D3DXHANDLE   mhLightWVP;
+	//mFX->SetMatrix(mhLightWVP, &(m_Citadel->GetWorld() * m_LightViewProj));
+	//HR(mFX->CommitChanges());
+
+	//m_Citadel->Draw(mFX, mhTex);
 	//m_Citadel->UpdateShaderVariables(&m_PhongContainer);
 	//SetPhongShaderVariables(m_Dwarf->GetWorld());
 	//m_Citadel->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());
