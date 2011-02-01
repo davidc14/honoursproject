@@ -237,6 +237,11 @@ D3DXMATRIX Citadel::GetWorld()
 	return m_matWorld;
 }
 
+D3DXMATRIX* Citadel::GetWorldPointer()
+{
+	return &m_matWorld;
+}
+
 float Citadel::GetAngle()
 {
 	return m_Angle;

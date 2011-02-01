@@ -30,12 +30,15 @@ public: //Public methods
 	void SetVelocity(D3DXVECTOR3 newVelocity){ UpdateVelocity(newVelocity); }
 	void SetAngularVelocity(float newAngularVelocity) { UpdateAngularVelocity(newAngularVelocity); }
 
+	Mtrl* GetMaterial() { return &mWhiteMtrl; }
+
 	void Release();
 
 	//Accessors for the data required by the network
 	D3DXVECTOR3 GetPosition();
 	D3DXVECTOR3 GetVelocity();
 	D3DXMATRIX GetWorld();
+	D3DXMATRIX* GetWorldPointer() { return &m_matWorld; }
 	float GetAngle();
 	float GetAngularVelocity();
 

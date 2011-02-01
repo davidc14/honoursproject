@@ -32,10 +32,13 @@ public: //Public methods
 
 	void Release();
 
+	Mtrl* GetMaterial() { return &mWhiteMtrl; }
+
 	//Accessors for the data required by the network
 	D3DXVECTOR3 GetPosition();
 	D3DXVECTOR3 GetVelocity();
 	D3DXMATRIX GetWorld();
+	D3DXMATRIX* GetWorldPointer();
 	float GetAngle();
 	float GetAngularVelocity();
 
