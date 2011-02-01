@@ -213,10 +213,6 @@ void Game::HandleInput()
 		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);			
 }
 
-float fAngle = 0.0f;
-float randomDwarfTicker = 0.0f;
-D3DXVECTOR3 serverDwarfVelocity;
-D3DXVECTOR3 randomDwarfVelocity;
 void Game::Update()
 {
 	m_Camera->Update(m_DeltaTime);
