@@ -7,7 +7,7 @@
 uniform extern float4x4 gLightWVP;
 
 static const float SHADOW_EPSILON = 0.00005f;
-static const float SMAP_SIZE = 512.0f;
+static const float SMAP_SIZE = 256.0f;
 
 void BuildShadowMapVS(float3 posL : POSITION0,
                       out float4 posH : POSITION0,

@@ -145,7 +145,7 @@ bool Game::LoadContent()
 	mWhiteMtrl.specPower = 48.0f;
 
 	m_RenderTarget = new DrawableTex2D(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
-	m_ShadowTarget = new DrawableTex2D(pDevice, 512, 512);
+	m_ShadowTarget = new DrawableTex2D(pDevice, 256, 256);
 
 	m_AnimatedInterface = new AnimatedInterface(pDevice);
 
@@ -271,7 +271,7 @@ void Game::Draw()
 	pDevice->BeginScene();
 
 	// Clear the backbuffer to a blue color
-    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFF00, 1.0f, 0 );
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 
 	mFX->SetTechnique(mhBuildShadowMapTech);
 	UINT numberOfShadowPasses = 1;
