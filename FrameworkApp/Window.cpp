@@ -42,13 +42,13 @@ namespace WindProc
     }
 }
 
-Window::Window():sWindowWidth(800),sWindowHeight(600)
+Window::Window()//:sWindowWidth(800),sWindowHeight(600)
 {
 	g_hInst = NULL;	//Set to NULL in constructor
 	g_hWnd = NULL;		//Set to NULL in constructor
 
-	WindowWidth = 1280;
-	WindowHeight = 720;
+	WindowWidth = 800;
+	WindowHeight = 600;
 }
 
 Window::~Window()

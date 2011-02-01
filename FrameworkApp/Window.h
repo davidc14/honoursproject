@@ -31,9 +31,9 @@ private: //Private functions
 
 private: //Private members
 
-	//The width and height of the window
-	const int sWindowWidth; 
-	const int sWindowHeight;
+	////The width and height of the window
+	//const int sWindowWidth; 
+	//const int sWindowHeight;
 
 	int WindowWidth, WindowHeight;
 
