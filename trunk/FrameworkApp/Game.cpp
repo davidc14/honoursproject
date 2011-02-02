@@ -255,6 +255,10 @@ void Game::Update()
 	D3DXVec3Normalize(&lightDirW, &lightDirW);
 	mSpotLight.posW      = lightPosW;
 	mSpotLight.dirW      = lightDirW;
+
+	printf("%f\n", lightPosW.x);
+	printf("%f\n", lightPosW.y);
+	printf("%f\n", lightPosW.z);
 }
 
 void Game::Draw()
@@ -281,7 +285,7 @@ void Game::Draw()
 	mFX->SetMatrix(mhLightWVP, &(m_Dwarf->GetWorld() * m_LightViewProj));
 	HR(mFX->CommitChanges());
 
-	m_Dwarf->DrawToShadowMap(mFX, mhTex);
+	m_Dwarf->Draw(mFX, mhTex);
 
 	////D3DXHANDLE   mhLightWVP;
 	//mFX->SetMatrix(mhLightWVP, &(m_Citadel->GetWorld() * m_LightViewProj));
@@ -319,28 +323,12 @@ void Game::Draw()
 		mFX->Begin(&numPasses, 0);
 		mFX->BeginPass(0);
 
-		////D3DXHANDLE   mhLightWVP;
-		//mFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-		//
-		//D3DXMatrixInverse(&WorldInverseTranspose, NULL, m_Citadel->GetWorldPointer());
-		//D3DXMatrixTranspose(&WorldInverseTranspose, &WorldInverseTranspose);
-		//mFX->SetMatrix(mhWorldInvTrans, &WorldInverseTranspose);
-		//mFX->SetValue(mhEyePosW, m_Camera->getPosition(), sizeof(D3DXVECTOR3));
-		//mFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
-		//mFX->SetTexture(mhShadowMap, m_ShadowTarget->getRenderTexture());
-		//mFX->SetValue(mhMtrl, m_Citadel->GetMaterial(), sizeof(Mtrl));
-		//mFX->SetValue(mhLight, &mSpotLight, sizeof(SpotLight));
-		//HR(mFX->CommitChanges());
-
-//	m_Citadel->Draw(mFX, mhTex);
-
 		//D3DXHANDLE   mhLightWVP;
 		mFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-		D3DXMATRIX WorldInverseTranspose;
 		D3DXMATRIX DwarfWorldInverseTranspose;
-		D3DXMatrixInverse(&WorldInverseTranspose, NULL, m_Dwarf->GetWorldPointer());
-		D3DXMatrixTranspose(&WorldInverseTranspose, &WorldInverseTranspose);
-		mFX->SetMatrix(mhWorldInvTrans, &WorldInverseTranspose);
+		D3DXMatrixInverse(&DwarfWorldInverseTranspose, NULL, m_Dwarf->GetWorldPointer());
+		D3DXMatrixTranspose(&DwarfWorldInverseTranspose, &DwarfWorldInverseTranspose);
+		mFX->SetMatrix(mhWorldInvTrans, &DwarfWorldInverseTranspose);
 		mFX->SetValue(mhEyePosW, m_Camera->getPosition(), sizeof(D3DXVECTOR3));
 		mFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
 		mFX->SetTexture(mhShadowMap, m_WhiteTexture);
@@ -366,11 +354,11 @@ void Game::Draw()
 		////Draw the model
 		//m_Citadel->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());	
 
-		//////Update the world matrix for the object
+		////Update the world matrix for the object
 		//m_Dwarf->UpdateShaderVariables(&m_PhongContainer);
-		//////Set the variables - This is essentially my version of CommitChanges()
+		////Set the variables - This is essentially my version of CommitChanges()
 		//SetPhongShaderVariables(m_Dwarf->GetWorld());
-		////Draw the model
+		//Draw the model
 		//m_Dwarf->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());
 
 		//End the pass
