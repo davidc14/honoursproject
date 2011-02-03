@@ -181,7 +181,7 @@ bool Game::LoadContent()
 	mSpotLight.ambient   = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.diffuse   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
-	mSpotLight.spotPower = 8.0f;
+	mSpotLight.spotPower = 32.0f;
 
 	return true;
 }
@@ -424,20 +424,19 @@ void Game::Draw()
 
 void Game::Unload()
 {
-	//m_Model->Release();
-
 	m_Font->Release();
 
 	m_PhongInterface->Release();
 	m_AnimatedInterface->Release();
 	m_Dwarf->Release();
-	/*m_ServerDwarf->Release();
-	m_RandomDwarf->Release();*/
+
+	m_Citadel->Release();
 
 	m_SkinnedMesh->Release();
 
+	mShadowMap->onLostDevice();
+
 	mFX->Release();
-	//m_Citadel->Release();
 }
 
 void Game::CalculateMatrices()

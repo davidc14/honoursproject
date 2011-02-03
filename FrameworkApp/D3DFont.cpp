@@ -21,6 +21,7 @@ void D3DFont::CreateFont()
 		DEFAULT_PITCH | FF_DONTCARE, TEXT("Courier New"), &m_Font );
 }
 
+char infoString[80];
 void D3DFont::Update(float deltaTime, float width, float height)
 {
 	rect.bottom = (LONG)height;
@@ -28,6 +29,10 @@ void D3DFont::Update(float deltaTime, float width, float height)
 	rect.top = 0;
 	rect.left = 0;
 	sprintf_s(m_DeltaTimeString, sizeof(m_DeltaTimeString), "%f", deltaTime);
+	
+	sprintf_s (infoString,sizeof(infoString)," ms per frame ");
+
+	strcat_s(m_DeltaTimeString, sizeof(m_DeltaTimeString) + sizeof(infoString), infoString);
 }
 
 void D3DFont::Draw()
@@ -38,6 +43,6 @@ void D3DFont::Draw()
 
 void D3DFont::Release()
 {
-	pDevice->Release();
+	//pDevice->Release();
 	m_Font->Release();
 }
