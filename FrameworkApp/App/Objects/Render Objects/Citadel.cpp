@@ -107,9 +107,9 @@ void Citadel::Draw(ID3DXEffect* effect, D3DXHANDLE texture)
 //Draw the ship
 void Citadel::DrawToShadowMap()
 {
-	for(UINT j = 1; j < m_Model->GetNumberOfMaterials(); ++j)
+	for(UINT j = 0; j < m_Model->GetNumberOfMaterials(); ++j)
 	{
-		for(UINT j = 1; j < m_Model->GetNumberOfMaterials(); ++j)
+		for(UINT j = 0; j < m_Model->GetNumberOfMaterials(); ++j)
 		{
 			m_Model->DrawToShadowMap(j);
 		}

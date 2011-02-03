@@ -13,6 +13,7 @@
 #include "App Framework\Animation\Vertex.h"
 #include "App Framework\Animation\SkinnedMesh.h"
 #include "App\Render Targets\DrawableRenderTarget.h"
+#include "App\Render Targets\DrawableTex2D.h"
 #include "App\Objects\Render Objects\Citadel.h"
 
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
@@ -45,6 +46,7 @@ Mtrl     mWhiteMtrl;
 
 DrawableRenderTarget* m_RenderTarget;
 DrawableRenderTarget* m_ShadowTarget;
+DrawableTex2D* mShadowMap;
 
 IDirect3DTexture9* m_WhiteTexture;
 
@@ -146,7 +148,10 @@ bool Game::LoadContent()
 
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
 	m_ShadowTarget = new DrawableRenderTarget(pDevice, 512, 512);
-	//m_ShadowTarget = new DrawableTex2D(512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
+
+	// Create shadow map.
+	D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
+	mShadowMap = new DrawableTex2D(pDevice, 512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
 
 	m_AnimatedInterface = new AnimatedInterface(pDevice);
 
@@ -265,12 +270,14 @@ void Game::Update()
 
 void Game::Draw()
 {
-	pDevice->GetTransform(D3DTS_PROJECTION, m_ShadowTarget->getOldProjectionPointer());
-	pDevice->GetRenderTarget(0, m_ShadowTarget->getBackBufferPointer());
+	//pDevice->GetTransform(D3DTS_PROJECTION, m_ShadowTarget->getOldProjectionPointer());
+	//pDevice->GetRenderTarget(0, m_ShadowTarget->getBackBufferPointer());
 
-	pDevice->SetRenderTarget(0, m_ShadowTarget->getRenderSurface());
+	//pDevice->SetRenderTarget(0, m_ShadowTarget->getRenderSurface());
 
-	pDevice->BeginScene();
+	//pDevice->BeginScene();
+
+	mShadowMap->beginScene();
 
 	// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
@@ -294,7 +301,8 @@ void Game::Draw()
 	mFX->EndPass();
 	mFX->End();	
 
-	pDevice->EndScene();
+	mShadowMap->endScene();
+	//pDevice->EndScene();
 
 	//render scene with texture
 	//set back buffer
@@ -313,7 +321,8 @@ void Game::Draw()
 
 	//Draw the scene
 		mFX->SetTechnique(mhTech);
-		mFX->SetTexture(mhShadowMap, m_ShadowTarget->getRenderTexture());
+		//mFX->SetTexture(mhShadowMap, m_ShadowTarget->getRenderTexture());
+		mFX->SetTexture(mhShadowMap, mShadowMap->d3dTex());
 		UINT numPasses = 1;
 		mFX->Begin(&numPasses, 0);
 		mFX->BeginPass(0);
@@ -401,7 +410,7 @@ void Game::Draw()
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
 
 		m_RenderTarget->Draw();
-		//m_ShadowTarget->Draw();
+		
 
 		m_Font->Draw();	
 
