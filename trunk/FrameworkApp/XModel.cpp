@@ -123,6 +123,11 @@ bool XModel::SetModel(char* filePath, char* fileName)
 	return true;
 }
 
+void XModel::DrawToShadowMap(int subset)
+{
+	HR(m_Mesh->DrawSubset(subset));
+}
+
 void XModel::Draw(ID3DXEffect* m_Effect, D3DXHANDLE m_hTexture)
 {
 	for(DWORD t = 0; t < m_NumberOfMaterials; t++)    // loop through each subset
@@ -135,6 +140,8 @@ void XModel::Draw(ID3DXEffect* m_Effect, D3DXHANDLE m_hTexture)
 		m_Effect->CommitChanges();
 		m_Mesh->DrawSubset(t);    // draw the subset
 	}
+
+	
 
 	////	//Begin passes
 	//UINT numPasses=1;

@@ -104,6 +104,18 @@ void Citadel::Draw(ID3DXEffect* effect, D3DXHANDLE texture)
 	m_Model->Draw(effect, texture);
 }
 
+//Draw the ship
+void Citadel::DrawToShadowMap()
+{
+	for(UINT j = 1; j < m_Model->GetNumberOfMaterials(); ++j)
+	{
+		for(UINT j = 1; j < m_Model->GetNumberOfMaterials(); ++j)
+		{
+			m_Model->DrawToShadowMap(j);
+		}
+	}
+}
+
 //Update the ship
 void Citadel::Update(D3DXVECTOR3 newVelocity, float newAngularVelocity)
 {
@@ -168,7 +180,7 @@ bool Citadel::LoadModel()
 	//("Models/Citadel", "Citadel.x")
 	//("Models/SpaceShip", "SpaceShip.x")
 	//Attempt to load the model
-	if(!m_Model->SetModel("Models/Atrium", "sponza.X"))
+	if(!m_Model->SetModel("Models/Atrium", "BasicColumnScene.X"))
 		//Freak out if it fails
 		return false;
 
@@ -196,7 +208,7 @@ void Citadel::UpdateWorldMatrix()
 {
 	//Zero the matrices
 	//D3DXMatrixIdentity(&m_matWorld);
-	D3DXMatrixScaling(&m_matScale, 5.0f, 5.0f, 5.0f);
+	D3DXMatrixScaling(&m_matScale, 1.0f, 1.0f, 1.0f);
 	D3DXMatrixRotationY(&m_matRotationY, m_Angle);
 	D3DXMatrixTranslation(&m_matTranslation, m_Position.x, m_Position.y, m_Position.z);
 

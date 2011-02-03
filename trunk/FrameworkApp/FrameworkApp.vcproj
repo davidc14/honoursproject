@@ -528,11 +528,11 @@
 				Name="Render Targets"
 				>
 				<File
-					RelativePath=".\App\Render Targets\DrawableTex2D.cpp"
+					RelativePath=".\App\Render Targets\DrawableRenderTarget.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\App\Render Targets\DrawableTex2D.h"
+					RelativePath=".\App\Render Targets\DrawableRenderTarget.h"
 					>
 				</File>
 			</Filter>
