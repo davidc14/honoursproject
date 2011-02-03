@@ -11,6 +11,7 @@ typedef struct AnimatedContainer
 	DirLight m_Light;
 	Mtrl     m_Mtrl;
 	IDirect3DTexture9* m_Tex;
+	IDirect3DTexture9* m_ShadowMap;
 }AnimatedContainer;
 
 class AnimatedInterface
@@ -48,6 +49,7 @@ private:
 		mhTex;
 
 	D3DXHANDLE mhShadowTech, 
+		mhShadowMap,
 		mhFinalXFormsShadow,
 		mhLightWVP;
 
