@@ -535,6 +535,14 @@
 					RelativePath=".\App\Render Targets\DrawableRenderTarget.h"
 					>
 				</File>
+				<File
+					RelativePath=".\App\Render Targets\DrawableTex2D.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App\Render Targets\DrawableTex2D.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
