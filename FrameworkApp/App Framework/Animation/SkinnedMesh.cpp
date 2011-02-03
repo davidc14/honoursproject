@@ -116,7 +116,7 @@ void SkinnedMesh::UpdateShaderVariables(AnimatedContainer* input)
 void SkinnedMesh::UpdateWorldMatrix()
 {
 	//D3DXMatrixTranslation(&matWorld, 0.0f, 0.0f, 0.0f);
-	D3DXMatrixScaling(&m_World, 0.01f, 0.01f, 0.01f);
+	D3DXMatrixScaling(&m_World, 0.02f, 0.02f, 0.02f);
 }
 
 void SkinnedMesh::Draw()
