@@ -75,6 +75,7 @@ uniform extern Mtrl     gMtrl;
 uniform extern DirLight gLight;
 uniform extern float3   gEyePosW;
 uniform extern texture  gTex;
+uniform extern texture  gShadowMap;
 
 sampler TexS = sampler_state
 {
@@ -84,6 +85,16 @@ sampler TexS = sampler_state
 	MipFilter = LINEAR;
 	AddressU  = WRAP;
     AddressV  = WRAP;
+};
+
+sampler ShadowMapS = sampler_state
+{
+	Texture = <gShadowMap>;
+	MinFilter = POINT;
+	MagFilter = POINT;
+	MipFilter = POINT;
+	AddressU  = CLAMP; 
+    AddressV  = CLAMP;
 };
  
 struct OutputVS
@@ -98,7 +109,8 @@ OutputVS VBlend2VS(float3 posL    : POSITION0,
                    float3 normalL : NORMAL0, 
                    float2 tex0    : TEXCOORD0,
                    float weight0  : BLENDWEIGHT0, 
-                   int4 boneIndex : BLENDINDICES0)
+                   int4 boneIndex : BLENDINDICES0,
+                   out float4 oProjTex : TEXCOORD3)
 {
     // Zero out our output.
 	OutputVS outVS = (OutputVS)0;
@@ -130,12 +142,15 @@ OutputVS VBlend2VS(float3 posL    : POSITION0,
 	
 	// Pass on texture coordinates to be interpolated in rasterization.
 	outVS.tex0 = tex0;
+	
+	// Generate projective texture coordinates.
+	oProjTex = mul(p, gLightWVP);
 
 	// Done--return the output.
     return outVS;
 }
 
-float4 VBlend2PS(float3 normalW : TEXCOORD0, float3 toEyeW  : TEXCOORD1, float2 tex0 : TEXCOORD2) : COLOR
+float4 VBlend2PS(float3 normalW : TEXCOORD0, float3 toEyeW  : TEXCOORD1, float2 tex0 : TEXCOORD2, float4 projTex : TEXCOORD3) : COLOR
 {
 	// Interpolated normals can become unnormal--so normalize.
 	normalW = normalize(normalW);
@@ -163,9 +178,38 @@ float4 VBlend2PS(float3 normalW : TEXCOORD0, float3 toEyeW  : TEXCOORD1, float2 
 	
 	// Combine the color from lighting with the texture color.
 	float3 color = (ambient + diffuse)*texColor.rgb + spec;
+	
+	// Project the texture coords and scale/offset to [0, 1].
+	projTex.xy /= projTex.w;            
+	projTex.x =  0.5f*projTex.x + 0.5f; 
+	projTex.y = -0.5f*projTex.y + 0.5f;
+	
+	// Compute pixel depth for shadowing.
+	float depth = projTex.z / projTex.w;
+ 
+	// Transform to texel space
+    float2 texelpos = SMAP_SIZE * projTex.xy;
+        
+    // Determine the lerp amounts.           
+    float2 lerps = frac( texelpos );
+    
+    // 2x2 percentage closest filter.
+    float dx = 1.0f / SMAP_SIZE;
+	float s0 = (tex2D(ShadowMapS, projTex.xy).r + SHADOW_EPSILON < depth) ? 0.0f : 1.0f;
+	float s1 = (tex2D(ShadowMapS, projTex.xy + float2(dx, 0.0f)).r + SHADOW_EPSILON < depth) ? 0.0f : 1.0f;
+	float s2 = (tex2D(ShadowMapS, projTex.xy + float2(0.0f, dx)).r + SHADOW_EPSILON < depth) ? 0.0f : 1.0f;
+	float s3 = (tex2D(ShadowMapS, projTex.xy + float2(dx, dx)).r   + SHADOW_EPSILON < depth) ? 0.0f : 1.0f;
+	
+	float shadowCoeff = lerp( lerp( s0, s1, lerps.x ),
+                              lerp( s2, s3, lerps.x ),
+                              lerps.y );
+	
+	// Light/Texture pixel.  Note that shadow coefficient only affects diffuse/spec.
+	//float3 litColor = spot*ambient*texColor.rgb + spot*shadowCoeff*(diffuse*texColor.rgb + spec);
+	float3 litColor = ambient*texColor.rgb + shadowCoeff*(diffuse*texColor.rgb + spec);
 		
 	// Sum all the terms together and copy over the diffuse alpha.
-    return float4(color, gMtrl.diffuse.a*texColor.a);
+    return float4(litColor, gMtrl.diffuse.a*texColor.a);
 }
 
 technique VBlend2Tech

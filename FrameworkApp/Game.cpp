@@ -512,6 +512,7 @@ void Game::SetAnimatedInterfaceVariables()
 {
 	m_AnimatedContainer.m_EyePos = *m_Camera->getPosition();
 	m_AnimatedContainer.m_WVP = *m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer();
+	m_AnimatedContainer.m_ShadowMap = mShadowMap->d3dTex();
 
 	m_AnimatedInterface->UpdateHandles(&m_AnimatedContainer, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
 }

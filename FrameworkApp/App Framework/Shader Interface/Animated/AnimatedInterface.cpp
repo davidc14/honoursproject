@@ -41,6 +41,7 @@ void AnimatedInterface::SetupHandles()
 	mhEyePos			= mFX->GetParameterByName(0, "gEyePosW");
 	mhWorld				= mFX->GetParameterByName(0, "gWorld");
 	mhTex				= mFX->GetParameterByName(0, "gTex");
+	mhShadowMap			= mFX->GetParameterByName(0, "gShadowMap");
 }
 
 void AnimatedInterface::UpdateHandles(AnimatedContainer* input, const D3DXMATRIX* finalXFormArray, UINT numBones)
@@ -56,6 +57,7 @@ void AnimatedInterface::UpdateHandles(AnimatedContainer* input, const D3DXMATRIX
 	HR(mFX->SetMatrix(mhWorld, &input->m_World));
 	HR(mFX->SetValue(mhMtrl, &mWhiteMtrl, sizeof(Mtrl)));
 	HR(mFX->SetTexture(mhTex, input->m_Tex));
+	HR(mFX->SetTexture(mhShadowMap, input->m_ShadowMap));
 
 	mFX->CommitChanges();
 }
