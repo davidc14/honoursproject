@@ -7,14 +7,12 @@
 typedef struct SpotLighting
 {
 	//The objects needed to be set for the basic lighting shader
-	D3DXMATRIXA16 m_World, m_WorldInvTrans, m_WVP; 
+	D3DXMATRIXA16 m_World, m_WorldInvTrans, m_WVP, m_LightWVP, m_LightViewProj; 
 	Mtrl m_Material;
-	DirLight m_Light;
+	SpotLight m_Light;
 	D3DXVECTOR3 m_EyePosW;
-	D3DXMATRIXA16 m_LightWVP;
 
 	IDirect3DTexture9* m_ShadowMap;
-
 }SpotLighting;
 
 class SpotLightingInterface
@@ -53,9 +51,6 @@ private:
  
 	SpotLight mSpotLight;
 	D3DXMATRIXA16 m_LightViewProj;
-
-	D3DXHANDLE m_hTechnique;
-	D3DXHANDLE m_hShadowTechnique;
 	
 	//The effect
 	ID3DXEffect	*m_Effect;
