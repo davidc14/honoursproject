@@ -553,6 +553,10 @@
 			Name="Shaders"
 			>
 			<File
+				RelativePath=".\AnimatedShadowMap.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\LightShadow.fx"
 				>
 			</File>
