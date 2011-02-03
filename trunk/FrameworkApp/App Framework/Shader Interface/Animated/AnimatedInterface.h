@@ -21,7 +21,7 @@ public:
 	~AnimatedInterface();
 
 	void Release();
-	void UpdateHandles(AnimatedContainer* input, const D3DXMATRIX* finalXFormArray, UINT numBones);
+	void UpdateHandles(AnimatedContainer* input, const D3DXMATRIX* finalXFormArray, UINT numBones, SpotLight spotLight);
 
 	ID3DXEffect* GetEffect() { return mFX; }
 
@@ -49,6 +49,7 @@ private:
 		mhTex;
 
 	D3DXHANDLE mhShadowTech, 
+		mhSpotLight,
 		mhShadowMap,
 		mhFinalXFormsShadow,
 		mhLightWVP;

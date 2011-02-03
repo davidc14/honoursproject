@@ -514,7 +514,10 @@ void Game::SetAnimatedInterfaceVariables()
 	m_AnimatedContainer.m_WVP = *m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer();
 	m_AnimatedContainer.m_ShadowMap = mShadowMap->d3dTex();
 
-	m_AnimatedInterface->UpdateHandles(&m_AnimatedContainer, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+	m_AnimatedInterface->UpdateHandles(&m_AnimatedContainer, 
+		m_SkinnedMesh->getFinalXFormArray(), 
+		m_SkinnedMesh->numBones(),
+		mSpotLight);
 }
 
 void Game::SetPacketVariables()

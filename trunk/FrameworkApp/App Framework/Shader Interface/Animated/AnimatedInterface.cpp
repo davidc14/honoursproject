@@ -42,13 +42,15 @@ void AnimatedInterface::SetupHandles()
 	mhWorld				= mFX->GetParameterByName(0, "gWorld");
 	mhTex				= mFX->GetParameterByName(0, "gTex");
 	mhShadowMap			= mFX->GetParameterByName(0, "gShadowMap");
+	mhSpotLight			= mFX->GetParameterByName(0, "gSpotLight");
 }
 
-void AnimatedInterface::UpdateHandles(AnimatedContainer* input, const D3DXMATRIX* finalXFormArray, UINT numBones)
+void AnimatedInterface::UpdateHandles(AnimatedContainer* input, const D3DXMATRIX* finalXFormArray, UINT numBones, SpotLight spotLight)
 {
 	//HR(mFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones()));
 	HR(mFX->SetMatrixArray(mhFinalXForms, finalXFormArray, numBones));
 	HR(mFX->SetValue(mhLight, &mLight, sizeof(DirLight)));
+	HR(mFX->SetValue(mhSpotLight, &spotLight, sizeof(SpotLight)));
 	HR(mFX->SetMatrix(mhWVP, &input->m_WVP));
 	D3DXMATRIX worldInvTrans;
 	D3DXMatrixInverse(&worldInvTrans, 0, &input->m_World);
