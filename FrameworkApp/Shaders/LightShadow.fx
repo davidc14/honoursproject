@@ -7,7 +7,7 @@
 uniform extern float4x4 gLightWVP;
 
 static const float SHADOW_EPSILON = 0.00005f;
-static const float SMAP_SIZE = 256.0f;
+static const float SMAP_SIZE = 512.0f;
 
 void BuildShadowMapVS(float3 posL : POSITION0,
                       out float4 posH : POSITION0,
@@ -25,6 +25,7 @@ float4 BuildShadowMapPS(float2 depth : TEXCOORD0) : COLOR
 	// Each pixel in the shadow map stores the pixel depth from the 
 	// light source in normalized device coordinates.
 	return depth.x / depth.y; // z / w
+	//return float4(1,1,0,0);
 }
 
 technique BuildShadowMapTech

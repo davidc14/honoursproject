@@ -105,9 +105,15 @@ void Dwarf::Draw(ID3DXEffect* effect, D3DXHANDLE texture)
 }
 
 //Draw the ship
-void Dwarf::DrawToShadowMap(ID3DXEffect* effect, D3DXHANDLE texture)
+void Dwarf::DrawToShadowMap()
 {
-	m_Model->Draw(effect, texture);
+	for(UINT j = 0; j < m_Model->GetNumberOfMaterials(); ++j)
+	{
+		for(UINT j = 0; j < m_Model->GetNumberOfMaterials(); ++j)
+		{
+			m_Model->DrawToShadowMap(j);
+		}
+	}
 }
 
 //Update the ship

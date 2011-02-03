@@ -4,6 +4,7 @@
 #include <atlbase.h>
 #include <d3d9.h>
 #include <d3dx9.h>
+#include "App Framework/Utilities/d3dUtil.h"
 
 class XModel
 {
@@ -17,6 +18,7 @@ public:
 
 	//The render function for the model
 	void Draw(ID3DXEffect* m_Effect, D3DXHANDLE m_hTexture);
+	void DrawToShadowMap(int subset);
 
 	////The set model function that is used if the device is not initialised before the model loader
 	bool SetModel(char* filePath, char* fileName);
@@ -33,6 +35,8 @@ public:
 
 	//The release function
 	void Release();
+
+	DWORD GetNumberOfMaterials() { return m_NumberOfMaterials; }
 
 public:
 

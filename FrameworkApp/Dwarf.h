@@ -18,7 +18,7 @@ public: //Public methods
 	void MoveToLocation(D3DXVECTOR3 newPosition);
 	//Draw the dwarf
 	void Draw(ID3DXEffect* effect, D3DXHANDLE texture);
-	void DrawToShadowMap(ID3DXEffect* effect, D3DXHANDLE texture);
+	void DrawToShadowMap();
 	//Update the dwarf
 	void Update();
 	void Update(D3DXVECTOR3 newVelocity, float newAngularVelocity);

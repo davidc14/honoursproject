@@ -12,7 +12,7 @@
 #include "App Framework\Shader Interface\Animated\AnimatedInterface.h"
 #include "App Framework\Animation\Vertex.h"
 #include "App Framework\Animation\SkinnedMesh.h"
-#include "App\Render Targets\DrawableTex2D.h"
+#include "App\Render Targets\DrawableRenderTarget.h"
 #include "App\Objects\Render Objects\Citadel.h"
 
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
@@ -28,7 +28,7 @@ PhongLighting m_PhongContainer;
 AnimatedInterface* m_AnimatedInterface;
 AnimatedContainer m_AnimatedContainer;
 
-//Citadel* m_Citadel;
+Citadel* m_Citadel;
 
 DirectInput* m_DInput;
 
@@ -43,8 +43,8 @@ Dwarf* m_Dwarf;
 DirLight mLight;
 Mtrl     mWhiteMtrl;
 
-DrawableTex2D* m_RenderTarget;
-DrawableTex2D* m_ShadowTarget;
+DrawableRenderTarget* m_RenderTarget;
+DrawableRenderTarget* m_ShadowTarget;
 
 IDirect3DTexture9* m_WhiteTexture;
 
@@ -119,7 +119,7 @@ bool Game::LoadContent()
 
 	ConnectionStatus = false;
 	
-	//m_Citadel = new Citadel(pDevice);
+	m_Citadel = new Citadel(pDevice);
 
 	D3DXVECTOR3 vEyePt( 0.0f, 5.0f,-20.0f );
     D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
@@ -144,8 +144,9 @@ bool Game::LoadContent()
 	mWhiteMtrl.spec    = WHITE*0.6f;
 	mWhiteMtrl.specPower = 48.0f;
 
-	m_RenderTarget = new DrawableTex2D(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
-	m_ShadowTarget = new DrawableTex2D(pDevice, 256, 256);
+	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
+	m_ShadowTarget = new DrawableRenderTarget(pDevice, 512, 512);
+	//m_ShadowTarget = new DrawableTex2D(512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
 
 	m_AnimatedInterface = new AnimatedInterface(pDevice);
 
@@ -175,7 +176,7 @@ bool Game::LoadContent()
 	mSpotLight.ambient   = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.diffuse   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
-	mSpotLight.spotPower = 32.0f;
+	mSpotLight.spotPower = 8.0f;
 
 	return true;
 }
@@ -217,7 +218,7 @@ void Game::Update()
 {
 	m_Camera->Update(m_DeltaTime);
 	
-	//m_Citadel->Update();
+	m_Citadel->Update();
 
 	m_Dwarf->Update();
 
@@ -231,6 +232,7 @@ void Game::Update()
 	// Animate spot light by rotating it on y-axis with respect to time.
 	D3DXMATRIX lightView;
 	D3DXVECTOR3 lightPosW(00.0f, 50.0f, -115.0f);
+	//D3DXVECTOR3 lightPosW(125.0f, 50.0f, 0.0f);
 	D3DXVECTOR3 lightTargetW(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 lightUpW(0.0f, 1.0f, 0.0f);
 
@@ -246,7 +248,7 @@ void Game::Update()
 	
 	D3DXMATRIX lightLens;
 	float lightFOV = D3DX_PI*0.25f;
-	D3DXMatrixPerspectiveFovLH(&lightLens, lightFOV, 1.0f, 1.0f, 1000.0f);
+	D3DXMatrixPerspectiveFovLH(&lightLens, lightFOV, 1.0f, 1.0f, 200.0f);
 
 	m_LightViewProj = lightView * lightLens;
 
@@ -256,9 +258,9 @@ void Game::Update()
 	mSpotLight.posW      = lightPosW;
 	mSpotLight.dirW      = lightDirW;
 
-	printf("%f\n", lightPosW.x);
+	/*printf("%f\n", lightPosW.x);
 	printf("%f\n", lightPosW.y);
-	printf("%f\n", lightPosW.z);
+	printf("%f\n", lightPosW.z);*/
 }
 
 void Game::Draw()
@@ -278,23 +280,15 @@ void Game::Draw()
 	mFX->Begin(&numberOfShadowPasses, 0);
 	mFX->BeginPass(0);
 
-	//m_Dwarf->UpdateShaderVariables(&m_PhongContainer);
-	//SetPhongShaderVariables(m_Dwarf->GetWorld());
+		mFX->SetMatrix(mhLightWVP, &(m_Dwarf->GetWorld() * m_LightViewProj));
+		HR(mFX->CommitChanges());
 
-	//D3DXHANDLE   mhLightWVP;
-	mFX->SetMatrix(mhLightWVP, &(m_Dwarf->GetWorld() * m_LightViewProj));
-	HR(mFX->CommitChanges());
+		m_Dwarf->DrawToShadowMap();
 
-	m_Dwarf->Draw(mFX, mhTex);
+		mFX->SetMatrix(mhLightWVP, &(m_Citadel->GetWorld() * m_LightViewProj));
+		HR(mFX->CommitChanges());
 
-	////D3DXHANDLE   mhLightWVP;
-	//mFX->SetMatrix(mhLightWVP, &(m_Citadel->GetWorld() * m_LightViewProj));
-	//HR(mFX->CommitChanges());
-
-	//m_Citadel->Draw(mFX, mhTex);
-	//m_Citadel->UpdateShaderVariables(&m_PhongContainer);
-	//SetPhongShaderVariables(m_Dwarf->GetWorld());
-	//m_Citadel->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());
+		m_Citadel->DrawToShadowMap();
 
 	//End the pass
 	mFX->EndPass();
@@ -319,11 +313,11 @@ void Game::Draw()
 
 	//Draw the scene
 		mFX->SetTechnique(mhTech);
+		mFX->SetTexture(mhShadowMap, m_ShadowTarget->getRenderTexture());
 		UINT numPasses = 1;
 		mFX->Begin(&numPasses, 0);
 		mFX->BeginPass(0);
 
-		//D3DXHANDLE   mhLightWVP;
 		mFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 		D3DXMATRIX DwarfWorldInverseTranspose;
 		D3DXMatrixInverse(&DwarfWorldInverseTranspose, NULL, m_Dwarf->GetWorldPointer());
@@ -331,12 +325,28 @@ void Game::Draw()
 		mFX->SetMatrix(mhWorldInvTrans, &DwarfWorldInverseTranspose);
 		mFX->SetValue(mhEyePosW, m_Camera->getPosition(), sizeof(D3DXVECTOR3));
 		mFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
-		mFX->SetTexture(mhShadowMap, m_WhiteTexture);
+		mFX->SetMatrix(mhLightWVP, &(m_Dwarf->GetWorld() * m_LightViewProj));
+		
 		mFX->SetValue(mhMtrl, m_Dwarf->GetMaterial(), sizeof(Mtrl));
 		mFX->SetValue(mhLight, &mSpotLight, sizeof(SpotLight));
 		HR(mFX->CommitChanges());
 
 		m_Dwarf->Draw(mFX, mhTex);
+
+		mFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+		D3DXMATRIX CitadelWorldInverseTranspose;
+		D3DXMatrixInverse(&CitadelWorldInverseTranspose, NULL, m_Citadel->GetWorldPointer());
+		D3DXMatrixTranspose(&CitadelWorldInverseTranspose, &CitadelWorldInverseTranspose);
+		mFX->SetMatrix(mhWorldInvTrans, &DwarfWorldInverseTranspose);
+		mFX->SetValue(mhEyePosW, m_Camera->getPosition(), sizeof(D3DXVECTOR3));
+		mFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
+		mFX->SetMatrix(mhLightWVP, &(m_Citadel->GetWorld() * m_LightViewProj));
+		//mFX->SetTexture(mhShadowMap, m_ShadowTarget->getRenderTexture());
+		mFX->SetValue(mhMtrl, m_Citadel->GetMaterial(), sizeof(Mtrl));
+		mFX->SetValue(mhLight, &mSpotLight, sizeof(SpotLight));
+		HR(mFX->CommitChanges());
+
+		m_Citadel->Draw(mFX, mhTex);
 
 		mFX->EndPass();
 		mFX->End();
@@ -464,7 +474,7 @@ void Game::SetPhongShaderVariables(D3DXMATRIX World)
 	m_PhongContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
 	m_PhongContainer.m_EyePosW = *m_Camera->getPosition();
 	m_PhongContainer.m_Light = mLight;
-	m_PhongContainer.m_LightWVP = World * m_LightViewProj;
+	//m_PhongContainer.m_LightWVP = World * m_LightViewProj;
 	m_PhongContainer.m_ShadowMap = m_ShadowTarget->getRenderTexture();	
 	//m_PhongContainer.m_ShadowMap = m_WhiteTexture;	
 	
