@@ -29,15 +29,18 @@ void AnimatedInterface::LoadShader()
 void AnimatedInterface::SetupHandles()
 {
 	// Obtain handles.
-	mhTech            = mFX->GetTechniqueByName("VBlend2Tech");
-	mhWVP             = mFX->GetParameterByName(0, "gWVP");
-	mhWorldInvTrans   = mFX->GetParameterByName(0, "gWorldInvTrans");
-	mhFinalXForms     = mFX->GetParameterByName(0, "gFinalXForms");
-	mhMtrl            = mFX->GetParameterByName(0, "gMtrl");
-	mhLight           = mFX->GetParameterByName(0, "gLight");
-	mhEyePos          = mFX->GetParameterByName(0, "gEyePosW");
-	mhWorld           = mFX->GetParameterByName(0, "gWorld");
-	mhTex             = mFX->GetParameterByName(0, "gTex");
+	mhTech				= mFX->GetTechniqueByName("VBlend2Tech");
+	mhShadowTech		= mFX->GetTechniqueByName("BuildShadowMapTech");
+	mhLightWVP			= mFX->GetParameterByName(0, "gLightWVP");
+	mhFinalXFormsShadow = mFX->GetParameterByName(0, "gFinalXFormsShadow");
+	mhWVP				= mFX->GetParameterByName(0, "gWVP");
+	mhWorldInvTrans		= mFX->GetParameterByName(0, "gWorldInvTrans");
+	mhFinalXForms		= mFX->GetParameterByName(0, "gFinalXForms");
+	mhMtrl				= mFX->GetParameterByName(0, "gMtrl");
+	mhLight				= mFX->GetParameterByName(0, "gLight");
+	mhEyePos			= mFX->GetParameterByName(0, "gEyePosW");
+	mhWorld				= mFX->GetParameterByName(0, "gWorld");
+	mhTex				= mFX->GetParameterByName(0, "gTex");
 }
 
 void AnimatedInterface::UpdateHandles(AnimatedContainer* input, const D3DXMATRIX* finalXFormArray, UINT numBones)
@@ -55,6 +58,12 @@ void AnimatedInterface::UpdateHandles(AnimatedContainer* input, const D3DXMATRIX
 	HR(mFX->SetTexture(mhTex, input->m_Tex));
 
 	mFX->CommitChanges();
+}
+
+void AnimatedInterface::UpdateShadowVariables(D3DXMATRIX* m_LightWVP, const D3DXMATRIX* finalXFormArray, UINT numBones)
+{
+	HR(mFX->SetMatrixArray(mhFinalXFormsShadow, finalXFormArray, numBones));
+	HR(mFX->SetMatrix(mhLightWVP, m_LightWVP));
 }
 
 void AnimatedInterface::SetupLight()

@@ -24,6 +24,11 @@ public:
 
 	ID3DXEffect* GetEffect() { return mFX; }
 
+	D3DXHANDLE GetTechnique() { return mhTech; }
+	D3DXHANDLE GetShadowTechnique() { return mhShadowTech; }
+
+	void UpdateShadowVariables(D3DXMATRIX* m_LightWVP, const D3DXMATRIX* finalXFormArray, UINT numBones);
+
 private:
 
 	void LoadShader();
@@ -32,8 +37,22 @@ private:
 	void SetupLight();
 	void SetupMaterial();	
 
-	D3DXHANDLE mhTech,mhWVP,mhWorldInvTrans ,mhFinalXForms,mhMtrl,mhLight,mhEyePos,mhWorld,mhTex ;
+	D3DXHANDLE mhTech,
+		mhWVP,
+		mhWorldInvTrans,
+		mhFinalXForms,
+		mhMtrl,
+		mhLight,
+		mhEyePos,
+		mhWorld,
+		mhTex;
+
+	D3DXHANDLE mhShadowTech, 
+		mhFinalXFormsShadow,
+		mhLightWVP;
+
 	ID3DXEffect* mFX;
+	ID3DXEffect* shadowFX;
 	DirLight mLight;
 	Mtrl     mWhiteMtrl;
 

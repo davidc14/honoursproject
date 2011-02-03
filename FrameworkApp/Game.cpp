@@ -290,7 +290,7 @@ void Game::Draw()
 		mFX->SetMatrix(mhLightWVP, &(m_Dwarf->GetWorld() * m_LightViewProj));
 		HR(mFX->CommitChanges());
 
-		m_Dwarf->DrawToShadowMap();
+		//m_Dwarf->DrawToShadowMap();
 
 		mFX->SetMatrix(mhLightWVP, &(m_Citadel->GetWorld() * m_LightViewProj));
 		HR(mFX->CommitChanges());
@@ -300,6 +300,21 @@ void Game::Draw()
 	//End the pass
 	mFX->EndPass();
 	mFX->End();	
+
+	UINT numOfPasses = 0;
+		
+		m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
+
+		m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
+		m_AnimatedInterface->GetEffect()->BeginPass(0);		
+
+		m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
+			m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+
+		m_SkinnedMesh->Draw();
+
+		m_AnimatedInterface->GetEffect()->EndPass();
+		m_AnimatedInterface->GetEffect()->End();
 
 	mShadowMap->endScene();
 	//pDevice->EndScene();
@@ -340,7 +355,7 @@ void Game::Draw()
 		mFX->SetValue(mhLight, &mSpotLight, sizeof(SpotLight));
 		HR(mFX->CommitChanges());
 
-		m_Dwarf->Draw(mFX, mhTex);
+		//m_Dwarf->Draw(mFX, mhTex);
 
 		mFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 		D3DXMATRIX CitadelWorldInverseTranspose;
@@ -360,7 +375,7 @@ void Game::Draw()
 		mFX->EndPass();
 		mFX->End();
 
-		//Draw the scene
+		/*//Draw the scene
 		m_PhongInterface->GetEffect()->SetTechnique(m_PhongInterface->GetTechnique());
 		UINT numberOfPasses = 1;
 		m_PhongInterface->GetEffect()->Begin(&numberOfPasses, 0);
@@ -382,11 +397,14 @@ void Game::Draw()
 
 		//End the pass
 		m_PhongInterface->GetEffect()->EndPass();
-		m_PhongInterface->GetEffect()->End();	
+		m_PhongInterface->GetEffect()->End();	*/
 
-		UINT numOfPasses = 0;
+		numOfPasses = 0;
+		
+		m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetTechnique());
+
 		m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
-		m_AnimatedInterface->GetEffect()->BeginPass(0);
+		m_AnimatedInterface->GetEffect()->BeginPass(0);		
 
 		m_SkinnedMesh->UpdateShaderVariables(&m_AnimatedContainer);
 
