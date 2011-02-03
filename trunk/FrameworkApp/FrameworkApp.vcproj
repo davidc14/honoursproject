@@ -244,6 +244,14 @@
 						RelativePath=".\App Framework\Shader Interface\PhongLightingInterface.h"
 						>
 					</File>
+					<File
+						RelativePath=".\App Framework\Shader Interface\Non Animated\SpotLightingInterface.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\App Framework\Shader Interface\Non Animated\SpotLightingInterface.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter

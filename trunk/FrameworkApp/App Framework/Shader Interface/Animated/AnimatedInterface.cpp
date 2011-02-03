@@ -68,6 +68,7 @@ void AnimatedInterface::UpdateShadowVariables(D3DXMATRIX* m_LightWVP, const D3DX
 {
 	HR(mFX->SetMatrixArray(mhFinalXFormsShadow, finalXFormArray, numBones));
 	HR(mFX->SetMatrix(mhLightWVP, m_LightWVP));
+	mFX->CommitChanges();
 }
 
 void AnimatedInterface::SetupLight()
