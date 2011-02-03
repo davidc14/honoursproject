@@ -41,6 +41,23 @@ void SpotLightingInterface::SetupHandles()
 	m_hTexture = m_Effect->GetParameterByName(0, "gTex");
 	m_hShadowMap = m_Effect->GetParameterByName(0, "gShadowMap");
 	m_hLightWVP = m_Effect->GetParameterByName(0, "gLightWVP");*/
+
+	mhBuildShadowMapTech = m_Effect->GetTechniqueByName("BuildShadowMapTech");
+	mhTech = m_Effect->GetTechniqueByName("VBlend2Tech");
+	mhLightWVP;
+
+	   
+	   mhWVP;
+	   mhWorldInvTrans;
+	   mhEyePosW;
+	   mhWorld;
+	   mhTex;
+	   mhShadowMap;
+	   mhMtrl;
+	   mhLight;
+ 
+	SpotLight mSpotLight;
+	D3DXMATRIXA16 m_LightViewProj;
 }
 
 void SpotLightingInterface::UpdateHandles(SpotLighting* input)
