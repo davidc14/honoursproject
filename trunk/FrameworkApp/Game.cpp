@@ -181,7 +181,7 @@ bool Game::LoadContent()
 	mSpotLight.ambient   = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.diffuse   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
-	mSpotLight.spotPower = 32.0f;
+	mSpotLight.spotPower = 24.0f;
 
 	return true;
 }
@@ -241,13 +241,13 @@ void Game::Update()
 	D3DXVECTOR3 lightTargetW(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 lightUpW(0.0f, 1.0f, 0.0f);
 
-	static float t = 0.0f;
+	/*static float t = 0.0f;
 	t += m_DeltaTime;
 	if( t >= 2.0f*D3DX_PI )
 		t = 0.0f;
 	D3DXMATRIX Ry;
 	D3DXMatrixRotationY(&Ry, t);
-	D3DXVec3TransformCoord(&lightPosW, &lightPosW, &Ry);
+	D3DXVec3TransformCoord(&lightPosW, &lightPosW, &Ry);*/
 
 	D3DXMatrixLookAtLH(&lightView, &lightPosW, &lightTargetW, &lightUpW);
 	
@@ -290,7 +290,7 @@ void Game::Draw()
 		mFX->SetMatrix(mhLightWVP, &(m_Dwarf->GetWorld() * m_LightViewProj));
 		HR(mFX->CommitChanges());
 
-		//m_Dwarf->DrawToShadowMap();
+		m_Dwarf->DrawToShadowMap();
 
 		mFX->SetMatrix(mhLightWVP, &(m_Citadel->GetWorld() * m_LightViewProj));
 		HR(mFX->CommitChanges());
@@ -355,7 +355,7 @@ void Game::Draw()
 		mFX->SetValue(mhLight, &mSpotLight, sizeof(SpotLight));
 		HR(mFX->CommitChanges());
 
-		//m_Dwarf->Draw(mFX, mhTex);
+		m_Dwarf->Draw(mFX, mhTex);
 
 		mFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 		D3DXMATRIX CitadelWorldInverseTranspose;
