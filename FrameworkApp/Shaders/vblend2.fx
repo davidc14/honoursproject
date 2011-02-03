@@ -67,12 +67,23 @@ struct DirLight
 	float3 dirW;  
 };
 
+struct SpotLight
+{
+	float4 ambient;
+	float4 diffuse;
+	float4 spec;
+	float3 posW;
+	float3 dirW;  
+	float  spotPower;
+};
+
 uniform extern float4x4 gWorld;
 uniform extern float4x4 gWorldInvTrans;
 uniform extern float4x4 gWVP;
 uniform extern float4x4 gFinalXForms[35];
 uniform extern Mtrl     gMtrl;
 uniform extern DirLight gLight;
+uniform extern SpotLight gSpotLight;
 uniform extern float3   gEyePosW;
 uniform extern texture  gTex;
 uniform extern texture  gShadowMap;
@@ -157,7 +168,7 @@ float4 VBlend2PS(float3 normalW : TEXCOORD0, float3 toEyeW  : TEXCOORD1, float2 
 	toEyeW  = normalize(toEyeW);
 	
 	// Light vector is opposite the direction of the light.
-	float3 lightVecW = -gLight.dirW;
+	float3 lightVecW = -gSpotLight.dirW;
 	
 	// Compute the reflection vector.
 	float3 r = reflect(-lightVecW, normalW);
@@ -169,9 +180,12 @@ float4 VBlend2PS(float3 normalW : TEXCOORD0, float3 toEyeW  : TEXCOORD1, float2 
 	float s = max(dot(lightVecW, normalW), 0.0f);
 	
 	// Compute the ambient, diffuse and specular terms separatly. 
-	float3 spec = t*(gMtrl.spec*gLight.spec).rgb;
-	float3 diffuse = s*(gMtrl.diffuse*gLight.diffuse).rgb;
-	float3 ambient = gMtrl.ambient*gLight.ambient;
+	float3 spec = t*(gMtrl.spec*gSpotLight.spec).rgb;
+	float3 diffuse = s*(gMtrl.diffuse*gSpotLight.diffuse).rgb;
+	float3 ambient = gMtrl.ambient*gSpotLight.ambient;
+	
+	// Compute spotlight coefficient.
+	float spot = pow(max( dot(-lightVecW, gSpotLight.dirW), 0.0f), gSpotLight.spotPower);
 	
 	// Get the texture color.
 	float4 texColor = tex2D(TexS, tex0);
@@ -205,8 +219,8 @@ float4 VBlend2PS(float3 normalW : TEXCOORD0, float3 toEyeW  : TEXCOORD1, float2 
                               lerps.y );
 	
 	// Light/Texture pixel.  Note that shadow coefficient only affects diffuse/spec.
-	//float3 litColor = spot*ambient*texColor.rgb + spot*shadowCoeff*(diffuse*texColor.rgb + spec);
-	float3 litColor = ambient*texColor.rgb + shadowCoeff*(diffuse*texColor.rgb + spec);
+	float3 litColor = spot*ambient*texColor.rgb + spot*shadowCoeff*(diffuse*texColor.rgb + spec);
+	//float3 litColor = ambient*texColor.rgb + shadowCoeff*(diffuse*texColor.rgb + spec);
 		
 	// Sum all the terms together and copy over the diffuse alpha.
     return float4(litColor, gMtrl.diffuse.a*texColor.a);
