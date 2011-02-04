@@ -569,6 +569,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\SSAO.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\vblend2.fx"
 				>
 			</File>

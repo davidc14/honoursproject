@@ -10,6 +10,7 @@
 #include "FPCamera.h"
 #include "App Framework\Shader Interface\PhongLightingInterface.h"
 #include "App Framework\Shader Interface\Animated\AnimatedInterface.h"
+#include "App Framework\Shader Interface\Non Animated\SpotLightingInterface.h"
 #include "App Framework\Animation\Vertex.h"
 #include "App Framework\Animation\SkinnedMesh.h"
 #include "App\Render Targets\DrawableRenderTarget.h"
@@ -28,6 +29,9 @@ PhongLighting m_PhongContainer;
 
 AnimatedInterface* m_AnimatedInterface;
 AnimatedContainer m_AnimatedContainer;
+
+SpotLightingInterface* m_SpotInterface;
+SpotLighting m_SpotContainer;
 
 Citadel* m_Citadel;
 
@@ -49,6 +53,8 @@ DrawableRenderTarget* m_ShadowTarget;
 DrawableTex2D* mShadowMap;
 
 IDirect3DTexture9* m_WhiteTexture;
+
+ID3DXEffect* ssaoFX;
 
 ID3DXEffect* mFX;
 	D3DXHANDLE   mhBuildShadowMapTech;
@@ -154,6 +160,7 @@ bool Game::LoadContent()
 	mShadowMap = new DrawableTex2D(pDevice, 512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
 
 	m_AnimatedInterface = new AnimatedInterface(pDevice);
+	m_SpotInterface = new SpotLightingInterface(pDevice);
 
 	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_WhiteTexture);
 
@@ -182,6 +189,14 @@ bool Game::LoadContent()
 	mSpotLight.diffuse   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.spotPower = 24.0f;
+
+	 // Create the FX from a .fx file.
+	errors = 0;
+	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/SSAO.fx", 
+		0, 0, D3DXSHADER_DEBUG, 0, &ssaoFX, &errors));
+	if( errors )
+		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
+
 
 	return true;
 }
@@ -270,43 +285,34 @@ void Game::Update()
 
 void Game::Draw()
 {
-	//pDevice->GetTransform(D3DTS_PROJECTION, m_ShadowTarget->getOldProjectionPointer());
-	//pDevice->GetRenderTarget(0, m_ShadowTarget->getBackBufferPointer());
-
-	//pDevice->SetRenderTarget(0, m_ShadowTarget->getRenderSurface());
-
-	//pDevice->BeginScene();
-
 	mShadowMap->beginScene();
 
 	// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 
-	mFX->SetTechnique(mhBuildShadowMapTech);
+	m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
 	UINT numberOfShadowPasses = 1;
-	mFX->Begin(&numberOfShadowPasses, 0);
-	mFX->BeginPass(0);
+	m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
+	m_SpotInterface->GetEffect()->BeginPass(0);
 
-		mFX->SetMatrix(mhLightWVP, &(m_Dwarf->GetWorld() * m_LightViewProj));
-		HR(mFX->CommitChanges());
+		m_SpotInterface->UpdateShadowHandles(&(m_Dwarf->GetWorld() * m_LightViewProj));
 
 		m_Dwarf->DrawToShadowMap();
 
-		mFX->SetMatrix(mhLightWVP, &(m_Citadel->GetWorld() * m_LightViewProj));
-		HR(mFX->CommitChanges());
+		m_SpotInterface->UpdateShadowHandles(&(m_Citadel->GetWorld() * m_LightViewProj));
 
 		m_Citadel->DrawToShadowMap();
 
 	//End the pass
-	mFX->EndPass();
-	mFX->End();	
+	m_SpotInterface->GetEffect()->EndPass();
+	m_SpotInterface->GetEffect()->End();	
 
 	UINT numOfPasses = 0;
 		
-		m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
+	m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
 
-		m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
-		m_AnimatedInterface->GetEffect()->BeginPass(0);		
+	m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
+	m_AnimatedInterface->GetEffect()->BeginPass(0);		
 
 		m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
 			m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
@@ -317,12 +323,6 @@ void Game::Draw()
 		m_AnimatedInterface->GetEffect()->End();
 
 	mShadowMap->endScene();
-	//pDevice->EndScene();
-
-	//render scene with texture
-	//set back buffer
-	pDevice->SetRenderTarget(0, m_ShadowTarget->getBackBuffer());
-	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
 
 	pDevice->GetTransform(D3DTS_PROJECTION, m_RenderTarget->getOldProjectionPointer());
 	pDevice->GetRenderTarget(0, m_RenderTarget->getBackBufferPointer());
@@ -335,84 +335,35 @@ void Game::Draw()
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
 
 	//Draw the scene
-		mFX->SetTechnique(mhTech);
-		//mFX->SetTexture(mhShadowMap, m_ShadowTarget->getRenderTexture());
-		mFX->SetTexture(mhShadowMap, mShadowMap->d3dTex());
-		UINT numPasses = 1;
-		mFX->Begin(&numPasses, 0);
-		mFX->BeginPass(0);
 
-		mFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-		D3DXMATRIX DwarfWorldInverseTranspose;
-		D3DXMatrixInverse(&DwarfWorldInverseTranspose, NULL, m_Dwarf->GetWorldPointer());
-		D3DXMatrixTranspose(&DwarfWorldInverseTranspose, &DwarfWorldInverseTranspose);
-		//mFX->SetMatrix(mhWorldInvTrans, &DwarfWorldInverseTranspose);
-		mFX->SetValue(mhEyePosW, m_Camera->getPosition(), sizeof(D3DXVECTOR3));
-		mFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
-		mFX->SetMatrix(mhLightWVP, &(m_Dwarf->GetWorld() * m_LightViewProj));
-		
-		mFX->SetValue(mhMtrl, m_Dwarf->GetMaterial(), sizeof(Mtrl));
-		mFX->SetValue(mhLight, &mSpotLight, sizeof(SpotLight));
-		HR(mFX->CommitChanges());
+	m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetTechnique());
+	UINT numPasses = 1;
+	m_SpotInterface->GetEffect()->Begin(&numPasses, 0);
+	m_SpotInterface->GetEffect()->BeginPass(0);
 
-		m_Dwarf->Draw(mFX, mhTex);
+		SetSpotLightVariables(m_Citadel->GetWorld(), m_Citadel->GetMaterial());
+		m_Citadel->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
-		mFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-		D3DXMATRIX CitadelWorldInverseTranspose;
-		D3DXMatrixInverse(&CitadelWorldInverseTranspose, NULL, m_Citadel->GetWorldPointer());
-		D3DXMatrixTranspose(&CitadelWorldInverseTranspose, &CitadelWorldInverseTranspose);
-		//mFX->SetMatrix(mhWorldInvTrans, &CitadelWorldInverseTranspose);
-		mFX->SetValue(mhEyePosW, m_Camera->getPosition(), sizeof(D3DXVECTOR3));
-		mFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
-		mFX->SetMatrix(mhLightWVP, &(m_Citadel->GetWorld() * m_LightViewProj));
-		mFX->SetValue(mhMtrl, m_Citadel->GetMaterial(), sizeof(Mtrl));
-		mFX->SetValue(mhLight, &mSpotLight, sizeof(SpotLight));
-		HR(mFX->CommitChanges());
+		SetSpotLightVariables(m_Dwarf->GetWorld(), m_Dwarf->GetMaterial());
+		m_Dwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
-		m_Citadel->Draw(mFX, mhTex);
+	m_SpotInterface->GetEffect()->EndPass();
+	m_SpotInterface->GetEffect()->End();
 
-		mFX->EndPass();
-		mFX->End();
+	numOfPasses = 0;
+	
+	m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetTechnique());
 
-		/*//Draw the scene
-		m_PhongInterface->GetEffect()->SetTechnique(m_PhongInterface->GetTechnique());
-		UINT numberOfPasses = 1;
-		m_PhongInterface->GetEffect()->Begin(&numberOfPasses, 0);
-		m_PhongInterface->GetEffect()->BeginPass(0);
-
-		//////Update the world matrix for the object
-		//m_Citadel->UpdateShaderVariables(&m_PhongContainer);
-		//////Set the variables - This is essentially my version of CommitChanges()
-		//SetPhongShaderVariables(m_Citadel->GetWorld());
-		////Draw the model
-		//m_Citadel->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());	
-
-		////Update the world matrix for the object
-		//m_Dwarf->UpdateShaderVariables(&m_PhongContainer);
-		////Set the variables - This is essentially my version of CommitChanges()
-		//SetPhongShaderVariables(m_Dwarf->GetWorld());
-		//Draw the model
-		//m_Dwarf->Draw(m_PhongInterface->GetEffect(), m_PhongInterface->GetTextureHandle());
-
-		//End the pass
-		m_PhongInterface->GetEffect()->EndPass();
-		m_PhongInterface->GetEffect()->End();	*/
-
-		numOfPasses = 0;
-		
-		m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetTechnique());
-
-		m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
-		m_AnimatedInterface->GetEffect()->BeginPass(0);		
+	m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
+	m_AnimatedInterface->GetEffect()->BeginPass(0);		
 
 		m_SkinnedMesh->UpdateShaderVariables(&m_AnimatedContainer);
-
-		SetAnimatedInterfaceVariables();
+		SetAnimatedInterfaceVariables(*m_SkinnedMesh->GetWorld());
 
 		m_SkinnedMesh->Draw();
 
-		m_AnimatedInterface->GetEffect()->EndPass();
-		m_AnimatedInterface->GetEffect()->End();
+	m_AnimatedInterface->GetEffect()->EndPass();
+	m_AnimatedInterface->GetEffect()->End();
 
 	pDevice->EndScene();
 
@@ -453,7 +404,10 @@ void Game::Unload()
 
 	mShadowMap->onLostDevice();
 
+	m_SpotInterface->Release();
+
 	mFX->Release();
+	ssaoFX->Release();
 }
 
 void Game::CalculateMatrices()
@@ -507,16 +461,30 @@ void Game::SetPhongShaderVariables(D3DXMATRIX World)
 	m_PhongInterface->UpdateHandles(&m_PhongContainer);
 }
 
-void Game::SetAnimatedInterfaceVariables()
+void Game::SetAnimatedInterfaceVariables(D3DXMATRIX World)
 {
 	m_AnimatedContainer.m_EyePos = *m_Camera->getPosition();
-	m_AnimatedContainer.m_WVP = *m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer();
+	m_AnimatedContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
 	m_AnimatedContainer.m_ShadowMap = mShadowMap->d3dTex();
 
 	m_AnimatedInterface->UpdateHandles(&m_AnimatedContainer, 
 		m_SkinnedMesh->getFinalXFormArray(), 
 		m_SkinnedMesh->numBones(),
 		mSpotLight);
+}
+
+void Game::SetSpotLightVariables(D3DXMATRIX World, Mtrl* material)
+{
+	m_SpotContainer.m_EyePosW = *m_Camera->getPosition();
+	m_SpotContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
+	m_SpotContainer.m_ShadowMap = mShadowMap->d3dTex();
+	m_SpotContainer.m_World = World;
+	m_SpotContainer.m_LightWVP = World * m_LightViewProj;
+	m_SpotContainer.m_Light = mSpotLight;
+	m_SpotContainer.m_LightViewProj = m_LightViewProj;
+	m_SpotContainer.m_Material = *material;
+
+	m_SpotInterface->UpdateHandles(&m_SpotContainer);
 }
 
 void Game::SetPacketVariables()

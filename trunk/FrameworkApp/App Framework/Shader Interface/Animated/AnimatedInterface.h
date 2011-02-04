@@ -12,6 +12,9 @@ typedef struct AnimatedContainer
 	Mtrl     m_Mtrl;
 	IDirect3DTexture9* m_Tex;
 	IDirect3DTexture9* m_ShadowMap;
+
+	const D3DXMATRIX* finalXFormsArray;
+	UINT numBones;
 }AnimatedContainer;
 
 class AnimatedInterface
