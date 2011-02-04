@@ -256,13 +256,13 @@ void Game::Update()
 	D3DXVECTOR3 lightTargetW(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 lightUpW(0.0f, 1.0f, 0.0f);
 
-	/*static float t = 0.0f;
+	static float t = 0.0f;
 	t += m_DeltaTime;
 	if( t >= 2.0f*D3DX_PI )
 		t = 0.0f;
 	D3DXMATRIX Ry;
 	D3DXMatrixRotationY(&Ry, t);
-	D3DXVec3TransformCoord(&lightPosW, &lightPosW, &Ry);*/
+	D3DXVec3TransformCoord(&lightPosW, &lightPosW, &Ry);
 
 	D3DXMatrixLookAtLH(&lightView, &lightPosW, &lightTargetW, &lightUpW);
 	
@@ -378,7 +378,8 @@ void Game::Draw()
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
 
 		m_RenderTarget->Draw();
-		
+		//mShadowMap->Draw(*m_RenderTarget->getOldProjectionPointer(), mShadowMap->d3dTex());
+		//mShadowMap->Draw(*m_RenderTarget->getOldProjectionPointer());
 
 		m_Font->Draw();	
 

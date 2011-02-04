@@ -7,6 +7,25 @@
 
 #include "../../App Framework/Utilities/d3dUtil.h"
 
+struct VertexRenderTex2D
+{
+	VertexRenderTex2D()
+		:pos(0.0f, 0.0f, 0.0f),
+		tex0(0.0f, 0.0f){}
+	VertexRenderTex2D(float x, float y, float z, 
+		float u, float v):pos(x,y,z), tex0(u,v){}
+	VertexRenderTex2D(const D3DXVECTOR3& v, const D3DXVECTOR2& uv)
+		:pos(v), tex0(uv){}
+
+	D3DXVECTOR3 pos;
+	D3DXVECTOR2 tex0;
+
+	static IDirect3DVertexDeclaration9* Decl;
+};
+
+// Our custom FVF, which describes our custom vertex structure
+#define D3DFVF_SHADOWMAPVERTEX (D3DFVF_XYZ|D3DFVF_TEX1)
+
 class DrawableTex2D
 {
 public:
@@ -16,6 +35,9 @@ public:
 	~DrawableTex2D();
 
 	IDirect3DTexture9* d3dTex();
+
+	void Draw(D3DXMATRIX proj);
+	void Draw(D3DXMATRIX proj, IDirect3DTexture9* tex);
 
 	void beginScene();
 	void endScene();
@@ -29,6 +51,8 @@ private:
 	DrawableTex2D& operator=(const DrawableTex2D& rhs);
 
 private:
+	IDirect3DVertexBuffer9* mRadarVB;
+
 	IDirect3DTexture9*    mTex;
 	ID3DXRenderToSurface* mRTS;
 	IDirect3DSurface9*    mTopSurf;
