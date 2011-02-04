@@ -38,6 +38,17 @@ DrawableTex2D::DrawableTex2D(LPDIRECT3DDEVICE9 device, UINT width, UINT height, 
 	v[4] = VertexRenderTex2D(1.0f, 1.0f, 0.0f, 1.0f, 0.0f);
 	v[5] = VertexRenderTex2D(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);
 	mRadarVB->Unlock();
+
+	//===============================================================
+	// VertexRenderTex2D
+
+	//D3DVERTEXELEMENT9 VertexPNElements[] = 
+	//{
+	//	{0, 0,  D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+	//	{0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},
+	//	D3DDECL_END()
+	//};	
+	//HR(gd3dDevice->CreateVertexDeclaration(VertexPNElements, &VertexRenderTex2D::Decl));
 }
 
 DrawableTex2D::~DrawableTex2D()
@@ -83,7 +94,7 @@ void DrawableTex2D::Draw(D3DXMATRIX proj)
 	gd3dDevice->SetStreamSource(0, mRadarVB, 0, sizeof(VertexRenderTex2D));
 	gd3dDevice->SetFVF(D3DFVF_SHADOWMAPVERTEX);
 
-	gd3dDevice->SetTransform(D3DTS_PROJECTION, &proj);
+	//gd3dDevice->SetTransform(D3DTS_PROJECTION, &proj);
 
 	//pDevice->SetTexture(0, pRenderTexture);
 	gd3dDevice->SetTexture(0, mTex);
@@ -101,8 +112,9 @@ void DrawableTex2D::Draw(D3DXMATRIX proj, IDirect3DTexture9* tex)
 {
 	gd3dDevice->SetStreamSource(0, mRadarVB, 0, sizeof(VertexRenderTex2D));
 	gd3dDevice->SetFVF(D3DFVF_SHADOWMAPVERTEX);
+	//gd3dDevice->SetVertexDeclaration (VertexRenderTex2D::Decl);
 
-	gd3dDevice->SetTransform(D3DTS_PROJECTION, &proj);
+	//gd3dDevice->SetTransform(D3DTS_PROJECTION, &proj);
 
 	//pDevice->SetTexture(0, pRenderTexture);
 	gd3dDevice->SetTexture(0, tex);
