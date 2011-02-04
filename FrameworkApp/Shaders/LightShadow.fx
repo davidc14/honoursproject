@@ -25,7 +25,6 @@ float4 BuildShadowMapPS(float2 depth : TEXCOORD0) : COLOR
 	// Each pixel in the shadow map stores the pixel depth from the 
 	// light source in normalized device coordinates.
 	return depth.x / depth.y; // z / w
-	//return float4(1,1,1,1);
 }
 
 technique BuildShadowMapTech

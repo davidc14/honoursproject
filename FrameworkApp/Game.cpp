@@ -288,7 +288,7 @@ void Game::Draw()
 	mShadowMap->beginScene();
 
 	// Clear the backbuffer to a blue color
-    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0 );
 
 	m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
 	UINT numberOfShadowPasses = 1;
@@ -378,7 +378,7 @@ void Game::Draw()
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
 
 		m_RenderTarget->Draw();
-		//mShadowMap->Draw(*m_RenderTarget->getOldProjectionPointer(), mShadowMap->d3dTex());
+		
 		//mShadowMap->Draw(*m_RenderTarget->getOldProjectionPointer());
 
 		m_Font->Draw();	
