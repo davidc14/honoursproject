@@ -49,7 +49,7 @@ public:
 	void CalculateMatrices();
 	void SetShaderVariables();
 	void SetPhongShaderVariables(D3DXMATRIX World);
-	void SetAnimatedInterfaceVariables();
+	void SetAnimatedInterfaceVariables(D3DXMATRIX World);
 
 	void setDeltaTime(float DeltaTime) { m_DeltaTime = DeltaTime; }
 	float getDeltaTime() { return m_DeltaTime; }
@@ -82,6 +82,8 @@ private:
 	//Set the variables for the network transmission
 	void SetPacketVariables();
 	void SendPacket();
+
+	void SetSpotLightVariables(D3DXMATRIX World, Mtrl* material);
 	//void SetShaderVariables();
 };
 

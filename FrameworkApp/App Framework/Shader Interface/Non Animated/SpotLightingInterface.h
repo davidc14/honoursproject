@@ -7,7 +7,7 @@
 typedef struct SpotLighting
 {
 	//The objects needed to be set for the basic lighting shader
-	D3DXMATRIXA16 m_World, m_WorldInvTrans, m_WVP, m_LightWVP, m_LightViewProj; 
+	D3DXMATRIXA16 m_World, m_WVP, m_LightWVP, m_LightViewProj; 
 	Mtrl m_Material;
 	SpotLight m_Light;
 	D3DXVECTOR3 m_EyePosW;
@@ -25,14 +25,15 @@ public:
 	void SetupHandles();
 
 	void UpdateHandles(SpotLighting* input);
+	void UpdateShadowHandles(D3DXMATRIX* matLightWVP);
 
 	void Release();
 
-	ID3DXEffect* GetEffect() { return m_Effect; }
-	/*D3DXHANDLE GetTextureHandle() { return m_hTexture; }
+	ID3DXEffect* GetEffect() { return mFX; }
+	D3DXHANDLE GetTextureHandle() { return mhTex; }
 
-	D3DXHANDLE GetTechnique() { return m_hTechnique; }
-	D3DXHANDLE GetShadowTechnique() { return m_hShadowTechnique; }*/
+	D3DXHANDLE GetTechnique() { return mhTech; }
+	D3DXHANDLE GetShadowTechnique() { return mhBuildShadowMapTech; }
 
 private:
 
@@ -53,7 +54,7 @@ private:
 	D3DXMATRIXA16 m_LightViewProj;
 	
 	//The effect
-	ID3DXEffect	*m_Effect;
+	ID3DXEffect	*mFX;
 	ID3DXBuffer *m_Error;
 
 	IDirect3DDevice9* pDevice;
