@@ -68,6 +68,11 @@ void DrawableTex2D::onLostDevice()
 	ReleaseCOM(mTopSurf);
 }
 
+void DrawableTex2D::Release()
+{
+	mRTS->Release();
+}
+
 void DrawableTex2D::onResetDevice()
 {
 	UINT usage = D3DUSAGE_RENDERTARGET;

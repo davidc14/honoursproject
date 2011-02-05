@@ -47,7 +47,7 @@ technique NormalDepth
 {
 	pass Pass1
     {
-        VertexShader = compile vs_1_1 NormalDepthVertexShader();
+        VertexShader = compile vs_2_0 NormalDepthVertexShader();
         PixelShader = compile ps_2_0 NormalDepthPixelShader();
     }
 }

@@ -49,29 +49,19 @@ DirLight mLight;
 Mtrl     mWhiteMtrl;
 
 DrawableRenderTarget* m_RenderTarget;
-DrawableRenderTarget* m_ShadowTarget;
+DrawableRenderTarget* m_DepthNormalTarget;
 DrawableTex2D* mShadowMap;
+DrawableTex2D* m_DepthNormalTex2D;
 
 IDirect3DTexture9* m_WhiteTexture;
 
 ID3DXEffect* ssaoFX;
 
 ID3DXEffect* mFX;
-	D3DXHANDLE   mhBuildShadowMapTech;
-	D3DXHANDLE   mhLightWVP;
-
-	D3DXHANDLE   mhTech;
-	D3DXHANDLE   mhWVP;
-	D3DXHANDLE   mhWorldInvTrans;
-	D3DXHANDLE   mhEyePosW;
-	D3DXHANDLE   mhWorld;
-	D3DXHANDLE   mhTex;
-	D3DXHANDLE   mhShadowMap;
-	D3DXHANDLE   mhMtrl;
-	D3DXHANDLE   mhLight;
+D3DXHANDLE mhTech, mhWorld, mhView, mhProj;
  
-	SpotLight mSpotLight;
-	D3DXMATRIXA16 m_LightViewProj;
+SpotLight mSpotLight;
+D3DXMATRIXA16 m_LightViewProj;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -153,35 +143,18 @@ bool Game::LoadContent()
 	mWhiteMtrl.specPower = 48.0f;
 
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
-	m_ShadowTarget = new DrawableRenderTarget(pDevice, 512, 512);
+	m_DepthNormalTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
 
 	// Create shadow map.
 	D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
 	mShadowMap = new DrawableTex2D(pDevice, 512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
+	D3DVIEWPORT9 depthNormalVP = {0, 0, (UINT)m_WindowWidth, (UINT)m_WindowHeight, 0.0f, 1.0f};
+	m_DepthNormalTex2D = new DrawableTex2D(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, 1, D3DFMT_R32F, true, D3DFMT_D24X8, depthNormalVP, false);
 
 	m_AnimatedInterface = new AnimatedInterface(pDevice);
 	m_SpotInterface = new SpotLightingInterface(pDevice);
 
 	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_WhiteTexture);
-
-	 // Create the FX from a .fx file.
-	ID3DXBuffer* errors = 0;
-	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/LightShadow.fx", 
-		0, 0, D3DXSHADER_DEBUG, 0, &mFX, &errors));
-	if( errors )
-		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
-
-	// Obtain handles.
-	mhTech               = mFX->GetTechniqueByName("LightShadowTech");
-	mhBuildShadowMapTech = mFX->GetTechniqueByName("BuildShadowMapTech");
-	mhLightWVP           = mFX->GetParameterByName(0, "gLightWVP");
-	mhWVP                = mFX->GetParameterByName(0, "gWVP");
-	mhWorld              = mFX->GetParameterByName(0, "gWorld");
-	mhMtrl               = mFX->GetParameterByName(0, "gMtrl");
-	mhLight              = mFX->GetParameterByName(0, "gLight");
-	mhEyePosW            = mFX->GetParameterByName(0, "gEyePosW");
-	mhTex                = mFX->GetParameterByName(0, "gTex");
-	mhShadowMap          = mFX->GetParameterByName(0, "gShadowMap");
 
 	// Set some light properties; other properties are set in update function,
 	// where they are animated.
@@ -191,12 +164,23 @@ bool Game::LoadContent()
 	mSpotLight.spotPower = 24.0f;
 
 	 // Create the FX from a .fx file.
-	errors = 0;
+	ID3DXBuffer* errors = 0;
 	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/SSAO.fx", 
 		0, 0, D3DXSHADER_DEBUG, 0, &ssaoFX, &errors));
 	if( errors )
 		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
 
+	// Create the FX from a .fx file.
+	errors = 0;
+	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/DrawDepthNormal.fx", 
+		0, 0, D3DXSHADER_DEBUG, 0, &mFX, &errors));
+	if( errors )
+		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
+
+	mhTech = mFX->GetTechniqueByName("NormalDepth");
+	mhWorld = mFX->GetParameterByName(0, "World");
+	mhView = mFX->GetParameterByName(0, "View");
+	mhProj = mFX->GetParameterByName(0, "Projection");
 
 	return true;
 }
@@ -285,6 +269,42 @@ void Game::Update()
 
 void Game::Draw()
 {
+	pDevice->GetTransform(D3DTS_PROJECTION, m_DepthNormalTarget->getOldProjectionPointer());
+	pDevice->GetRenderTarget(0, m_DepthNormalTarget->getBackBufferPointer());
+
+	pDevice->SetRenderTarget(0, m_DepthNormalTarget->getRenderSurface());
+
+	pDevice->BeginScene();
+
+	// Clear the backbuffer to a blue color
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x0000FFFF, 1.0f, 0 );
+
+	mFX->SetTechnique(mhTech);
+
+	UINT depthPasses = 1;
+	mFX->Begin(&depthPasses, 0);
+	mFX->BeginPass(0);
+	
+	mFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
+	mFX->SetMatrix(mhView, &matView);
+	mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
+	mFX->CommitChanges();
+
+	m_Dwarf->Draw(mFX, 0);
+
+	mFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
+	mFX->SetMatrix(mhView, &matView);
+	mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
+	mFX->CommitChanges();
+
+	m_Dwarf->Draw(mFX, 0);
+
+	mFX->EndPass();
+	mFX->End();
+		
+	pDevice->EndScene();
+	pDevice->SetRenderTarget(0, m_DepthNormalTarget->getBackBuffer());
+
 	mShadowMap->beginScene();
 
 	// Clear the backbuffer to a blue color
@@ -379,7 +399,8 @@ void Game::Draw()
 
 		m_RenderTarget->Draw();
 		
-		//mShadowMap->Draw(*m_RenderTarget->getOldProjectionPointer());
+		//m_DepthNormalTex2D->Draw(*m_RenderTarget->getOldProjectionPointer());
+		m_DepthNormalTarget->Draw();
 
 		m_Font->Draw();	
 
@@ -407,8 +428,8 @@ void Game::Unload()
 
 	m_SpotInterface->Release();
 
-	mFX->Release();
 	ssaoFX->Release();
+	mFX->Release();
 }
 
 void Game::CalculateMatrices()
@@ -455,7 +476,7 @@ void Game::SetPhongShaderVariables(D3DXMATRIX World)
 	m_PhongContainer.m_EyePosW = *m_Camera->getPosition();
 	m_PhongContainer.m_Light = mLight;
 	//m_PhongContainer.m_LightWVP = World * m_LightViewProj;
-	m_PhongContainer.m_ShadowMap = m_ShadowTarget->getRenderTexture();	
+	//m_PhongContainer.m_ShadowMap = m_ShadowTarget->getRenderTexture();	
 	//m_PhongContainer.m_ShadowMap = m_WhiteTexture;	
 	
 	//Pass it in the lighting interface
