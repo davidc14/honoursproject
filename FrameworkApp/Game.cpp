@@ -51,14 +51,14 @@ Mtrl     mWhiteMtrl;
 DrawableRenderTarget* m_RenderTarget;
 DrawableRenderTarget* m_DepthNormalTarget;
 DrawableTex2D* mShadowMap;
-DrawableTex2D* m_DepthNormalTex2D;
+//DrawableTex2D* m_DepthNormalTex2D;
 
 IDirect3DTexture9* m_WhiteTexture;
 
 ID3DXEffect* ssaoFX;
 
 ID3DXEffect* mFX;
-D3DXHANDLE mhTech, mhWorld, mhView, mhProj;
+D3DXHANDLE mhTech, mhTechAni, mhWorld, mhWorldInvTrans, mhFinalXFormsArray, mhView, mhProj;
  
 SpotLight mSpotLight;
 D3DXMATRIXA16 m_LightViewProj;
@@ -148,8 +148,8 @@ bool Game::LoadContent()
 	// Create shadow map.
 	D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
 	mShadowMap = new DrawableTex2D(pDevice, 512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
-	D3DVIEWPORT9 depthNormalVP = {0, 0, (UINT)m_WindowWidth, (UINT)m_WindowHeight, 0.0f, 1.0f};
-	m_DepthNormalTex2D = new DrawableTex2D(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, 1, D3DFMT_R32F, true, D3DFMT_D24X8, depthNormalVP, false);
+	//D3DVIEWPORT9 depthNormalVP = {0, 0, (UINT)m_WindowWidth, (UINT)m_WindowHeight, 0.0f, 1.0f};
+	//m_DepthNormalTex2D = new DrawableTex2D(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, 1, D3DFMT_R32F, true, D3DFMT_D24X8, depthNormalVP, false);
 
 	m_AnimatedInterface = new AnimatedInterface(pDevice);
 	m_SpotInterface = new SpotLightingInterface(pDevice);
@@ -178,9 +178,12 @@ bool Game::LoadContent()
 		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
 
 	mhTech = mFX->GetTechniqueByName("NormalDepth");
+	mhTechAni = mFX->GetTechniqueByName("NormalDepthAni");
 	mhWorld = mFX->GetParameterByName(0, "World");
 	mhView = mFX->GetParameterByName(0, "View");
 	mhProj = mFX->GetParameterByName(0, "Projection");
+	mhFinalXFormsArray = mFX->GetParameterByName(0, "gFinalXForms");
+	mhWorldInvTrans = mFX->GetParameterByName(0, "WorldInvTrans");
 
 	return true;
 }
@@ -277,7 +280,7 @@ void Game::Draw()
 	pDevice->BeginScene();
 
 	// Clear the backbuffer to a blue color
-    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x0000FFFF, 1.0f, 0 );
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x000000FF, 1.0f, 0 );
 
 	mFX->SetTechnique(mhTech);
 
@@ -292,12 +295,32 @@ void Game::Draw()
 
 	m_Dwarf->Draw(mFX, 0);
 
-	mFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
+	mFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
 	mFX->SetMatrix(mhView, &matView);
 	mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
 	mFX->CommitChanges();
 
-	m_Dwarf->Draw(mFX, 0);
+	m_Citadel->Draw(mFX, 0);
+
+	mFX->EndPass();
+	mFX->End();
+
+	mFX->SetTechnique(mhTechAni);
+	mFX->Begin(&depthPasses, 0);
+	mFX->BeginPass(0);
+
+	mFX->SetMatrix(mhWorld, m_SkinnedMesh->GetWorld());
+	mFX->SetMatrix(mhView, &matView);
+	mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
+	mFX->SetMatrixArray(mhFinalXFormsArray, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+	D3DXMATRIX m_matWorldInverseTranspose;
+	D3DXMatrixInverse(&m_matWorldInverseTranspose, NULL, m_SkinnedMesh->GetWorld());
+	D3DXMatrixTranspose(&m_matWorldInverseTranspose, &m_matWorldInverseTranspose);
+	mFX->SetMatrix(mhWorldInvTrans, &m_matWorldInverseTranspose);
+	
+	mFX->CommitChanges();
+
+	m_SkinnedMesh->Draw();
 
 	mFX->EndPass();
 	mFX->End();
@@ -430,6 +453,7 @@ void Game::Unload()
 
 	ssaoFX->Release();
 	mFX->Release();
+	//m_DepthNormalTarget->Release();
 }
 
 void Game::CalculateMatrices()
