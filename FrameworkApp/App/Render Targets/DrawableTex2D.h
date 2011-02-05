@@ -45,6 +45,8 @@ public:
 	void onLostDevice();
 	void onResetDevice();
 
+	void Release();
+
 private:
 	// This class is not designed to be copied.
 	DrawableTex2D(const DrawableTex2D& rhs);
