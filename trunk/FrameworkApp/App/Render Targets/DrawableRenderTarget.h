@@ -40,6 +40,9 @@ public:
 
 	void Release();
 
+	void BeginScene();
+	void EndScene();
+
 	D3DXMATRIX* getProjectionPointer(){return &matProjection;}
 	D3DXMATRIX* getOldProjectionPointer() {return &matOldProjection;}
 	LPDIRECT3DTEXTURE9 getRenderTexture() {return pRenderTexture;}
@@ -53,9 +56,11 @@ public:
 private:
 
 	IDirect3DVertexBuffer9* mRadarVB;
+	D3DVIEWPORT9 mViewPort;
 
 	LPDIRECT3DTEXTURE9 pRenderTexture;
 	LPDIRECT3DSURFACE9 pRenderSurface, pBackBuffer;
+	ID3DXRenderToSurface* mRTS;
 	D3DXMATRIX matProjection, matOldProjection;
 
 	IDirect3DDevice9* pDevice;

@@ -423,7 +423,7 @@ void Game::Draw()
 		m_RenderTarget->Draw();
 		
 		//m_DepthNormalTex2D->Draw(*m_RenderTarget->getOldProjectionPointer());
-		m_DepthNormalTarget->Draw();
+		//m_DepthNormalTarget->Draw();
 
 		m_Font->Draw();	
 
