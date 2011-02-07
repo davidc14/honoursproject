@@ -433,6 +433,7 @@ void Game::Draw()
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
 
 		m_RenderTarget->Draw();
+		//mShadowTarget->Draw();
 		
 		//m_DepthNormalTex2D->Draw(*m_RenderTarget->getOldProjectionPointer());
 		//m_DepthNormalTarget->Draw();
@@ -462,6 +463,8 @@ void Game::Unload()
 	mShadowMap->onLostDevice();
 
 	m_SpotInterface->Release();
+
+	mShadowTarget->Release();
 
 	ssaoFX->Release();
 	mFX->Release();
