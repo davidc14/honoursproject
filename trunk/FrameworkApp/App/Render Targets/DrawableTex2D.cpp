@@ -22,22 +22,22 @@ DrawableTex2D::DrawableTex2D(LPDIRECT3DDEVICE9 device, UINT width, UINT height, 
 	HR(D3DXCreateRenderToSurface(gd3dDevice, mWidth, mHeight, mTexFormat, mUseDepthBuffer, mDepthFormat, &mRTS));
 	HR(mTex->GetSurfaceLevel(0, &mTopSurf));
 
-	// Viewport is entire texture.
-	gd3dDevice->CreateVertexBuffer(6*sizeof(VertexRenderTex2D), D3DUSAGE_WRITEONLY,
-		0, D3DPOOL_MANAGED, &mRadarVB, 0);
+	//// Viewport is entire texture.
+	//gd3dDevice->CreateVertexBuffer(6*sizeof(VertexRenderTex2D), D3DUSAGE_WRITEONLY,
+	//	0, D3DPOOL_MANAGED, &mRadarVB, 0);
 
-	// Radar quad takes up quadrant IV.  Note that we specify coordinate directly in
-	// normalized device coordinates.  I.e., world, view, projection matrices are all
-	// identity.
-	VertexRenderTex2D* v = 0;
-	mRadarVB->Lock(0, 0, (void**)&v, 0);
-	v[0] = VertexRenderTex2D(-1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
-	v[1] = VertexRenderTex2D(1.0f, 1.0f, 0.0f, 1.0f, 0.0f);
-	v[2] = VertexRenderTex2D(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f);
-	v[3] = VertexRenderTex2D(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f);
-	v[4] = VertexRenderTex2D(1.0f, 1.0f, 0.0f, 1.0f, 0.0f);
-	v[5] = VertexRenderTex2D(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);
-	mRadarVB->Unlock();
+	//// Radar quad takes up quadrant IV.  Note that we specify coordinate directly in
+	//// normalized device coordinates.  I.e., world, view, projection matrices are all
+	//// identity.
+	//VertexRenderTex2D* v = 0;
+	//mRadarVB->Lock(0, 0, (void**)&v, 0);
+	//v[0] = VertexRenderTex2D(-1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+	//v[1] = VertexRenderTex2D(1.0f, 1.0f, 0.0f, 1.0f, 0.0f);
+	//v[2] = VertexRenderTex2D(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f);
+	//v[3] = VertexRenderTex2D(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f);
+	//v[4] = VertexRenderTex2D(1.0f, 1.0f, 0.0f, 1.0f, 0.0f);
+	//v[5] = VertexRenderTex2D(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);
+	//mRadarVB->Unlock();
 
 	//===============================================================
 	// VertexRenderTex2D

@@ -50,6 +50,7 @@ Mtrl     mWhiteMtrl;
 
 DrawableRenderTarget* m_RenderTarget;
 DrawableRenderTarget* m_DepthNormalTarget;
+DrawableRenderTarget* mShadowTarget;
 DrawableTex2D* mShadowMap;
 //DrawableTex2D* m_DepthNormalTex2D;
 
@@ -144,6 +145,7 @@ bool Game::LoadContent()
 
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
 	m_DepthNormalTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
+	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F);
 
 	// Create shadow map.
 	D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
@@ -328,7 +330,14 @@ void Game::Draw()
 	pDevice->EndScene();
 	pDevice->SetRenderTarget(0, m_DepthNormalTarget->getBackBuffer());
 
-	mShadowMap->beginScene();
+	//mShadowMap->beginScene();
+	pDevice->GetTransform(D3DTS_PROJECTION, mShadowTarget->getOldProjectionPointer());
+	pDevice->GetRenderTarget(0, mShadowTarget->getBackBufferPointer());
+
+	pDevice->SetRenderTarget(0, mShadowTarget->getRenderSurface());
+	//mShadowTarget->BeginScene();
+
+	pDevice->BeginScene();
 
 	// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0 );
@@ -365,7 +374,10 @@ void Game::Draw()
 		m_AnimatedInterface->GetEffect()->EndPass();
 		m_AnimatedInterface->GetEffect()->End();
 
-	mShadowMap->endScene();
+	//mShadowMap->endScene();
+	pDevice->EndScene();
+	//mShadowTarget->EndScene();
+	pDevice->SetRenderTarget(0, mShadowTarget->getBackBuffer());
 
 	pDevice->GetTransform(D3DTS_PROJECTION, m_RenderTarget->getOldProjectionPointer());
 	pDevice->GetRenderTarget(0, m_RenderTarget->getBackBufferPointer());
@@ -511,7 +523,8 @@ void Game::SetAnimatedInterfaceVariables(D3DXMATRIX World)
 {
 	m_AnimatedContainer.m_EyePos = *m_Camera->getPosition();
 	m_AnimatedContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
-	m_AnimatedContainer.m_ShadowMap = mShadowMap->d3dTex();
+	//m_AnimatedContainer.m_ShadowMap = mShadowMap->d3dTex();
+	m_AnimatedContainer.m_ShadowMap = mShadowTarget->getRenderTexture();
 
 	m_AnimatedInterface->UpdateHandles(&m_AnimatedContainer, 
 		m_SkinnedMesh->getFinalXFormArray(), 
@@ -523,7 +536,8 @@ void Game::SetSpotLightVariables(D3DXMATRIX World, Mtrl* material)
 {
 	m_SpotContainer.m_EyePosW = *m_Camera->getPosition();
 	m_SpotContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
-	m_SpotContainer.m_ShadowMap = mShadowMap->d3dTex();
+	//m_SpotContainer.m_ShadowMap = mShadowMap->d3dTex();
+	m_SpotContainer.m_ShadowMap = mShadowTarget->getRenderTexture();
 	m_SpotContainer.m_World = World;
 	m_SpotContainer.m_LightWVP = World * m_LightViewProj;
 	m_SpotContainer.m_Light = mSpotLight;
