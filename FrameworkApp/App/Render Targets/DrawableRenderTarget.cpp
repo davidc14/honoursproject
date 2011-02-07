@@ -27,6 +27,8 @@ DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_Wind
 	v[5] = VertexPT(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);
 	mRadarVB->Unlock();
 
+	D3DXCreateRenderToSurface(pDevice, m_WindowWidth, m_WindowHeight, D3DFMT_R32F, true, D3DFMT_D24X8, &mRTS);
+
 	pDevice->CreateTexture(m_WindowWidth,
                              m_WindowHeight,
                              1,
@@ -40,6 +42,19 @@ DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_Wind
 	pRenderTexture->GetSurfaceLevel(0,&pRenderSurface);
 
 	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f, (float)m_WindowWidth/m_WindowHeight, 1.0f, 1000.0f);
+
+	D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
+	mViewPort = vp;
+}
+
+void DrawableRenderTarget::BeginScene()
+{
+	mRTS->BeginScene(pRenderSurface, &mViewPort);
+}
+
+void DrawableRenderTarget::EndScene()
+{
+	mRTS->EndScene(D3DX_FILTER_NONE);
 }
 
 void DrawableRenderTarget::Draw()
@@ -59,4 +74,9 @@ void DrawableRenderTarget::Draw()
 
 	// Turn on D3D lighting, since we are providing our own vertex colors
 	pDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
+}
+
+void DrawableRenderTarget::Release()
+{
+	mRTS->Release();
 }
