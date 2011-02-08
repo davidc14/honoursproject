@@ -111,7 +111,7 @@ void DrawableRenderTarget::Draw()
 	pDevice->SetStreamSource(0, mRadarVB, 0, sizeof(VertexPT));
 	pDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
 
-	pDevice->SetTransform(D3DTS_PROJECTION, getOldProjectionPointer());
+	//pDevice->SetTransform(D3DTS_PROJECTION, getOldProjectionPointer());
 
 	//pDevice->SetTexture(0, pRenderTexture);
 	pDevice->SetTexture(0, getRenderTexture());
