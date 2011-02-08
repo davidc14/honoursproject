@@ -1,12 +1,45 @@
-sampler g_buffer_norm;
-sampler g_buffer_pos;
-sampler g_random;
+//sampler g_buffer_norm;
+//sampler g_buffer_pos;
+//sampler g_random;
 float random_size;
 float g_sample_rad;
 float g_intensity;
 float g_scale;
 float g_bias;
 float2 g_screen_size;
+uniform extern texture gNormalBuffer;
+uniform extern texture gDepthBuffer;
+uniform extern texture gSampleTexture;
+
+sampler g_buffer_norm = sampler_state
+{
+	Texture = <gNormalBuffer>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = LINEAR;
+	AddressU  = WRAP;
+    AddressV  = WRAP;
+};
+
+sampler g_buffer_pos = sampler_state
+{
+	Texture = <gDepthBuffer>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = LINEAR;
+	AddressU  = WRAP;
+    AddressV  = WRAP;
+};
+
+sampler g_random = sampler_state
+{
+	Texture = <gSampleTexture>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = LINEAR;
+	AddressU  = WRAP;
+    AddressV  = WRAP;
+};
 
 struct PS_INPUT
 {
@@ -81,7 +114,6 @@ technique SSAO
 	pass P0
     {
         // Specify the vertex and pixel shader associated with this pass.
-        //vertexShader = compile vs_2_0 LightShadowVS();
         pixelShader  = compile ps_2_0 main();
     }
 }

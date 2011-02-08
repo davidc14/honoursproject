@@ -561,6 +561,10 @@
 			Name="Shaders"
 			>
 			<File
+				RelativePath=".\Shaders\CellShaderEffect.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\DrawDepthNormal.fx"
 				>
 			</File>
