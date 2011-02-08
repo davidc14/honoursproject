@@ -545,6 +545,9 @@ void Game::Unload()
 
 	ssaoFX->Release();
 	mFX->Release();
+
+	cellFX->Release();
+	
 	//m_DepthNormalTarget->Release();
 }
 
