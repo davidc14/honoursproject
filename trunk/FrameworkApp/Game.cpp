@@ -57,7 +57,13 @@ DrawableTex2D* mShadowMap;
 IDirect3DTexture9* m_WhiteTexture;
 IDirect3DTexture9* m_SampleTexture;
 
-
+ID3DXEffect* mDepthFX;
+D3DXHANDLE mhDepthTech;
+D3DXHANDLE mhITWorldView;
+D3DXHANDLE mhWorldView;
+D3DXHANDLE mhWorldViewProjection;
+D3DXHANDLE mhFarClip;
+D3DXHANDLE mhFinalXForms;
  
 SpotLight mSpotLight;
 D3DXMATRIXA16 m_LightViewProj;
@@ -142,9 +148,9 @@ bool Game::LoadContent()
 	mWhiteMtrl.specPower = 48.0f;
 
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
-	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
-	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_R32F);
-	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F);
+	//mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
+	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_R32F, D3DFMT_D24X8);
+	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8);
 
 	// Create shadow map.
 	D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
@@ -163,6 +169,20 @@ bool Game::LoadContent()
 	mSpotLight.diffuse   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.spotPower = 24.0f;
+
+	 // Create the FX from a .fx file.
+	ID3DXBuffer* errors = 0;
+	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/DepthAndShade.fx", 
+		0, 0, D3DXSHADER_DEBUG, 0, &mDepthFX, &errors));
+	if( errors )
+		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
+
+	mhDepthTech = mDepthFX->GetTechniqueByName("Depth");
+	mhITWorldView = mDepthFX->GetParameterByName(0, "ITWorldView");
+	mhWorldView = mDepthFX->GetParameterByName(0, "WorldView");
+	mhWorldViewProjection = mDepthFX->GetParameterByName(0, "WorldViewProjection");
+	mhFarClip = mDepthFX->GetParameterByName(0, "FarClip");
+	mhFinalXForms = mDepthFX->GetParameterByName(0, "FinalXForms");
 
 	// // Create the FX from a .fx file.
 	//ID3DXBuffer* errors = 0;
@@ -297,6 +317,53 @@ void Game::Update()
 
 void Game::Draw()
 {
+	mDepthFX->SetTechnique(mhDepthTech);
+	mDepthFX->SetFloat(mhFarClip, 1000.0f);
+
+	mDepthTarget->BeginScene();
+	
+		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0 );
+
+		UINT depthPasses = 1;
+		mDepthFX->Begin(&depthPasses, 0);
+		mDepthFX->BeginPass(0);
+
+			mDepthFX->SetMatrix(mhWorldViewProjection, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+			mDepthFX->SetMatrix(mhWorldView, &(m_Dwarf->GetWorld() * matView));
+			D3DXMATRIX WorldViewInvTrans;
+			D3DXMatrixInverse(&WorldViewInvTrans, NULL, m_Dwarf->GetWorldPointer());
+			D3DXMatrixTranspose(&WorldViewInvTrans, &WorldViewInvTrans);
+			mDepthFX->SetMatrix(mhITWorldView, &WorldViewInvTrans);
+			mDepthFX->CommitChanges();
+
+			m_Dwarf->Draw(mDepthFX, 0);
+
+			mDepthFX->SetMatrix(mhWorldViewProjection, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+			mDepthFX->SetMatrix(mhWorldView, &(m_Citadel->GetWorld() * matView));
+			//D3DXMATRIX WorldViewInvTrans;
+			D3DXMatrixInverse(&WorldViewInvTrans, NULL, m_Citadel->GetWorldPointer());
+			D3DXMatrixTranspose(&WorldViewInvTrans, &WorldViewInvTrans);
+			mDepthFX->SetMatrix(mhITWorldView, &WorldViewInvTrans);
+			mDepthFX->CommitChanges();
+
+			m_Citadel->Draw(mDepthFX, 0);
+
+
+			mDepthFX->SetMatrix(mhWorldViewProjection, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+			mDepthFX->SetMatrix(mhWorldView, &(*m_SkinnedMesh->GetWorld() * matView));
+			//D3DXMATRIX WorldViewInvTrans;
+			D3DXMatrixInverse(&WorldViewInvTrans, NULL, m_SkinnedMesh->GetWorld());
+			D3DXMatrixTranspose(&WorldViewInvTrans, &WorldViewInvTrans);
+			mDepthFX->SetMatrix(mhITWorldView, &WorldViewInvTrans);
+			mDepthFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+			mDepthFX->CommitChanges();
+
+			m_SkinnedMesh->Draw();
+
+		mDepthFX->EndPass();
+		mDepthFX->End();
+
+	mDepthTarget->EndScene();
 	//pDevice->GetTransform(D3DTS_PROJECTION, m_DepthNormalTarget->getOldProjectionPointer());
 	//pDevice->GetRenderTarget(0, m_DepthNormalTarget->getBackBufferPointer());
 
@@ -458,6 +525,7 @@ void Game::Draw()
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
 
 		m_RenderTarget->Draw();
+		mDepthTarget->Draw();
 
 		m_Font->Draw();	
 
@@ -487,12 +555,8 @@ void Game::Unload()
 
 	mShadowTarget->Release();
 
-	//ssaoFX->Release();
-	//mFX->Release();
-
-	//cellFX->Release();
-	
-	//m_DepthNormalTarget->Release();
+	mDepthTarget->Release();
+	mDepthFX->Release();
 }
 
 void Game::CalculateMatrices()

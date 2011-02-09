@@ -47,7 +47,7 @@ DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_Wind
 	//mViewPort = vp;
 }
 
-DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_WindowWidth, UINT m_WindowHeight, D3DFORMAT TextureFormat)
+DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_WindowWidth, UINT m_WindowHeight, D3DFORMAT TextureFormat, D3DFORMAT depthFormat)
 {
 	pDevice = Device;
 
@@ -89,7 +89,7 @@ DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_Wind
 
 	D3DXCreateTexture(pDevice, m_WindowWidth, m_WindowHeight, 1, D3DUSAGE_RENDERTARGET, TextureFormat, D3DPOOL_DEFAULT, &pRenderTexture);
 
-	D3DXCreateRenderToSurface(pDevice, m_WindowWidth, m_WindowHeight, TextureFormat, true, D3DFMT_D24X8, &mRTS);
+	D3DXCreateRenderToSurface(pDevice, m_WindowWidth, m_WindowHeight, TextureFormat, true, depthFormat, &mRTS);
 
 	pRenderTexture->GetSurfaceLevel(0,&pRenderSurface);
 

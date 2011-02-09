@@ -48,6 +48,62 @@ technique Depth
     }
 }
 
+uniform extern float4x4 FinalXForms[35];
+
+struct VSANI_INPUT 
+{
+   float4 Position: POSITION0;
+   float3 Normal : NORMAL;
+   float weight0  : BLENDWEIGHT0;
+   int4 boneIndex : BLENDINDICES0;
+};
+
+struct VSANI_OUTPUT 
+{
+   float4 Position: POSITION0;
+   float3 Normal : TEXCOORD0;
+   float4 vPositionVS : TEXCOORD1;
+};
+
+
+VSANI_OUTPUT DepthVertexShaderFunctionAni(VSANI_INPUT IN)
+{
+   VSANI_OUTPUT Output;
+   
+   // Do the vertex blending calculation for posL and normalL.
+   float weight1 = 1.0f - IN.weight0;
+    
+   float4 p = IN.weight0 * mul(IN.Position, FinalXForms[IN.boneIndex[0]]);
+   p       += weight1 * mul(IN.Position, FinalXForms[IN.boneIndex[1]]);
+   p.w = 1.0f;   
+   
+   float4 n = IN.weight0 * mul(float4(IN.Normal, 0.0f), FinalXForms[IN.boneIndex[0]]);
+   n       += weight1 * mul(float4(IN.Normal, 0.0f), FinalXForms[IN.boneIndex[1]]);
+   n.w = 1.0f;
+   
+   Output.Position = mul(p, WorldViewProjection);
+   Output.vPositionVS = mul(p, WorldView);
+   Output.Normal = mul(n, ITWorldView);
+   
+   return Output;
+}
+
+float4 DepthPixelShaderFunctionAni(VSANI_OUTPUT IN) : COLOR0
+{
+	float depth = IN.vPositionVS.z / FarClip;
+	IN.Normal = normalize(IN.Normal);
+	return float4(IN.Normal.x, IN.Normal.y, IN.Normal.z, depth);
+}
+
+technique DepthAni
+{
+    pass Pass1
+    {
+
+        VertexShader = compile vs_2_0 DepthVertexShaderFunctionAni();
+        PixelShader = compile ps_2_0 DepthPixelShaderFunctionAni();
+    }
+}
 
 // TEXTURED TECHNIQUE
 
@@ -85,7 +141,7 @@ struct VS_OUTPUT_TEX
 
 bool textured; 
 
-VS_OUTPUT_TEX VertexShader (VS_INPUT_TEX Input)
+VS_OUTPUT_TEX TVertexShader (VS_INPUT_TEX Input)
 {
 	VS_OUTPUT_TEX Output; 
 	Output.Position = mul(Input.Position, WorldViewProjection); 
@@ -128,7 +184,7 @@ technique Textured
 {
     pass P0
     {
-		VertexShader = compile vs_2_0 VertexShader();
+		VertexShader = compile vs_2_0 TVertexShader();
         PixelShader = compile ps_2_0 PixelShaderOnlyTexture();
     }
 }
@@ -137,7 +193,7 @@ technique Shaded
 {
     pass P0
     {
-		VertexShader = compile vs_2_0 VertexShader();
+		VertexShader = compile vs_2_0 TVertexShader();
         PixelShader = compile ps_2_0 PixelShaderShaded();
     }
 }

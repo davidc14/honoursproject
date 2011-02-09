@@ -32,7 +32,7 @@ class DrawableRenderTarget
 public:
 
 	DrawableRenderTarget(IDirect3DDevice9* pDevice, UINT m_WindowWidth, UINT m_WindowHeight);
-	DrawableRenderTarget(IDirect3DDevice9* pDevice, UINT m_WindowWidth, UINT m_WindowHeight, D3DFORMAT TextureFormat);
+	DrawableRenderTarget(IDirect3DDevice9* pDevice, UINT m_WindowWidth, UINT m_WindowHeight, D3DFORMAT TextureFormat, D3DFORMAT depthFormat);
 	~DrawableRenderTarget();
 
 	void Update();
