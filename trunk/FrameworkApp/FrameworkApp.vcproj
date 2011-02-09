@@ -561,7 +561,15 @@
 			Name="Shaders"
 			>
 			<File
+				RelativePath=".\Shaders\BlurEffect.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\CellShaderEffect.fx"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\DepthAndShade.fx"
 				>
 			</File>
 			<File
@@ -577,7 +585,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Shaders\SSAO.fx"
+				RelativePath=".\Shaders\SSAOEffect.fx"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\SSAOFinalPass.fx"
 				>
 			</File>
 			<File
