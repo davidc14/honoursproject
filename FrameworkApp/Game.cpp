@@ -49,33 +49,15 @@ DirLight mLight;
 Mtrl     mWhiteMtrl;
 
 DrawableRenderTarget* m_RenderTarget;
-DrawableRenderTarget* m_DepthNormalTarget;
+DrawableRenderTarget* mDepthTarget;
+DrawableRenderTarget* mSSAOTarget;
 DrawableRenderTarget* mShadowTarget;
 DrawableTex2D* mShadowMap;
-//DrawableTex2D* m_DepthNormalTex2D;
 
 IDirect3DTexture9* m_WhiteTexture;
 IDirect3DTexture9* m_SampleTexture;
 
-ID3DXEffect* ssaoFX;
-D3DXHANDLE mhSSAOTech;
-D3DXHANDLE mhRandomSize;
-D3DXHANDLE mhSampleRadius;
-D3DXHANDLE mhIntensity;
-D3DXHANDLE mhScale;
-D3DXHANDLE mhBias;
-D3DXHANDLE mhScreenSize;
-D3DXHANDLE mhNormalBuffer;
-D3DXHANDLE mhDepthBuffer;
-D3DXHANDLE mhSampleTexture;
 
-ID3DXEffect* cellFX;
-D3DXHANDLE cellTech;
-D3DXHANDLE mhCellScreenSize;
-D3DXHANDLE mhNormalDepthTexture;
-
-ID3DXEffect* mFX;
-D3DXHANDLE mhTech, mhTechAni, mhWorld, mhWorldInvTrans, mhFinalXFormsArray, mhView, mhProj;
  
 SpotLight mSpotLight;
 D3DXMATRIXA16 m_LightViewProj;
@@ -160,7 +142,8 @@ bool Game::LoadContent()
 	mWhiteMtrl.specPower = 48.0f;
 
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
-	m_DepthNormalTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
+	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
+	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_R32F);
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F);
 
 	// Create shadow map.
@@ -181,51 +164,51 @@ bool Game::LoadContent()
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.spotPower = 24.0f;
 
-	 // Create the FX from a .fx file.
-	ID3DXBuffer* errors = 0;
-	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/SSAO.fx", 
-		0, 0, D3DXSHADER_DEBUG, 0, &ssaoFX, &errors));
-	if( errors )
-		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
+	// // Create the FX from a .fx file.
+	//ID3DXBuffer* errors = 0;
+	//HR(D3DXCreateEffectFromFile(pDevice, "Shaders/SSAO.fx", 
+	//	0, 0, D3DXSHADER_DEBUG, 0, &ssaoFX, &errors));
+	//if( errors )
+	//	MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
 
-	// Create the FX from a .fx file.
-	errors = 0;
-	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/DrawDepthNormal.fx", 
-		0, 0, D3DXSHADER_DEBUG, 0, &mFX, &errors));
-	if( errors )
-		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
+	//// Create the FX from a .fx file.
+	//errors = 0;
+	//HR(D3DXCreateEffectFromFile(pDevice, "Shaders/DrawDepthNormal.fx", 
+	//	0, 0, D3DXSHADER_DEBUG, 0, &mFX, &errors));
+	//if( errors )
+	//	MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
 
-	mhTech = mFX->GetTechniqueByName("NormalDepth");
-	mhTechAni = mFX->GetTechniqueByName("NormalDepthAni");
-	mhWorld = mFX->GetParameterByName(0, "World");
-	mhView = mFX->GetParameterByName(0, "View");
-	mhProj = mFX->GetParameterByName(0, "Projection");
-	mhFinalXFormsArray = mFX->GetParameterByName(0, "gFinalXForms");
-	mhWorldInvTrans = mFX->GetParameterByName(0, "WorldInvTrans");
+	//mhTech = mFX->GetTechniqueByName("NormalDepth");
+	//mhTechAni = mFX->GetTechniqueByName("NormalDepthAni");
+	//mhWorld = mFX->GetParameterByName(0, "World");
+	//mhView = mFX->GetParameterByName(0, "View");
+	//mhProj = mFX->GetParameterByName(0, "Projection");
+	//mhFinalXFormsArray = mFX->GetParameterByName(0, "gFinalXForms");
+	//mhWorldInvTrans = mFX->GetParameterByName(0, "WorldInvTrans");
 
-	mhSSAOTech = ssaoFX->GetTechniqueByName("SSAO");
-	mhRandomSize = ssaoFX->GetParameterByName(0, "random_size");
-	mhSampleRadius = ssaoFX->GetParameterByName(0, "g_sample_rad");
-	mhIntensity = ssaoFX->GetParameterByName(0, "g_intensity");
-	mhScale = ssaoFX->GetParameterByName(0, "g_scale");
-	mhBias = ssaoFX->GetParameterByName(0, "g_bias");
-	mhScreenSize = ssaoFX->GetParameterByName(0, "g_screen_size");
-	mhNormalBuffer = ssaoFX->GetParameterByName(0, "gNormalBuffer");
-	mhDepthBuffer = ssaoFX->GetParameterByName(0, "gDepthBuffer");
-	mhSampleTexture = ssaoFX->GetParameterByName(0, "gSampleTexture");
+	//mhSSAOTech = ssaoFX->GetTechniqueByName("SSAO");
+	//mhRandomSize = ssaoFX->GetParameterByName(0, "random_size");
+	//mhSampleRadius = ssaoFX->GetParameterByName(0, "g_sample_rad");
+	//mhIntensity = ssaoFX->GetParameterByName(0, "g_intensity");
+	//mhScale = ssaoFX->GetParameterByName(0, "g_scale");
+	//mhBias = ssaoFX->GetParameterByName(0, "g_bias");
+	//mhScreenSize = ssaoFX->GetParameterByName(0, "g_screen_size");
+	//mhNormalBuffer = ssaoFX->GetParameterByName(0, "gNormalBuffer");
+	//mhDepthBuffer = ssaoFX->GetParameterByName(0, "gDepthBuffer");
+	//mhSampleTexture = ssaoFX->GetParameterByName(0, "gSampleTexture");
 
-	D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &m_SampleTexture);
+	//D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &m_SampleTexture);
 
-	// Create the FX from a .fx file.
-	errors = 0;
-	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/CellShaderEffect.fx", 
-		0, 0, D3DXSHADER_DEBUG, 0, &cellFX, &errors));
-	if( errors )
-		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
+	//// Create the FX from a .fx file.
+	//errors = 0;
+	//HR(D3DXCreateEffectFromFile(pDevice, "Shaders/CellShaderEffect.fx", 
+	//	0, 0, D3DXSHADER_DEBUG, 0, &cellFX, &errors));
+	//if( errors )
+	//	MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
 
-	cellTech = cellFX->GetTechniqueByName("EdgeDetect");
-	mhCellScreenSize = cellFX->GetParameterByName(0, "ScreenResolution");
-	mhNormalDepthTexture = cellFX->GetParameterByName(0, "NormalDepthTexture");
+	//cellTech = cellFX->GetTechniqueByName("EdgeDetect");
+	//mhCellScreenSize = cellFX->GetParameterByName(0, "ScreenResolution");
+	//mhNormalDepthTexture = cellFX->GetParameterByName(0, "NormalDepthTexture");
 
 	return true;
 }
@@ -314,61 +297,61 @@ void Game::Update()
 
 void Game::Draw()
 {
-	pDevice->GetTransform(D3DTS_PROJECTION, m_DepthNormalTarget->getOldProjectionPointer());
-	pDevice->GetRenderTarget(0, m_DepthNormalTarget->getBackBufferPointer());
+	//pDevice->GetTransform(D3DTS_PROJECTION, m_DepthNormalTarget->getOldProjectionPointer());
+	//pDevice->GetRenderTarget(0, m_DepthNormalTarget->getBackBufferPointer());
 
-	pDevice->SetRenderTarget(0, m_DepthNormalTarget->getRenderSurface());
+	//pDevice->SetRenderTarget(0, m_DepthNormalTarget->getRenderSurface());
 
-	pDevice->BeginScene();
+	//pDevice->BeginScene();
 
-	// Clear the backbuffer to a blue color
-    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x000000FF, 1.0f, 0 );
+	//// Clear the backbuffer to a blue color
+ //   pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x000000FF, 1.0f, 0 );
 
-	mFX->SetTechnique(mhTech);
+	//mFX->SetTechnique(mhTech);
 
-	UINT depthPasses = 1;
-	mFX->Begin(&depthPasses, 0);
-	mFX->BeginPass(0);
-	
-	mFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
-	mFX->SetMatrix(mhView, &matView);
-	mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
-	mFX->CommitChanges();
+	//UINT depthPasses = 1;
+	//mFX->Begin(&depthPasses, 0);
+	//mFX->BeginPass(0);
+	//
+	//mFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
+	//mFX->SetMatrix(mhView, &matView);
+	//mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
+	//mFX->CommitChanges();
 
-	m_Dwarf->Draw(mFX, 0);
+	//m_Dwarf->Draw(mFX, 0);
 
-	mFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
-	mFX->SetMatrix(mhView, &matView);
-	mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
-	mFX->CommitChanges();
+	//mFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
+	//mFX->SetMatrix(mhView, &matView);
+	//mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
+	//mFX->CommitChanges();
 
-	m_Citadel->Draw(mFX, 0);
+	//m_Citadel->Draw(mFX, 0);
 
-	mFX->EndPass();
-	mFX->End();
+	//mFX->EndPass();
+	//mFX->End();
 
-	mFX->SetTechnique(mhTechAni);
-	mFX->Begin(&depthPasses, 0);
-	mFX->BeginPass(0);
+	//mFX->SetTechnique(mhTechAni);
+	//mFX->Begin(&depthPasses, 0);
+	//mFX->BeginPass(0);
 
-	mFX->SetMatrix(mhWorld, m_SkinnedMesh->GetWorld());
-	mFX->SetMatrix(mhView, &matView);
-	mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
-	mFX->SetMatrixArray(mhFinalXFormsArray, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-	D3DXMATRIX m_matWorldInverseTranspose;
-	D3DXMatrixInverse(&m_matWorldInverseTranspose, NULL, m_SkinnedMesh->GetWorld());
-	D3DXMatrixTranspose(&m_matWorldInverseTranspose, &m_matWorldInverseTranspose);
-	mFX->SetMatrix(mhWorldInvTrans, &m_matWorldInverseTranspose);
-	
-	mFX->CommitChanges();
+	//mFX->SetMatrix(mhWorld, m_SkinnedMesh->GetWorld());
+	//mFX->SetMatrix(mhView, &matView);
+	//mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
+	//mFX->SetMatrixArray(mhFinalXFormsArray, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+	//D3DXMATRIX m_matWorldInverseTranspose;
+	//D3DXMatrixInverse(&m_matWorldInverseTranspose, NULL, m_SkinnedMesh->GetWorld());
+	//D3DXMatrixTranspose(&m_matWorldInverseTranspose, &m_matWorldInverseTranspose);
+	//mFX->SetMatrix(mhWorldInvTrans, &m_matWorldInverseTranspose);
+	//
+	//mFX->CommitChanges();
 
-	m_SkinnedMesh->Draw();
+	//m_SkinnedMesh->Draw();
 
-	mFX->EndPass();
-	mFX->End();
-		
-	pDevice->EndScene();
-	pDevice->SetRenderTarget(0, m_DepthNormalTarget->getBackBuffer());
+	//mFX->EndPass();
+	//mFX->End();
+	//	
+	//pDevice->EndScene();
+	//pDevice->SetRenderTarget(0, m_DepthNormalTarget->getBackBuffer());
 
 	//mShadowMap->beginScene();
 	pDevice->GetTransform(D3DTS_PROJECTION, mShadowTarget->getOldProjectionPointer());
@@ -468,52 +451,13 @@ void Game::Draw()
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
 
 	//ssaoFX->SetTechnique(mhSSAOTech);
-	cellFX->SetTechnique(cellTech);
+	//cellFX->SetTechnique(cellTech);
 	if( SUCCEEDED( pDevice->BeginScene() ) )
     {
 		// Clear the backbuffer to a blue color
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
-		
-		/*mhSSAOTech = ssaoFX->GetTechniqueByName("SSAO");
-		mhRandomSize = ssaoFX->GetParameterByName(0, "random_size");
-		mhSampleRadius = ssaoFX->GetParameterByName(0, "g_sample_rad");
-		mhIntensity = ssaoFX->GetParameterByName(0, "g_intensity");
-		mhScale = ssaoFX->GetParameterByName(0, "g_scale");
-		mhBias = ssaoFX->GetParameterByName(0, "g_bias");
-		mhScreenSize = ssaoFX->GetParameterByName(0, "g_screen_size");*/
-
-		//ssaoFX->SetFloat(mhRandomSize, 64.0f);
-		//ssaoFX->SetFloat(mhSampleRadius, 8.0f);
-		//ssaoFX->SetFloat(mhIntensity, 10.0f);
-		//ssaoFX->SetFloat(mhScale, 1.0f);
-		//ssaoFX->SetFloat(mhBias, 1.0f);
-		//D3DXVECTOR2 screenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
-		//ssaoFX->SetValue(mhScreenSize, &screenSize, sizeof(D3DXVECTOR2));
-		//ssaoFX->SetTexture(mhDepthBuffer, mShadowTarget->getRenderTexture());
-		//ssaoFX->SetTexture(mhNormalBuffer, m_DepthNormalTarget->getRenderTexture());
-
-		D3DXVECTOR2 screenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
-		cellFX->SetValue(mhCellScreenSize, &screenSize, sizeof(D3DXVECTOR2));
-		cellFX->SetTexture(mhNormalDepthTexture, m_DepthNormalTarget->getRenderTexture());
-
-		UINT ssaoPasses = 1;
-		//ssaoFX->Begin(&ssaoPasses, 0);
-		//ssaoFX->BeginPass(0);	
-
-		cellFX->Begin(&ssaoPasses, 0);
-		cellFX->BeginPass(0);	
 
 		m_RenderTarget->Draw();
-
-		//ssaoFX->EndPass();
-		//ssaoFX->End();
-
-		cellFX->EndPass();
-		cellFX->End();
-		//mShadowTarget->Draw();
-		
-		//m_DepthNormalTex2D->Draw(*m_RenderTarget->getOldProjectionPointer());
-		//m_DepthNormalTarget->Draw();
 
 		m_Font->Draw();	
 
@@ -543,10 +487,10 @@ void Game::Unload()
 
 	mShadowTarget->Release();
 
-	ssaoFX->Release();
-	mFX->Release();
+	//ssaoFX->Release();
+	//mFX->Release();
 
-	cellFX->Release();
+	//cellFX->Release();
 	
 	//m_DepthNormalTarget->Release();
 }
