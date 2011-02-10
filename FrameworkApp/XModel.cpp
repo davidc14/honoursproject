@@ -140,7 +140,7 @@ void XModel::DrawWhite(ID3DXEffect* m_Effect, D3DXHANDLE m_hTexture)
 			//else
 				m_Effect->SetTexture(m_hTexture, m_DefaultTexture);		// ...then set the texture
 		}
-		m_Effect->CommitChanges();
+		//m_Effect->CommitChanges();
 		m_Mesh->DrawSubset(t);    // draw the subset
 	}
 }
@@ -157,7 +157,7 @@ void XModel::Draw(ID3DXEffect* m_Effect, D3DXHANDLE m_hTexture)
 			else
 				m_Effect->SetTexture(m_hTexture, m_DefaultTexture);		// ...then set the texture
 		}
-		m_Effect->CommitChanges();
+		//m_Effect->CommitChanges();
 		m_Mesh->DrawSubset(t);    // draw the subset
 	}
 
