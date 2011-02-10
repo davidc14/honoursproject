@@ -12,7 +12,7 @@ struct VS_OUTPUT
     float3 viewDirection	: TEXCOORD1;
 };
 
-VS_OUTPUT VertexShader(
+VS_OUTPUT TVertexShader(
     float4 Position : POSITION, float2 TexCoord : TEXCOORD0)
 {
     VS_OUTPUT Out = (VS_OUTPUT)0;
@@ -49,7 +49,7 @@ sampler2D RandNormal = sampler_state
 	MINFILTER = LINEAR;
 };
 
-float4 PixelShader(VS_OUTPUT IN) : COLOR0
+float4 TPixelShader(VS_OUTPUT IN) : COLOR0
 {
 	float4 samples[16] =
 	{
@@ -118,7 +118,7 @@ technique SSAO
 {
     pass P0
     {          
-        VertexShader = compile vs_3_0 VertexShader();
-        PixelShader  = compile ps_3_0 PixelShader();
+        VertexShader = compile vs_3_0 TVertexShader();
+        PixelShader  = compile ps_3_0 TPixelShader();
     }
 }
