@@ -581,6 +581,7 @@ void Game::Draw()
 		
 		
 		mDepthTarget->Draw();
+		//mBlurTarget->Draw();
 		//mSSAOTarget->Draw();
 
 		m_Font->Draw();	
