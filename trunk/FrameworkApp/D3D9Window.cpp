@@ -40,6 +40,8 @@ HRESULT D3D9Window::InitDevice()
 	d3dpp.BackBufferHeight = getWindowHeight();	
     d3dpp.EnableAutoDepthStencil = TRUE;
     d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
+	//d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
+	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 
     // Create the Direct3D device. Here we are using the default adapter (most
     // systems only have one, unless they have multiple graphics hardware cards
