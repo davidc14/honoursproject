@@ -1,6 +1,6 @@
 #include "DrawableRenderTarget.h"
 
-DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_WindowWidth, UINT m_WindowHeight)
+DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_WindowWidth, UINT m_WindowHeight, float farPlane)
 {
 	pDevice = Device;
 
@@ -43,7 +43,7 @@ DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_Wind
 
 	pRenderTexture->GetSurfaceLevel(0,&pRenderSurface);
 
-	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f, (float)m_WindowWidth/m_WindowHeight, 1.0f, 1000.0f);
+	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f, (float)m_WindowWidth/m_WindowHeight, 1.0f, farPlane);
 
 	D3DVIEWPORT9 vp = {0, 0, m_WindowWidth, m_WindowHeight, 0.0f, 1.0f};
 	mViewPort = vp;
@@ -52,7 +52,7 @@ DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_Wind
 	//mViewPort = vp;
 }
 
-DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_WindowWidth, UINT m_WindowHeight, D3DFORMAT TextureFormat, D3DFORMAT depthFormat)
+DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_WindowWidth, UINT m_WindowHeight, D3DFORMAT TextureFormat, D3DFORMAT depthFormat, float farPlane)
 {
 	pDevice = Device;
 
@@ -98,7 +98,7 @@ DrawableRenderTarget::DrawableRenderTarget(IDirect3DDevice9* Device, UINT m_Wind
 
 	pRenderTexture->GetSurfaceLevel(0,&pRenderSurface);
 
-	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f, (float)m_WindowWidth/m_WindowHeight, 1.0f, 1000.0f);	
+	D3DXMatrixPerspectiveFovLH(&matProjection,D3DX_PI / 4.0f, (float)m_WindowWidth/m_WindowHeight, 1.0f, farPlane);	
 }
 
 void DrawableRenderTarget::BeginScene()
