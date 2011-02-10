@@ -525,7 +525,7 @@ void Game::Draw()
 		mSSAOFX->SetValue(mhCornerFrustrum, SetCornerFrustrum(), sizeof(D3DXVECTOR3));
 		mSSAOFX->CommitChanges();
 
-		mSSAOTarget->DrawPrimitive();
+		mSSAOTarget->DrawUntextured();
 
 	mSSAOFX->EndPass();
 	mSSAOFX->End();
@@ -544,7 +544,7 @@ void Game::Draw()
 			mBlurFX->SetValue(mhBlurDirection, new D3DXVECTOR2(1.0f/800.0f, 0.0f), sizeof D3DXVECTOR2);
 			mBlurFX->CommitChanges();
 
-			mBlurTarget->DrawPrimitive();
+			mBlurTarget->DrawUntextured();
 			
 		mBlurFX->EndPass();
 		mBlurFX->End();
