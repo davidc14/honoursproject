@@ -223,7 +223,7 @@ float4 VBlend2PS(float3 normalW : TEXCOORD0, float3 toEyeW  : TEXCOORD1, float2 
 	//float3 litColor = ambient*texColor.rgb + shadowCoeff*(diffuse*texColor.rgb + spec);
 		
 	// Sum all the terms together and copy over the diffuse alpha.
-    return float4(litColor, gMtrl.diffuse.a*texColor.a);
+    return float4(litColor, gMtrl.diffuse.a*texColor.a);    
 }
 
 technique VBlend2Tech

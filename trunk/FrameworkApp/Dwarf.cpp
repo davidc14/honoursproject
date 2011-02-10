@@ -99,10 +99,17 @@ void Dwarf::MoveToLocation(D3DXVECTOR3 newPosition)
 }
 
 //Draw the ship
+void Dwarf::DrawWhite(ID3DXEffect* effect, D3DXHANDLE texture)
+{
+	m_Model->DrawWhite(effect, texture);
+}
+
+//Draw the ship
 void Dwarf::Draw(ID3DXEffect* effect, D3DXHANDLE texture)
 {
 	m_Model->Draw(effect, texture);
 }
+
 
 //Draw the ship
 void Dwarf::DrawToShadowMap()
