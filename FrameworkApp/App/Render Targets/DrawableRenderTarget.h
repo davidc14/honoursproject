@@ -38,6 +38,10 @@ public:
 	void Update();
 
 	void Draw();
+	void DrawPrimitive();
+	void SetStreamSource();
+	void SetFVF();
+	void SetTexture();
 
 	void Release();
 

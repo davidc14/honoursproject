@@ -125,6 +125,26 @@ void DrawableRenderTarget::Draw()
 	pDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
 }
 
+void DrawableRenderTarget::SetStreamSource()
+{
+	pDevice->SetStreamSource(0, mRadarVB, 0, sizeof(VertexPT));
+}
+
+void DrawableRenderTarget::SetFVF()
+{
+	pDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
+}
+
+void DrawableRenderTarget::SetTexture()
+{
+	pDevice->SetTexture(0, getRenderTexture());
+}
+
+void DrawableRenderTarget::DrawPrimitive()
+{
+	pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 2);
+}
+
 void DrawableRenderTarget::Release()
 {
 	mRTS->Release();
