@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <time.h>
@@ -75,6 +76,8 @@ D3DXHANDLE mhSampleRadius;
 D3DXHANDLE mhDistanceScale;
 D3DXHANDLE mhProjection;
 D3DXHANDLE mhCornerFrustrum;
+float mRange = 0.0f, mFactor = 0.0f;
+D3DXVECTOR3 mCornerFrustrum;
  
 SpotLight mSpotLight;
 D3DXMATRIXA16 m_LightViewProj;
@@ -199,12 +202,21 @@ bool Game::LoadContent()
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
 
+	D3DXCreateTextureFromFile(pDevice, "Textures/RANDOMNORMAL.png", &m_SampleTexture);
 	 // Create the FX from a .fx file.
 	errors = 0;
 	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/SSAOEffect.fx", 
 		0, 0, D3DXSHADER_DEBUG, 0, &mSSAOFX, &errors));
 	if( errors )
 		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
+
+	mhSSAOTech = mSSAOFX->GetTechniqueByName("SSAO");
+	mhDepthTexture = mSSAOFX->GetParameterByName(0, "depthTexture");
+	mhRandomTexture = mSSAOFX->GetParameterByName(0, "randomTexture");
+	mhSampleRadius = mSSAOFX->GetParameterByName(0, "sampleRadius");
+	mhDistanceScale = mSSAOFX->GetParameterByName(0, "distanceScale");
+	mhProjection = mSSAOFX->GetParameterByName(0, "Projection");
+	mhCornerFrustrum = mSSAOFX->GetParameterByName(0, "cornerFustrum");
 
 	// // Create the FX from a .fx file.
 	//ID3DXBuffer* errors = 0;
@@ -239,7 +251,7 @@ bool Game::LoadContent()
 	//mhDepthBuffer = ssaoFX->GetParameterByName(0, "gDepthBuffer");
 	//mhSampleTexture = ssaoFX->GetParameterByName(0, "gSampleTexture");
 
-	//D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &m_SampleTexture);
+	
 
 	//// Create the FX from a .fx file.
 	//errors = 0;
@@ -513,12 +525,32 @@ void Game::Draw()
 	pDevice->SetRenderTarget(0, m_RenderTarget->getBackBuffer());
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
 
+
+
 	//ssaoFX->SetTechnique(mhSSAOTech);
 	//cellFX->SetTechnique(cellTech);
 	if( SUCCEEDED( pDevice->BeginScene() ) )
     {
 		// Clear the backbuffer to a blue color
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
+
+		UINT ssaoPasses = 1;
+		mSSAOFX->SetTechnique(mhSSAOTech);
+		mSSAOFX->Begin(&ssaoPasses, 0);
+		mSSAOFX->BeginPass(0);
+	
+			mSSAOFX->SetTexture(mhDepthTexture, mDepthTarget->getRenderTexture());
+			mSSAOFX->SetTexture(mhRandomTexture, m_SampleTexture);
+			mSSAOFX->SetFloat(mhSampleRadius, mRange);
+			mSSAOFX->SetFloat(mhDistanceScale, mFactor);			
+			mSSAOFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
+			mSSAOFX->SetValue(mhCornerFrustrum, SetCornerFrustrum(), sizeof(D3DXVECTOR3));
+			mSSAOFX->CommitChanges();
+
+			//m_RenderTarget->DrawPrimitive();
+
+		mSSAOFX->EndPass();
+		mSSAOFX->End();
 
 		m_RenderTarget->Draw();
 		//mDepthTarget->Draw();
@@ -644,4 +676,20 @@ void Game::SetPacketVariables()
 void Game::SendPacket()
 {
 	
+}
+
+D3DXVECTOR3 Game::SetCornerFrustrum()
+{
+	/*private Vector3 calculateCorner()
+        {
+            float farY = (float)Math.Tan(Math.PI / 3.0 / 2.0) * camera.FarPlane;
+            float farX = farY * camera.AspectRatio;
+
+            return new Vector3(farX, farY, camera.FarPlane);
+        }*/
+
+	static float farY = (float)tan(D3DX_PI / 3.0 / 2.0) * 1000.0f;
+	static float farX = farY * (m_WindowWidth/m_WindowHeight);
+
+	return D3DXVECTOR3(farX, farY, 1000.0f);
 }
