@@ -58,6 +58,7 @@ IDirect3DTexture9* m_WhiteTexture;
 IDirect3DTexture9* m_SampleTexture;
 
 ID3DXEffect* mDepthFX;
+D3DXHANDLE mhDepthTechAni;
 D3DXHANDLE mhDepthTech;
 D3DXHANDLE mhITWorldView;
 D3DXHANDLE mhWorldView;
@@ -178,6 +179,7 @@ bool Game::LoadContent()
 		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
 
 	mhDepthTech = mDepthFX->GetTechniqueByName("Depth");
+	mhDepthTechAni = mDepthFX->GetTechniqueByName("DepthAni");
 	mhITWorldView = mDepthFX->GetParameterByName(0, "ITWorldView");
 	mhWorldView = mDepthFX->GetParameterByName(0, "WorldView");
 	mhWorldViewProjection = mDepthFX->GetParameterByName(0, "WorldViewProjection");
@@ -348,6 +350,13 @@ void Game::Draw()
 
 			m_Citadel->Draw(mDepthFX, 0);
 
+		mDepthFX->EndPass();
+		mDepthFX->End();
+
+		mDepthFX->SetTechnique(mhDepthTechAni);
+
+		mDepthFX->Begin(&depthPasses, 0);
+		mDepthFX->BeginPass(0);
 
 			mDepthFX->SetMatrix(mhWorldViewProjection, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			mDepthFX->SetMatrix(mhWorldView, &(*m_SkinnedMesh->GetWorld() * matView));
