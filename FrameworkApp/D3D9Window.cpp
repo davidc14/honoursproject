@@ -39,7 +39,7 @@ HRESULT D3D9Window::InitDevice()
 	d3dpp.BackBufferWidth = getWindowWidth();
 	d3dpp.BackBufferHeight = getWindowHeight();	
     d3dpp.EnableAutoDepthStencil = TRUE;
-    d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
+    d3dpp.AutoDepthStencilFormat = D3DFMT_D24X8;
 	//d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
 	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 

@@ -83,7 +83,7 @@ VSANI_OUTPUT DepthVertexShaderFunctionAni(VSANI_INPUT IN)
    
    Output.Position = mul(p, WorldViewProjection);
    Output.vPositionVS = mul(p, WorldView);
-   Output.Normal = mul(n, ITWorldView).xyz;
+   Output.Normal = mul(n, ITWorldView);
    
    return Output;
 }

@@ -77,7 +77,8 @@ D3DXHANDLE mhSampleRadius;
 D3DXHANDLE mhDistanceScale;
 D3DXHANDLE mhProjection;
 D3DXHANDLE mhCornerFrustrum;
-float mRange = 6.0f, mFactor = 1000.0f;
+float mRange = 6.0f, mFactor = 2500.0f;
+//float mRange = 0.0f, mFactor = 0.0f;
 D3DXVECTOR3 mCornerFrustrum;
 
 ID3DXEffect* mBlurFX;
@@ -175,7 +176,7 @@ bool Game::LoadContent()
 
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
 	//mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
-	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_X8R8G8B8, D3DFMT_D24X8);
+	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A8R8G8B8, D3DFMT_D24X8);
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8);
 	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
 	mBlurTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
@@ -360,31 +361,35 @@ void Game::Update()
 
 void Game::Draw()
 {
-	mDepthFX->SetTechnique(mhDepthTech);
-	mDepthFX->SetFloat(mhFarClip, 1000.0f);
+	
+	
 
 	mDepthTarget->BeginScene();
 	
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+		
+		mDepthFX->SetTechnique(mhDepthTech);
 
 		UINT depthPasses = 1;
 		mDepthFX->Begin(&depthPasses, 0);
 		mDepthFX->BeginPass(0);
-
+			
+			mDepthFX->SetFloat(mhFarClip, 1000.0f);
 			mDepthFX->SetMatrix(mhWorldViewProjection, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			mDepthFX->SetMatrix(mhWorldView, &(m_Dwarf->GetWorld() * matView));
 			D3DXMATRIX WorldViewInvTrans;
-			D3DXMatrixInverse(&WorldViewInvTrans, NULL, m_Dwarf->GetWorldPointer());
+			D3DXMatrixInverse(&WorldViewInvTrans, NULL, &(m_Dwarf->GetWorld() * matView));
 			D3DXMatrixTranspose(&WorldViewInvTrans, &WorldViewInvTrans);
 			mDepthFX->SetMatrix(mhITWorldView, &WorldViewInvTrans);
 			mDepthFX->CommitChanges();
 
 			m_Dwarf->Draw(mDepthFX, 0);
 
+			mDepthFX->SetFloat(mhFarClip, 1000.0f);
 			mDepthFX->SetMatrix(mhWorldViewProjection, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			mDepthFX->SetMatrix(mhWorldView, &(m_Citadel->GetWorld() * matView));
 			//D3DXMATRIX WorldViewInvTrans;
-			D3DXMatrixInverse(&WorldViewInvTrans, NULL, m_Citadel->GetWorldPointer());
+			D3DXMatrixInverse(&WorldViewInvTrans, NULL, &(m_Citadel->GetWorld() * matView));
 			D3DXMatrixTranspose(&WorldViewInvTrans, &WorldViewInvTrans);
 			mDepthFX->SetMatrix(mhITWorldView, &WorldViewInvTrans);
 			mDepthFX->CommitChanges();
@@ -399,10 +404,11 @@ void Game::Draw()
 		mDepthFX->Begin(&depthPasses, 0);
 		mDepthFX->BeginPass(0);
 
+			mDepthFX->SetFloat(mhFarClip, 1000.0f);
 			mDepthFX->SetMatrix(mhWorldViewProjection, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			mDepthFX->SetMatrix(mhWorldView, &(*m_SkinnedMesh->GetWorld() * matView));
 			//D3DXMATRIX WorldViewInvTrans;
-			D3DXMatrixInverse(&WorldViewInvTrans, NULL, m_SkinnedMesh->GetWorld());
+			D3DXMatrixInverse(&WorldViewInvTrans, NULL, &(*m_SkinnedMesh->GetWorld() * matView));
 			D3DXMatrixTranspose(&WorldViewInvTrans, &WorldViewInvTrans);
 			mDepthFX->SetMatrix(mhITWorldView, &WorldViewInvTrans);
 			mDepthFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
@@ -574,15 +580,14 @@ void Game::Draw()
 			mFinalFX->SetTexture(mhSceneTexture, m_RenderTarget->getRenderTexture());
 			mFinalFX->CommitChanges();
 
-			m_RenderTarget->Draw();
+			//m_RenderTarget->Draw();
 
 		mFinalFX->EndPass();
 		mFinalFX->End();
 		
-		
-		mDepthTarget->Draw();
+		//mDepthTarget->Draw();
 		//mBlurTarget->Draw();
-		//mSSAOTarget->Draw();
+		mSSAOTarget->Draw();
 
 		m_Font->Draw();	
 
@@ -632,13 +637,16 @@ void Game::CalculateMatrices()
     // a point to lookat, and a direction for which way is up. Here, we set the
     // eye five units back along the z-axis and up three units, look at the
     // origin, and define "up" to be in the y-direction.
-    D3DXVECTOR3 vEyePt( -5.0f, 10.0f,-12.5f );
-    D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
-    D3DXVECTOR3 vUpVec( 0.0f, 1.0f, 0.0f );
-	D3DXMATRIX mViewTransform; 
-	D3DXMatrixRotationY(&mViewTransform, 0);
-	D3DXVec3Transform(&vViewVector, &(vLookatPt - vEyePt), &mViewTransform );
+ //   D3DXVECTOR3 vEyePt( -5.0f, 10.0f,-12.5f );
+ //   D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
+ //   D3DXVECTOR3 vUpVec( 0.0f, 1.0f, 0.0f );
+	//D3DXMATRIX mViewTransform; 
+	//D3DXMatrixRotationY(&mViewTransform, 0);
+	//D3DXVec3Transform(&vViewVector, &(vLookatPt - vEyePt), &mViewTransform );
 	D3DXMatrixLookAtLH( &matView, m_Camera->getPosition(), m_Camera->getLookAt(), m_Camera->getUp() );
+
+	//D3DXMatrixPerspectiveFovLH(m_RenderTarget->getProjectionPointer(), D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, 1000.0f);
+
     //pDevice->SetTransform( D3DTS_VIEW, &matView );
 
     // For the projection matrix, we set up a perspective transform (which
