@@ -66,6 +66,15 @@ D3DXHANDLE mhWorldView;
 D3DXHANDLE mhWorldViewProjection;
 D3DXHANDLE mhFarClip;
 D3DXHANDLE mhFinalXForms;
+
+ID3DXEffect* mSSAOFX; 
+D3DXHANDLE mhSSAOTech;
+D3DXHANDLE mhDepthTexture;
+D3DXHANDLE mhRandomTexture;
+D3DXHANDLE mhSampleRadius;
+D3DXHANDLE mhDistanceScale;
+D3DXHANDLE mhProjection;
+D3DXHANDLE mhCornerFrustrum;
  
 SpotLight mSpotLight;
 D3DXMATRIXA16 m_LightViewProj;
@@ -153,6 +162,7 @@ bool Game::LoadContent()
 	//mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
 	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_R32F, D3DFMT_D24X8);
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8);
+	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
 
 	// Create shadow map.
 	D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
@@ -186,6 +196,15 @@ bool Game::LoadContent()
 	mhWorldViewProjection = mDepthFX->GetParameterByName(0, "WorldViewProjection");
 	mhFarClip = mDepthFX->GetParameterByName(0, "FarClip");
 	mhFinalXForms = mDepthFX->GetParameterByName(0, "FinalXForms");
+
+	/////////////////////////////////////////////////////////////////////////////////////////////
+
+	 // Create the FX from a .fx file.
+	errors = 0;
+	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/SSAOEffect.fx", 
+		0, 0, D3DXSHADER_DEBUG, 0, &mSSAOFX, &errors));
+	if( errors )
+		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
 
 	// // Create the FX from a .fx file.
 	//ID3DXBuffer* errors = 0;
@@ -313,6 +332,7 @@ void Game::Update()
 	mSpotLight.posW      = lightPosW;
 	mSpotLight.dirW      = lightDirW;
 
+#ifdef _DEBUG
 	//Increment the frame counter
 	static float frameCount = 0.0f;
 	frameCount++;
@@ -327,16 +347,13 @@ void Game::Update()
 		//Calculate the frames per second
 		static float FPS = 0.0f;
 		FPS = frameCount/timeElapsed;
-		std::cout << FPS << std::endl;
+		std::cout << FPS << " FPS" << std::endl;
 
 		//Reset the values to ensure an accurate result
 		timeElapsed = 0.0f;
 		frameCount = 0.0f;
 	}
-
-	/*printf("%f\n", lightPosW.x);
-	printf("%f\n", lightPosW.y);
-	printf("%f\n", lightPosW.z);*/
+#endif
 }
 
 void Game::Draw()
@@ -536,6 +553,8 @@ void Game::Unload()
 
 	mDepthTarget->Release();
 	mDepthFX->Release();
+
+	mSSAOFX->Release();
 }
 
 void Game::CalculateMatrices()
