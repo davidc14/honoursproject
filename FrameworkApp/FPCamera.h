@@ -23,6 +23,8 @@ public:
 	void Update(const float dtSeconds);
 	void Update(const float dtSeconds, int windowWidth, int windowHeight);
 
+	float GetFarPlane() { return farPlane; }
+
 	////Returns the value of the vectors
 	//Vector3 getPosition();
 	//Vector3 getLookAt();
@@ -89,6 +91,8 @@ private:
 	POINT *m_mousePos;
 
 	int m_WindowWidth, m_WindowHeight;
+
+	float farPlane;
 };
 
 #endif

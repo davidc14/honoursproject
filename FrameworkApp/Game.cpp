@@ -21,7 +21,7 @@
 
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
 
-D3DXMATRIXA16 matWorld, matView, matProj, matWorldInverseTranspose;
+D3DXMATRIX matWorld, matView, matProj, matWorldInverseTranspose;
 D3DXVECTOR4 vViewVector;
 
 D3DFont* m_Font;
@@ -55,6 +55,7 @@ DrawableRenderTarget* mDepthTarget;
 DrawableRenderTarget* mSSAOTarget;
 DrawableRenderTarget* mBlurTarget;
 DrawableRenderTarget* mShadowTarget;
+DrawableRenderTarget* mDepthNormTarget;
 //DrawableTex2D* mShadowMap;
 
 IDirect3DTexture9* m_WhiteTexture;
@@ -91,6 +92,15 @@ ID3DXEffect* mFinalFX;
 D3DXHANDLE mhFinalTech;
 D3DXHANDLE mhSSAOTexture;
 D3DXHANDLE mhSceneTexture;
+
+ID3DXEffect* mDNFX;
+D3DXHANDLE mhNormDepth;
+D3DXHANDLE mhNormDepthAni;
+D3DXHANDLE mhWorld;
+D3DXHANDLE mhView;
+D3DXHANDLE mhProj;
+D3DXHANDLE mhWorldInvTrans;
+D3DXHANDLE mhFinalXFormsA;
  
 SpotLight mSpotLight;
 D3DXMATRIXA16 m_LightViewProj;
@@ -174,12 +184,14 @@ bool Game::LoadContent()
 	mWhiteMtrl.spec    = WHITE*0.6f;
 	mWhiteMtrl.specPower = 48.0f;
 
-	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
+	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, m_Camera->GetFarPlane());
 	//mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
-	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A32B32G32R32F, D3DFMT_D24X8);
-	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8);
-	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
-	mBlurTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
+	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A8R8G8B8, D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, m_Camera->GetFarPlane());
+	mBlurTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, m_Camera->GetFarPlane());
+
+	mDepthNormTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, m_Camera->GetFarPlane());
 
 	// Create shadow map.
 	//D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
@@ -198,6 +210,25 @@ bool Game::LoadContent()
 	mSpotLight.diffuse   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.spotPower = 24.0f;
+
+	ID3DXBuffer* error = 0;
+	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/DrawDepthNormal.fx", 
+		0, 0, D3DXSHADER_DEBUG, 0, &mDNFX, &error));
+	if( error )
+		MessageBox(0, (char*)error->GetBufferPointer(), 0, 0);
+
+	mhNormDepth = mDNFX->GetTechniqueByName("NormalDepth");
+	mhNormDepthAni = mDNFX->GetTechniqueByName("mhNormDepthAni");
+	mhWorld = mDNFX->GetParameterByName(0, "World");
+	mhView = mDNFX->GetParameterByName(0, "View");
+	mhProj = mDNFX->GetParameterByName(0, "Projection");
+	mhFinalXFormsA = mDNFX->GetParameterByName(0, "gFinalXForms");
+	
+	/*uniform extern float4x4 World;
+	uniform extern float4x4 View;
+	uniform extern float4x4 Projection;
+	uniform extern float4x4 WorldInvTrans;
+	uniform extern float4x4 gFinalXForms[35];*/
 
 	 // Create the FX from a .fx file.
 	ID3DXBuffer* errors = 0;
@@ -361,12 +392,41 @@ void Game::Update()
 
 void Game::Draw()
 {
-	
-	
-
 	mDepthTarget->BeginScene();
 	
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+
+		/*mDNFX->SetTechnique(mhNormDepth);
+		UINT depthPasses = 1;
+		mDNFX->Begin(&depthPasses, 0);
+		mDNFX->BeginPass(0);
+		
+			mDNFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
+			mDNFX->SetMatrix(mhView, &matView);
+			mDNFX->SetMatrix(mhProj, m_RenderTarget->getProjectionPointer());
+			mDNFX->CommitChanges();
+
+			m_Dwarf->Draw(mDNFX, 0);
+
+		mDNFX->EndPass();
+		mDNFX->End();
+
+		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+
+		mDNFX->SetTechnique(mhNormDepth);
+		
+		mDNFX->Begin(&depthPasses, 0);
+		mDNFX->BeginPass(0);
+		
+			mDNFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
+			mDNFX->SetMatrix(mhView, &matView);
+			mDNFX->SetMatrix(mhProj, m_RenderTarget->getProjectionPointer());
+			mDNFX->CommitChanges();
+
+			m_Citadel->Draw(mDNFX, 0);
+
+		mDNFX->EndPass();
+		mDNFX->End();*/
 		
 		mDepthFX->SetTechnique(mhDepthTech);
 
@@ -374,18 +434,18 @@ void Game::Draw()
 		mDepthFX->Begin(&depthPasses, 0);
 		mDepthFX->BeginPass(0);
 			
-			mDepthFX->SetFloat(mhFarClip, 1000.0f);
+			mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
 			mDepthFX->SetMatrix(mhWorldViewProjection, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			mDepthFX->SetMatrix(mhWorldView, &(m_Dwarf->GetWorld() * matView));
-			D3DXMATRIX WorldViewInvTrans;
-			D3DXMatrixInverse(&WorldViewInvTrans, NULL, &(m_Dwarf->GetWorld() * matView));
-			D3DXMatrixTranspose(&WorldViewInvTrans, &WorldViewInvTrans);
+			D3DXMATRIX WorldViewInv, WorldViewInvTrans;
+			D3DXMatrixInverse(&WorldViewInv, NULL, &(m_Dwarf->GetWorld() * matView));
+			D3DXMatrixTranspose(&WorldViewInvTrans, &WorldViewInv);
 			mDepthFX->SetMatrix(mhITWorldView, &WorldViewInvTrans);
 			mDepthFX->CommitChanges();
 
 			m_Dwarf->Draw(mDepthFX, 0);
 
-			mDepthFX->SetFloat(mhFarClip, 1000.0f);
+			mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
 			mDepthFX->SetMatrix(mhWorldViewProjection, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			mDepthFX->SetMatrix(mhWorldView, &(m_Citadel->GetWorld() * matView));
 			//D3DXMATRIX WorldViewInvTrans;
@@ -399,25 +459,25 @@ void Game::Draw()
 		mDepthFX->EndPass();
 		mDepthFX->End();
 
-		mDepthFX->SetTechnique(mhDepthTechAni);
+		//mDepthFX->SetTechnique(mhDepthTechAni);
 
-		mDepthFX->Begin(&depthPasses, 0);
-		mDepthFX->BeginPass(0);
+		//mDepthFX->Begin(&depthPasses, 0);
+		//mDepthFX->BeginPass(0);
 
-			mDepthFX->SetFloat(mhFarClip, 1000.0f);
-			mDepthFX->SetMatrix(mhWorldViewProjection, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			mDepthFX->SetMatrix(mhWorldView, &(*m_SkinnedMesh->GetWorld() * matView));
-			//D3DXMATRIX WorldViewInvTrans;
-			D3DXMatrixInverse(&WorldViewInvTrans, NULL, &(*m_SkinnedMesh->GetWorld() * matView));
-			D3DXMatrixTranspose(&WorldViewInvTrans, &WorldViewInvTrans);
-			mDepthFX->SetMatrix(mhITWorldView, &WorldViewInvTrans);
-			mDepthFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-			mDepthFX->CommitChanges();
+			//mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
+			//mDepthFX->SetMatrix(mhWorldViewProjection, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+			//mDepthFX->SetMatrix(mhWorldView, &(*m_SkinnedMesh->GetWorld() * matView));
+			////D3DXMATRIX WorldViewInvTrans;
+			//D3DXMatrixInverse(&WorldViewInvTrans, NULL, &(*m_SkinnedMesh->GetWorld() * matView));
+			//D3DXMatrixTranspose(&WorldViewInvTrans, &WorldViewInvTrans);
+			//mDepthFX->SetMatrix(mhITWorldView, &WorldViewInvTrans);
+			//mDepthFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+			//mDepthFX->CommitChanges();
 
-			m_SkinnedMesh->Draw();
+			//m_SkinnedMesh->Draw();
 
-		mDepthFX->EndPass();
-		mDepthFX->End();
+		//mDepthFX->EndPass();
+		//mDepthFX->End();
 
 	mDepthTarget->EndScene();
 	
@@ -509,7 +569,7 @@ void Game::Draw()
 		m_SkinnedMesh->UpdateShaderVariables(&m_AnimatedContainer);
 		SetAnimatedInterfaceVariables(*m_SkinnedMesh->GetWorld());
 
-		m_SkinnedMesh->Draw();
+		//m_SkinnedMesh->Draw();
 
 	m_AnimatedInterface->GetEffect()->EndPass();
 	m_AnimatedInterface->GetEffect()->End();
@@ -580,13 +640,13 @@ void Game::Draw()
 			mFinalFX->SetTexture(mhSceneTexture, m_RenderTarget->getRenderTexture());
 			mFinalFX->CommitChanges();
 
-			//m_RenderTarget->Draw();
+			m_RenderTarget->Draw();
 
 		mFinalFX->EndPass();
 		mFinalFX->End();
 		
-		//mDepthTarget->Draw();
-		mBlurTarget->Draw();
+		mDepthTarget->Draw();
+		//mBlurTarget->Draw();
 		//mSSAOTarget->Draw();
 
 		m_Font->Draw();	
@@ -645,7 +705,7 @@ void Game::CalculateMatrices()
 	//D3DXVec3Transform(&vViewVector, &(vLookatPt - vEyePt), &mViewTransform );
 	D3DXMatrixLookAtLH( &matView, m_Camera->getPosition(), m_Camera->getLookAt(), m_Camera->getUp() );
 
-	//D3DXMatrixPerspectiveFovLH(m_RenderTarget->getProjectionPointer(), D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, 1000.0f);
+	//D3DXMatrixPerspectiveFovLH(m_RenderTarget->getProjectionPointer(), D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, m_Camera->GetFarPlane());
 
     //pDevice->SetTransform( D3DTS_VIEW, &matView );
 
@@ -733,8 +793,8 @@ D3DXVECTOR3 Game::SetCornerFrustrum()
             return new Vector3(farX, farY, camera.FarPlane);
         }*/
 
-	static float farY = (float)tan(D3DX_PI / 3.0 / 2.0) * 1000.0f;
+	static float farY = (float)tan(D3DX_PI / 3.0 / 2.0) * m_Camera->GetFarPlane();
 	static float farX = farY * (m_WindowWidth/m_WindowHeight);
 
-	return D3DXVECTOR3(farX, farY, 1000.0f);
+	return D3DXVECTOR3(farX, farY, m_Camera->GetFarPlane());
 }
