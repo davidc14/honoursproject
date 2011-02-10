@@ -175,7 +175,7 @@ bool Game::LoadContent()
 
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
 	//mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
-	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_R32F, D3DFMT_D24X8);
+	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_X8R8G8B8, D3DFMT_D24X8);
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8);
 	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
 	mBlurTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
@@ -365,7 +365,7 @@ void Game::Draw()
 
 	mDepthTarget->BeginScene();
 	
-		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 1.0f, 0 );
+		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 
 		UINT depthPasses = 1;
 		mDepthFX->Begin(&depthPasses, 0);
@@ -574,13 +574,13 @@ void Game::Draw()
 			mFinalFX->SetTexture(mhSceneTexture, m_RenderTarget->getRenderTexture());
 			mFinalFX->CommitChanges();
 
-			//m_RenderTarget->Draw();
+			m_RenderTarget->Draw();
 
 		mFinalFX->EndPass();
 		mFinalFX->End();
 		
 		
-		mDepthTarget->Draw();
+		//mDepthTarget->Draw();
 		//mSSAOTarget->Draw();
 
 		m_Font->Draw();	
