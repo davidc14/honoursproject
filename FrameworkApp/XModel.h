@@ -18,6 +18,7 @@ public:
 
 	//The render function for the model
 	void Draw(ID3DXEffect* m_Effect, D3DXHANDLE m_hTexture);
+	void DrawWhite(ID3DXEffect* m_Effect, D3DXHANDLE m_hTexture);
 	void DrawToShadowMap(int subset);
 
 	////The set model function that is used if the device is not initialised before the model loader

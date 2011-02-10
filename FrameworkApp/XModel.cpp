@@ -128,6 +128,23 @@ void XModel::DrawToShadowMap(int subset)
 	HR(m_Mesh->DrawSubset(subset));
 }
 
+void XModel::DrawWhite(ID3DXEffect* m_Effect, D3DXHANDLE m_hTexture)
+{
+	
+	for(DWORD t = 0; t < m_NumberOfMaterials; t++)    // loop through each subset
+	{
+		if(m_hTexture != 0)
+		{
+			//if(m_Texture[t] != NULL)    // if the subset has a texture (if texture is not NULL)
+			//	m_Effect->SetTexture(m_hTexture, m_Texture[t]);			// ...then set the texture
+			//else
+				m_Effect->SetTexture(m_hTexture, m_DefaultTexture);		// ...then set the texture
+		}
+		m_Effect->CommitChanges();
+		m_Mesh->DrawSubset(t);    // draw the subset
+	}
+}
+
 void XModel::Draw(ID3DXEffect* m_Effect, D3DXHANDLE m_hTexture)
 {
 	

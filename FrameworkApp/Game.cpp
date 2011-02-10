@@ -77,7 +77,7 @@ D3DXHANDLE mhSampleRadius;
 D3DXHANDLE mhDistanceScale;
 D3DXHANDLE mhProjection;
 D3DXHANDLE mhCornerFrustrum;
-float mRange = 0.0f, mFactor = 0.0f;
+float mRange = 6.0f, mFactor = 1000.0f;
 D3DXVECTOR3 mCornerFrustrum;
 
 ID3DXEffect* mBlurFX;
@@ -312,13 +312,13 @@ void Game::Update()
 	D3DXVECTOR3 lightTargetW(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 lightUpW(0.0f, 1.0f, 0.0f);
 
-	static float t = 0.0f;
+	/*static float t = 0.0f;
 	t += m_DeltaTime;
 	if( t >= 2.0f*D3DX_PI )
 		t = 0.0f;
 	D3DXMATRIX Ry;
 	D3DXMatrixRotationY(&Ry, t);
-	D3DXVec3TransformCoord(&lightPosW, &lightPosW, &Ry);
+	D3DXVec3TransformCoord(&lightPosW, &lightPosW, &Ry);*/
 
 	D3DXMatrixLookAtLH(&lightView, &lightPosW, &lightTargetW, &lightUpW);
 	
@@ -455,7 +455,7 @@ void Game::Draw()
 		m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
 			m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
 
-		m_SkinnedMesh->Draw();
+		//m_SkinnedMesh->Draw();
 
 		m_AnimatedInterface->GetEffect()->EndPass();
 		m_AnimatedInterface->GetEffect()->End();
@@ -485,10 +485,10 @@ void Game::Draw()
 	m_SpotInterface->GetEffect()->BeginPass(0);
 
 		SetSpotLightVariables(m_Citadel->GetWorld(), m_Citadel->GetMaterial());
-		m_Citadel->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+		m_Citadel->DrawWhite(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
 		SetSpotLightVariables(m_Dwarf->GetWorld(), m_Dwarf->GetMaterial());
-		m_Dwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+		m_Dwarf->DrawWhite(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
 	m_SpotInterface->GetEffect()->EndPass();
 	m_SpotInterface->GetEffect()->End();
@@ -574,11 +574,13 @@ void Game::Draw()
 			mFinalFX->SetTexture(mhSceneTexture, m_RenderTarget->getRenderTexture());
 			mFinalFX->CommitChanges();
 
-			m_RenderTarget->Draw();
+			//m_RenderTarget->Draw();
 
 		mFinalFX->EndPass();
 		mFinalFX->End();
-		//mDepthTarget->Draw();
+		
+		
+		mDepthTarget->Draw();
 		//mSSAOTarget->Draw();
 
 		m_Font->Draw();	
