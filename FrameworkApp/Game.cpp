@@ -1,3 +1,4 @@
+#include <iostream>
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <time.h>
@@ -312,6 +313,27 @@ void Game::Update()
 	mSpotLight.posW      = lightPosW;
 	mSpotLight.dirW      = lightDirW;
 
+	//Increment the frame counter
+	static float frameCount = 0.0f;
+	frameCount++;
+
+	//Add the deltatime to the time elapsed in the game
+	static float timeElapsed = 0.0f; 
+	timeElapsed += m_DeltaTime;
+
+	//Prevent a division by zero error
+	if(timeElapsed >= 1.0f)
+	{
+		//Calculate the frames per second
+		static float FPS = 0.0f;
+		FPS = frameCount/timeElapsed;
+		std::cout << FPS << std::endl;
+
+		//Reset the values to ensure an accurate result
+		timeElapsed = 0.0f;
+		frameCount = 0.0f;
+	}
+
 	/*printf("%f\n", lightPosW.x);
 	printf("%f\n", lightPosW.y);
 	printf("%f\n", lightPosW.z);*/
@@ -373,63 +395,9 @@ void Game::Draw()
 		mDepthFX->End();
 
 	mDepthTarget->EndScene();
-	//pDevice->GetTransform(D3DTS_PROJECTION, m_DepthNormalTarget->getOldProjectionPointer());
-	//pDevice->GetRenderTarget(0, m_DepthNormalTarget->getBackBufferPointer());
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	//pDevice->SetRenderTarget(0, m_DepthNormalTarget->getRenderSurface());
-
-	//pDevice->BeginScene();
-
-	//// Clear the backbuffer to a blue color
- //   pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x000000FF, 1.0f, 0 );
-
-	//mFX->SetTechnique(mhTech);
-
-	//UINT depthPasses = 1;
-	//mFX->Begin(&depthPasses, 0);
-	//mFX->BeginPass(0);
-	//
-	//mFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
-	//mFX->SetMatrix(mhView, &matView);
-	//mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
-	//mFX->CommitChanges();
-
-	//m_Dwarf->Draw(mFX, 0);
-
-	//mFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
-	//mFX->SetMatrix(mhView, &matView);
-	//mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
-	//mFX->CommitChanges();
-
-	//m_Citadel->Draw(mFX, 0);
-
-	//mFX->EndPass();
-	//mFX->End();
-
-	//mFX->SetTechnique(mhTechAni);
-	//mFX->Begin(&depthPasses, 0);
-	//mFX->BeginPass(0);
-
-	//mFX->SetMatrix(mhWorld, m_SkinnedMesh->GetWorld());
-	//mFX->SetMatrix(mhView, &matView);
-	//mFX->SetMatrix(mhProj, m_DepthNormalTarget->getProjectionPointer());
-	//mFX->SetMatrixArray(mhFinalXFormsArray, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-	//D3DXMATRIX m_matWorldInverseTranspose;
-	//D3DXMatrixInverse(&m_matWorldInverseTranspose, NULL, m_SkinnedMesh->GetWorld());
-	//D3DXMatrixTranspose(&m_matWorldInverseTranspose, &m_matWorldInverseTranspose);
-	//mFX->SetMatrix(mhWorldInvTrans, &m_matWorldInverseTranspose);
-	//
-	//mFX->CommitChanges();
-
-	//m_SkinnedMesh->Draw();
-
-	//mFX->EndPass();
-	//mFX->End();
-	//	
-	//pDevice->EndScene();
-	//pDevice->SetRenderTarget(0, m_DepthNormalTarget->getBackBuffer());
-
-	//mShadowMap->beginScene();
 	pDevice->GetTransform(D3DTS_PROJECTION, mShadowTarget->getOldProjectionPointer());
 	pDevice->GetRenderTarget(0, mShadowTarget->getBackBufferPointer());
 
@@ -477,6 +445,8 @@ void Game::Draw()
 	pDevice->EndScene();
 	//mShadowTarget->EndScene();
 	pDevice->SetRenderTarget(0, mShadowTarget->getBackBuffer());
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	pDevice->GetTransform(D3DTS_PROJECTION, m_RenderTarget->getOldProjectionPointer());
 	pDevice->GetRenderTarget(0, m_RenderTarget->getBackBufferPointer());
@@ -534,7 +504,7 @@ void Game::Draw()
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
 
 		m_RenderTarget->Draw();
-		mDepthTarget->Draw();
+		//mDepthTarget->Draw();
 
 		m_Font->Draw();	
 
