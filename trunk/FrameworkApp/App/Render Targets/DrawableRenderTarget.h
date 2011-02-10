@@ -38,6 +38,7 @@ public:
 	void Update();
 
 	void Draw();
+	void DrawUntextured();
 	void DrawPrimitive();
 	void SetStreamSource();
 	void SetFVF();

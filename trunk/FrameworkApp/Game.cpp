@@ -80,11 +80,16 @@ D3DXHANDLE mhCornerFrustrum;
 float mRange = 0.0f, mFactor = 0.0f;
 D3DXVECTOR3 mCornerFrustrum;
 
-ID3DXEffect *mBlurFX;
+ID3DXEffect* mBlurFX;
 D3DXHANDLE mhBlurTech;
 D3DXHANDLE mhDepthFrame;
 D3DXHANDLE mhSSAOFrame;
 D3DXHANDLE mhBlurDirection;
+
+ID3DXEffect* mFinalFX;
+D3DXHANDLE mhFinalTech;
+D3DXHANDLE mhSSAOTexture;
+D3DXHANDLE mhSceneTexture;
  
 SpotLight mSpotLight;
 D3DXMATRIXA16 m_LightViewProj;
@@ -237,6 +242,17 @@ bool Game::LoadContent()
 	mhDepthFrame = mBlurFX->GetParameterByName(0, "depthTexture");
 	mhSSAOFrame = mBlurFX->GetParameterByName(0, "SSAOTexture"); 
 	mhBlurDirection = mBlurFX->GetParameterByName(0, "blurDirection");
+
+	// Create the FX from a .fx file.
+	errors = 0;
+	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/SSAOFinalPass.fx", 
+		0, 0, D3DXSHADER_DEBUG, 0, &mFinalFX, &errors));
+	if( errors )
+		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
+
+	mhFinalTech = mFinalFX->GetTechniqueByName("Merge");
+	mhSSAOTexture = mFinalFX->GetParameterByName(0, "SSAOTex");
+	mhSceneTexture = mFinalFX->GetParameterByName(0, "SceneTexture");
 
 	return true;
 }
@@ -549,7 +565,19 @@ void Game::Draw()
 		// Clear the backbuffer to a blue color
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );		
 
-		m_RenderTarget->Draw();
+		mFinalFX->SetTechnique(mhFinalTech);
+
+		UINT finalPasses = 1;
+		mFinalFX->Begin(&finalPasses, 0);
+		mFinalFX->BeginPass(0);
+			mFinalFX->SetTexture(mhSSAOTexture, mBlurTarget->getRenderTexture());
+			mFinalFX->SetTexture(mhSceneTexture, m_RenderTarget->getRenderTexture());
+			mFinalFX->CommitChanges();
+
+			m_RenderTarget->Draw();
+
+		mFinalFX->EndPass();
+		mFinalFX->End();
 		//mDepthTarget->Draw();
 		//mSSAOTarget->Draw();
 
@@ -591,6 +619,8 @@ void Game::Unload()
 	mBlurTarget->Release();
 
 	m_RenderTarget->Release();
+
+	mFinalFX->Release();
 }
 
 void Game::CalculateMatrices()
