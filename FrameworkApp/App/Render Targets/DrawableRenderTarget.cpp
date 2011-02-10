@@ -130,6 +130,25 @@ void DrawableRenderTarget::Draw()
 	pDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
 }
 
+void DrawableRenderTarget::DrawUntextured()
+{
+	pDevice->SetStreamSource(0, mRadarVB, 0, sizeof(VertexPT));
+	pDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
+
+	//pDevice->SetTransform(D3DTS_PROJECTION, getOldProjectionPointer());
+
+	//pDevice->SetTexture(0, pRenderTexture);
+	//pDevice->SetTexture(0, getRenderTexture());
+	
+	// Turn on D3D lighting, since we are providing our own vertex colors
+	pDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+
+	pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 2);
+
+	// Turn on D3D lighting, since we are providing our own vertex colors
+	pDevice->SetRenderState( D3DRS_LIGHTING, TRUE );
+}
+
 void DrawableRenderTarget::SetStreamSource()
 {
 	pDevice->SetStreamSource(0, mRadarVB, 0, sizeof(VertexPT));
