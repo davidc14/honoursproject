@@ -580,7 +580,7 @@ void Game::Draw()
 		mFinalFX->End();
 		
 		
-		//mDepthTarget->Draw();
+		mDepthTarget->Draw();
 		//mSSAOTarget->Draw();
 
 		m_Font->Draw();	
