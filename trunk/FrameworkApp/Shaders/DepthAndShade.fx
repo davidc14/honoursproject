@@ -17,6 +17,7 @@ struct VS_OUTPUT
    float4 Position: POSITION0;
    float3 Normal : TEXCOORD0;
    float4 vPositionVS : TEXCOORD1;
+   float4 Color : COLOR0;
 };
 
 
@@ -24,9 +25,14 @@ VS_OUTPUT DepthVertexShaderFunction(VS_INPUT IN)
 {
    VS_OUTPUT Output;
    
+   float3 n = IN.Normal;
+   
    Output.Position = mul(IN.Position, WorldViewProjection);
    Output.vPositionVS = mul(IN.Position, WorldView);
    Output.Normal = mul(IN.Normal, ITWorldView);
+   
+   Output.Color.rgb = Output.Normal;
+   Output.Color.a = 0;
    
    return Output;
 }
@@ -35,6 +41,7 @@ float4 DepthPixelShaderFunction(VS_OUTPUT IN) : COLOR0
 {
 	float depth = IN.vPositionVS.z / FarClip;
 	IN.Normal = normalize(IN.Normal);
+	if(IN.Normal.z < 0) IN.Normal.z *= -1;
 	return float4(IN.Normal.x, IN.Normal.y, IN.Normal.z, depth);
 }
 
@@ -79,20 +86,13 @@ VSANI_OUTPUT DepthVertexShaderFunctionAni(VSANI_INPUT IN)
    
    float4 n = IN.weight0 * mul(float4(IN.Normal, 0.0f), FinalXForms[IN.boneIndex[0]]);
    n       += weight1 * mul(float4(IN.Normal, 0.0f), FinalXForms[IN.boneIndex[1]]);
-   n.w = 1.0f;
+   n.w = 0.0f;
    
    Output.Position = mul(p, WorldViewProjection);
    Output.vPositionVS = mul(p, WorldView);
-   Output.Normal = mul(n, ITWorldView);
+   Output.Normal = mul(n, ITWorldView).xyz;
    
    return Output;
-}
-
-float4 DepthPixelShaderFunctionAni(VSANI_OUTPUT IN) : COLOR0
-{
-	float depth = IN.vPositionVS.z / FarClip;
-	IN.Normal = normalize(IN.Normal);
-	return float4(IN.Normal.x, IN.Normal.y, IN.Normal.z, depth);
 }
 
 technique DepthAni
@@ -101,7 +101,7 @@ technique DepthAni
     {
 
         VertexShader = compile vs_2_0 DepthVertexShaderFunctionAni();
-        PixelShader = compile ps_2_0 DepthPixelShaderFunctionAni();
+        PixelShader = compile ps_2_0 DepthPixelShaderFunction();
     }
 }
 

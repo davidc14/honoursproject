@@ -2,6 +2,7 @@ uniform extern float4x4 World;
 uniform extern float4x4 View;
 uniform extern float4x4 Projection;
 uniform extern float4x4 WorldInvTrans;
+uniform extern float4x4 WorldViewInvTrans;
 uniform extern float4x4 gFinalXForms[35];
 
 // Output structure for the vertex shader that renders normal and depth information.
