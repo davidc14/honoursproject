@@ -53,8 +53,9 @@ Mtrl     mWhiteMtrl;
 DrawableRenderTarget* m_RenderTarget;
 DrawableRenderTarget* mDepthTarget;
 DrawableRenderTarget* mSSAOTarget;
+DrawableRenderTarget* mBlurTarget;
 DrawableRenderTarget* mShadowTarget;
-DrawableTex2D* mShadowMap;
+//DrawableTex2D* mShadowMap;
 
 IDirect3DTexture9* m_WhiteTexture;
 IDirect3DTexture9* m_SampleTexture;
@@ -78,6 +79,12 @@ D3DXHANDLE mhProjection;
 D3DXHANDLE mhCornerFrustrum;
 float mRange = 0.0f, mFactor = 0.0f;
 D3DXVECTOR3 mCornerFrustrum;
+
+ID3DXEffect *mBlurFX;
+D3DXHANDLE mhBlurTech;
+D3DXHANDLE mhDepthFrame;
+D3DXHANDLE mhSSAOFrame;
+D3DXHANDLE mhBlurDirection;
  
 SpotLight mSpotLight;
 D3DXMATRIXA16 m_LightViewProj;
@@ -166,10 +173,11 @@ bool Game::LoadContent()
 	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_R32F, D3DFMT_D24X8);
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8);
 	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
+	mBlurTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight);
 
 	// Create shadow map.
-	D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
-	mShadowMap = new DrawableTex2D(pDevice, 512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
+	//D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
+	//mShadowMap = new DrawableTex2D(pDevice, 512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
 	//D3DVIEWPORT9 depthNormalVP = {0, 0, (UINT)m_WindowWidth, (UINT)m_WindowHeight, 0.0f, 1.0f};
 	//m_DepthNormalTex2D = new DrawableTex2D(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, 1, D3DFMT_R32F, true, D3DFMT_D24X8, depthNormalVP, false);
 
@@ -217,52 +225,18 @@ bool Game::LoadContent()
 	mhDistanceScale = mSSAOFX->GetParameterByName(0, "distanceScale");
 	mhProjection = mSSAOFX->GetParameterByName(0, "Projection");
 	mhCornerFrustrum = mSSAOFX->GetParameterByName(0, "cornerFustrum");
-
-	// // Create the FX from a .fx file.
-	//ID3DXBuffer* errors = 0;
-	//HR(D3DXCreateEffectFromFile(pDevice, "Shaders/SSAO.fx", 
-	//	0, 0, D3DXSHADER_DEBUG, 0, &ssaoFX, &errors));
-	//if( errors )
-	//	MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
-
-	//// Create the FX from a .fx file.
-	//errors = 0;
-	//HR(D3DXCreateEffectFromFile(pDevice, "Shaders/DrawDepthNormal.fx", 
-	//	0, 0, D3DXSHADER_DEBUG, 0, &mFX, &errors));
-	//if( errors )
-	//	MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
-
-	//mhTech = mFX->GetTechniqueByName("NormalDepth");
-	//mhTechAni = mFX->GetTechniqueByName("NormalDepthAni");
-	//mhWorld = mFX->GetParameterByName(0, "World");
-	//mhView = mFX->GetParameterByName(0, "View");
-	//mhProj = mFX->GetParameterByName(0, "Projection");
-	//mhFinalXFormsArray = mFX->GetParameterByName(0, "gFinalXForms");
-	//mhWorldInvTrans = mFX->GetParameterByName(0, "WorldInvTrans");
-
-	//mhSSAOTech = ssaoFX->GetTechniqueByName("SSAO");
-	//mhRandomSize = ssaoFX->GetParameterByName(0, "random_size");
-	//mhSampleRadius = ssaoFX->GetParameterByName(0, "g_sample_rad");
-	//mhIntensity = ssaoFX->GetParameterByName(0, "g_intensity");
-	//mhScale = ssaoFX->GetParameterByName(0, "g_scale");
-	//mhBias = ssaoFX->GetParameterByName(0, "g_bias");
-	//mhScreenSize = ssaoFX->GetParameterByName(0, "g_screen_size");
-	//mhNormalBuffer = ssaoFX->GetParameterByName(0, "gNormalBuffer");
-	//mhDepthBuffer = ssaoFX->GetParameterByName(0, "gDepthBuffer");
-	//mhSampleTexture = ssaoFX->GetParameterByName(0, "gSampleTexture");
-
 	
+	// Create the FX from a .fx file.
+	errors = 0;
+	HR(D3DXCreateEffectFromFile(pDevice, "Shaders/BlurEffect.fx", 
+		0, 0, D3DXSHADER_DEBUG, 0, &mBlurFX, &errors));
+	if( errors )
+		MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
 
-	//// Create the FX from a .fx file.
-	//errors = 0;
-	//HR(D3DXCreateEffectFromFile(pDevice, "Shaders/CellShaderEffect.fx", 
-	//	0, 0, D3DXSHADER_DEBUG, 0, &cellFX, &errors));
-	//if( errors )
-	//	MessageBox(0, (char*)errors->GetBufferPointer(), 0, 0);
-
-	//cellTech = cellFX->GetTechniqueByName("EdgeDetect");
-	//mhCellScreenSize = cellFX->GetParameterByName(0, "ScreenResolution");
-	//mhNormalDepthTexture = cellFX->GetParameterByName(0, "NormalDepthTexture");
+	mhBlurTech = mBlurFX->GetTechniqueByName("SSAOBlur");
+	mhDepthFrame = mBlurFX->GetParameterByName(0, "depthTexture");
+	mhSSAOFrame = mBlurFX->GetParameterByName(0, "SSAOTexture"); 
+	mhBlurDirection = mBlurFX->GetParameterByName(0, "blurDirection");
 
 	return true;
 }
@@ -519,41 +493,65 @@ void Game::Draw()
 	m_AnimatedInterface->GetEffect()->End();
 
 	pDevice->EndScene();
+	
+	mSSAOTarget->BeginScene();
+	
+	UINT ssaoPasses = 1;
+	mSSAOFX->SetTechnique(mhSSAOTech);
+	mSSAOFX->Begin(&ssaoPasses, 0);
+	mSSAOFX->BeginPass(0);
+
+		mSSAOFX->SetTexture(mhDepthTexture, mDepthTarget->getRenderTexture());
+		mSSAOFX->SetTexture(mhRandomTexture, m_SampleTexture);
+		mSSAOFX->SetFloat(mhSampleRadius, mRange);
+		mSSAOFX->SetFloat(mhDistanceScale, mFactor);			
+		mSSAOFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
+		mSSAOFX->SetValue(mhCornerFrustrum, SetCornerFrustrum(), sizeof(D3DXVECTOR3));
+		mSSAOFX->CommitChanges();
+
+		mSSAOTarget->DrawPrimitive();
+
+	mSSAOFX->EndPass();
+	mSSAOFX->End();
+
+	mSSAOTarget->EndScene();
+
+	mBlurTarget->BeginScene();
+	
+		UINT blurPasses = 1;
+		mBlurFX->SetTechnique(mhBlurTech);
+		mBlurFX->Begin(&blurPasses, 0);
+		mBlurFX->BeginPass(0);
+
+			mBlurFX->SetTexture(mhDepthFrame, mDepthTarget->getRenderTexture());
+			mBlurFX->SetTexture(mhSSAOFrame, mSSAOTarget->getRenderTexture());
+			mBlurFX->SetValue(mhBlurDirection, new D3DXVECTOR2(1.0f/800.0f, 0.0f), sizeof D3DXVECTOR2);
+			mBlurFX->CommitChanges();
+
+			mBlurTarget->DrawPrimitive();
+			
+		mBlurFX->EndPass();
+		mBlurFX->End();
+
+	mBlurTarget->EndScene();
 
 	//render scene with texture
 	//set back buffer
 	pDevice->SetRenderTarget(0, m_RenderTarget->getBackBuffer());
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
 
-
+	
 
 	//ssaoFX->SetTechnique(mhSSAOTech);
 	//cellFX->SetTechnique(cellTech);
 	if( SUCCEEDED( pDevice->BeginScene() ) )
     {
 		// Clear the backbuffer to a blue color
-		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );
-
-		UINT ssaoPasses = 1;
-		mSSAOFX->SetTechnique(mhSSAOTech);
-		mSSAOFX->Begin(&ssaoPasses, 0);
-		mSSAOFX->BeginPass(0);
-	
-			mSSAOFX->SetTexture(mhDepthTexture, mDepthTarget->getRenderTexture());
-			mSSAOFX->SetTexture(mhRandomTexture, m_SampleTexture);
-			mSSAOFX->SetFloat(mhSampleRadius, mRange);
-			mSSAOFX->SetFloat(mhDistanceScale, mFactor);			
-			mSSAOFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
-			mSSAOFX->SetValue(mhCornerFrustrum, SetCornerFrustrum(), sizeof(D3DXVECTOR3));
-			mSSAOFX->CommitChanges();
-
-			//m_RenderTarget->DrawPrimitive();
-
-		mSSAOFX->EndPass();
-		mSSAOFX->End();
+		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );		
 
 		m_RenderTarget->Draw();
 		//mDepthTarget->Draw();
+		//mSSAOTarget->Draw();
 
 		m_Font->Draw();	
 
@@ -577,7 +575,7 @@ void Game::Unload()
 
 	m_SkinnedMesh->Release();
 
-	mShadowMap->onLostDevice();
+	//mShadowMap->onLostDevice();
 
 	m_SpotInterface->Release();
 
@@ -586,7 +584,13 @@ void Game::Unload()
 	mDepthTarget->Release();
 	mDepthFX->Release();
 
+	mSSAOTarget->Release();
 	mSSAOFX->Release();
+
+	mBlurFX->Release();
+	mBlurTarget->Release();
+
+	m_RenderTarget->Release();
 }
 
 void Game::CalculateMatrices()
