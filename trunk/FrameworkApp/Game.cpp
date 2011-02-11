@@ -289,6 +289,7 @@ void Game::Update()
 #endif
 }
 
+#define D3DFVF_POSNORMAL (D3DFVF_XYZ | D3DFVF_NORMAL)
 void Game::Draw()
 {	
 	mDepthTarget->BeginScene();
@@ -302,6 +303,8 @@ void Game::Draw()
 		mDepthFX->BeginPass(0);
 			
 			mDepthFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+			//Matrix IWorldView = Matrix.Invert(World * View);
+            //effect.Parameters["ITWorldView"].SetValue(Matrix.Transpose(IWorldView));
 			D3DXMATRIX worldView;
 			worldView = m_Citadel->GetWorld() * matView;
 			mDepthFX->SetMatrix(mhWorldView, &(worldView));
@@ -486,12 +489,13 @@ void Game::CalculateMatrices()
     // a point to lookat, and a direction for which way is up. Here, we set the
     // eye five units back along the z-axis and up three units, look at the
     // origin, and define "up" to be in the y-direction.
- //   D3DXVECTOR3 vEyePt( -5.0f, 10.0f,-12.5f );
- //   D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
- //   D3DXVECTOR3 vUpVec( 0.0f, 1.0f, 0.0f );
-	//D3DXMATRIX mViewTransform; 
-	//D3DXMatrixRotationY(&mViewTransform, 0);
-	//D3DXVec3Transform(&vViewVector, &(vLookatPt - vEyePt), &mViewTransform );
+    D3DXVECTOR3 vEyePt( 0.0f, 2.0f,10.0f );
+    D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
+    D3DXVECTOR3 vUpVec( 0.0f, 1.0f, 0.0f );
+	D3DXMATRIX mViewTransform; 
+	D3DXMatrixRotationY(&mViewTransform, 0);
+	D3DXVec3Transform(&vViewVector, &(vLookatPt - vEyePt), &mViewTransform );
+	//D3DXMatrixLookAtLH( &matView, &vEyePt, &vLookatPt, &vUpVec );
 	D3DXMatrixLookAtLH( &matView, m_Camera->getPosition(), m_Camera->getLookAt(), m_Camera->getUp() );
 
 	//D3DXMatrixPerspectiveFovLH(m_RenderTarget->getProjectionPointer(), D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, m_Camera->GetFarPlane());

@@ -9,7 +9,7 @@ float FarClip;
 struct VS_INPUT 
 {
    float4 Position: POSITION0;
-   float3 Normal : NORMAL;
+   float3 Normal : NORMAL0;
 };
 
 struct VS_OUTPUT 
@@ -35,6 +35,7 @@ float4 DepthPixelShaderFunction(VS_OUTPUT IN) : COLOR0
 {
 	float depth = IN.vPositionVS.z / FarClip;
 	IN.Normal = normalize(IN.Normal);
+	if(IN.Normal.z < 0) IN.Normal.z *= -1;
 	return float4(IN.Normal.x, IN.Normal.y, IN.Normal.z, depth);
 }
 
