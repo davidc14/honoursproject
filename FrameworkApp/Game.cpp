@@ -64,6 +64,14 @@ IDirect3DTexture9* m_SampleTexture;
 SpotLight mSpotLight;
 D3DXMATRIXA16 m_LightViewProj;
 
+ID3DXEffect* mDepthFX;
+D3DXHANDLE mhDepthTech;
+D3DXHANDLE mhWorld;
+D3DXHANDLE mhView;
+D3DXHANDLE mhProj;
+D3DXHANDLE mhWorlView;
+D3DXHANDLE mhFarClip;
+
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
 	pDevice = g_pd3dDevice;
@@ -163,6 +171,21 @@ bool Game::LoadContent()
 	mSpotLight.diffuse   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.spotPower = 24.0f;
+
+	ID3DXBuffer *m_Error;
+	D3DXCreateEffectFromFile(pDevice, "Shaders/DepthShader.fx", 0, 0, D3DXSHADER_DEBUG,0, &mDepthFX, &m_Error);
+	if(m_Error)
+	{
+		//Display the error in a message bos
+		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
+	}
+
+	mhDepthTech = mDepthFX->GetTechniqueByName("DrawDepth");
+	mhWorld = mDepthFX->GetParameterByName(0, "World");
+	mhView = mDepthFX->GetParameterByName(0, "View");;
+	mhProj = mDepthFX->GetParameterByName(0, "Projection");;
+	mhWorlView = mDepthFX->GetParameterByName(0, "WorldView");;
+	mhFarClip = mDepthFX->GetParameterByName(0, "FarClip");;
 
 	return true;
 }
@@ -272,13 +295,13 @@ void Game::Draw()
 {	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	pDevice->GetTransform(D3DTS_PROJECTION, mShadowTarget->getOldProjectionPointer());
-	pDevice->GetRenderTarget(0, mShadowTarget->getBackBufferPointer());
+	//pDevice->GetTransform(D3DTS_PROJECTION, mShadowTarget->getOldProjectionPointer());
+	//pDevice->GetRenderTarget(0, mShadowTarget->getBackBufferPointer());
 
-	pDevice->SetRenderTarget(0, mShadowTarget->getRenderSurface());
-	//mShadowTarget->BeginScene();
+	//pDevice->SetRenderTarget(0, mShadowTarget->getRenderSurface());
+	mShadowTarget->BeginScene();
 
-	pDevice->BeginScene();
+	//pDevice->BeginScene();
 
 	// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
@@ -290,11 +313,11 @@ void Game::Draw()
 
 		m_SpotInterface->UpdateShadowHandles(&(m_Dwarf->GetWorld() * m_LightViewProj));
 
-		//m_Dwarf->DrawToShadowMap();
+		m_Dwarf->DrawToShadowMap();
 
 		m_SpotInterface->UpdateShadowHandles(&(m_Citadel->GetWorld() * m_LightViewProj));
 
-		//m_Citadel->DrawToShadowMap();
+		m_Citadel->DrawToShadowMap();
 
 	//End the pass
 	m_SpotInterface->GetEffect()->EndPass();
@@ -310,15 +333,15 @@ void Game::Draw()
 		m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
 			m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
 
-		//m_SkinnedMesh->Draw();
+		m_SkinnedMesh->Draw();
 
 		m_AnimatedInterface->GetEffect()->EndPass();
 		m_AnimatedInterface->GetEffect()->End();
 
 	//mShadowMap->endScene();
-	pDevice->EndScene();
-	//mShadowTarget->EndScene();
-	pDevice->SetRenderTarget(0, mShadowTarget->getBackBuffer());
+	//pDevice->EndScene();
+	mShadowTarget->EndScene();
+	//pDevice->SetRenderTarget(0, mShadowTarget->getBackBuffer());
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -340,10 +363,10 @@ void Game::Draw()
 	m_SpotInterface->GetEffect()->BeginPass(0);
 
 		SetSpotLightVariables(m_Citadel->GetWorld(), m_Citadel->GetMaterial());
-		m_Citadel->DrawWhite(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+		m_Citadel->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
 		SetSpotLightVariables(m_Dwarf->GetWorld(), m_Dwarf->GetMaterial());
-		m_Dwarf->DrawWhite(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+		m_Dwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
 	m_SpotInterface->GetEffect()->EndPass();
 	m_SpotInterface->GetEffect()->End();
@@ -409,6 +432,7 @@ void Game::Unload()
 
 	m_RenderTarget->Release();
 
+	mDepthFX->Release();
 }
 
 void Game::CalculateMatrices()

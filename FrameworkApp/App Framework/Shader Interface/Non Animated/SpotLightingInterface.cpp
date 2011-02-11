@@ -52,13 +52,13 @@ void SpotLightingInterface::UpdateHandles(SpotLighting* input)
 	mFX->SetMatrix(mhLightWVP, &(input->m_World * input->m_LightViewProj));
 	mFX->SetValue(mhMtrl, &input->m_Material, sizeof(Mtrl));
 	mFX->SetValue(mhLight, &input->m_Light, sizeof(SpotLight));
-	HR(mFX->CommitChanges());
+	mFX->CommitChanges();
 }
 
 void SpotLightingInterface::UpdateShadowHandles(D3DXMATRIX* matLightWVP)
 {
 	mFX->SetMatrix(mhLightWVP, matLightWVP);
-	HR(mFX->CommitChanges());	
+	mFX->CommitChanges();	
 }
 
 void SpotLightingInterface::Release()
