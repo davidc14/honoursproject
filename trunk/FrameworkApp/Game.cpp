@@ -173,7 +173,7 @@ bool Game::LoadContent()
 	mSpotLight.spotPower = 24.0f;
 
 	ID3DXBuffer *m_Error;
-	D3DXCreateEffectFromFile(pDevice, "Shaders/DepthShader.fx", 0, 0, D3DXSHADER_DEBUG,0, &mDepthFX, &m_Error);
+	D3DXCreateEffectFromFile(pDevice, "Shaders/CameraSpaceNormal.fx", 0, 0, D3DXSHADER_DEBUG,0, &mDepthFX, &m_Error);
 	if(m_Error)
 	{
 		//Display the error in a message bos
