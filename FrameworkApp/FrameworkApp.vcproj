@@ -596,6 +596,26 @@
 				RelativePath=".\Shaders\vblend2.fx"
 				>
 			</File>
+			<Filter
+				Name="SSAO"
+				>
+				<File
+					RelativePath=".\Shaders\SSAO\BlurEffect.fx"
+					>
+				</File>
+				<File
+					RelativePath=".\Shaders\SSAO\DepthAndShade.fx"
+					>
+				</File>
+				<File
+					RelativePath=".\Shaders\SSAO\SSAOEffect.fx"
+					>
+				</File>
+				<File
+					RelativePath=".\Shaders\SSAO\SSAOFinalPass.fx"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
