@@ -303,12 +303,15 @@ void Game::Draw()
 		UINT depthPasses = 1;
 		mDepthFX->Begin(&depthPasses, 0);
 		mDepthFX->BeginPass(0);
-			
-			mDepthFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+		
+			D3DXMATRIX matWorld;
+			D3DXMatrixRotationX(&matWorld, -D3DX_PI/2);
+
+			mDepthFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
 			//Matrix IWorldView = Matrix.Invert(World * View);
             //effect.Parameters["ITWorldView"].SetValue(Matrix.Transpose(IWorldView));
 			D3DXMATRIX worldView;
-			worldView = m_Citadel->GetWorld() * matView;
+			worldView = matWorld * matView;
 			mDepthFX->SetMatrix(mhWorldView, &(worldView));
 			D3DXMATRIX WorldViewInverse, WorldViewIT;
 			D3DXMatrixInverse(&WorldViewInverse, 0, &worldView);
