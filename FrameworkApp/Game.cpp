@@ -51,11 +51,7 @@ DirLight mLight;
 Mtrl     mWhiteMtrl;
 
 DrawableRenderTarget* m_RenderTarget;
-DrawableRenderTarget* mDepthTarget;
-DrawableRenderTarget* mSSAOTarget;
-DrawableRenderTarget* mBlurTarget;
 DrawableRenderTarget* mShadowTarget;
-DrawableRenderTarget* mDepthNormTarget;
 //DrawableTex2D* mShadowMap;
 
 IDirect3DTexture9* m_WhiteTexture;
@@ -69,8 +65,9 @@ D3DXHANDLE mhDepthTech;
 D3DXHANDLE mhWorld;
 D3DXHANDLE mhView;
 D3DXHANDLE mhProj;
-D3DXHANDLE mhWorlView;
+D3DXHANDLE mhWorldView;
 D3DXHANDLE mhFarClip;
+DrawableRenderTarget* mDepthTarget;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -153,6 +150,7 @@ bool Game::LoadContent()
 
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, m_Camera->GetFarPlane());
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A8R8G8B8, D3DFMT_D16, m_Camera->GetFarPlane());
 
 	// Create shadow map.
 	//D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
@@ -184,7 +182,7 @@ bool Game::LoadContent()
 	mhWorld = mDepthFX->GetParameterByName(0, "World");
 	mhView = mDepthFX->GetParameterByName(0, "View");;
 	mhProj = mDepthFX->GetParameterByName(0, "Projection");;
-	mhWorlView = mDepthFX->GetParameterByName(0, "WorldView");;
+	mhWorldView = mDepthFX->GetParameterByName(0, "WorldView");;
 	mhFarClip = mDepthFX->GetParameterByName(0, "FarClip");;
 
 	return true;
@@ -293,15 +291,42 @@ void Game::Update()
 
 void Game::Draw()
 {	
+	mDepthTarget->BeginScene();
+
+	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+	
+		mDepthFX->SetTechnique(mhDepthTech);
+
+		UINT depthPasses = 1;
+		mDepthFX->Begin(&depthPasses, 0);
+		mDepthFX->BeginPass(0);
+			
+			mDepthFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
+			mDepthFX->SetMatrix(mhView, &matView);
+			mDepthFX->SetMatrix(mhProj, m_RenderTarget->getProjectionPointer());
+			mDepthFX->SetMatrix(mhWorldView, &(m_Citadel->GetWorld() * matView));
+			mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
+			mDepthFX->CommitChanges();
+
+			m_Citadel->Draw(mDepthFX, 0);
+
+			mDepthFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
+			mDepthFX->SetMatrix(mhView, &matView);
+			mDepthFX->SetMatrix(mhProj, m_RenderTarget->getProjectionPointer());
+			mDepthFX->SetMatrix(mhWorldView, &(m_Dwarf->GetWorld() * matView));
+			mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
+			mDepthFX->CommitChanges();
+
+			m_Dwarf->Draw(mDepthFX, 0);
+
+		mDepthFX->EndPass();
+		mDepthFX->End();
+		
+	mDepthTarget->EndScene();
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	//pDevice->GetTransform(D3DTS_PROJECTION, mShadowTarget->getOldProjectionPointer());
-	//pDevice->GetRenderTarget(0, mShadowTarget->getBackBufferPointer());
-
-	//pDevice->SetRenderTarget(0, mShadowTarget->getRenderSurface());
 	mShadowTarget->BeginScene();
-
-	//pDevice->BeginScene();
 
 	// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
@@ -338,10 +363,7 @@ void Game::Draw()
 		m_AnimatedInterface->GetEffect()->EndPass();
 		m_AnimatedInterface->GetEffect()->End();
 
-	//mShadowMap->endScene();
-	//pDevice->EndScene();
 	mShadowTarget->EndScene();
-	//pDevice->SetRenderTarget(0, mShadowTarget->getBackBuffer());
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -391,8 +413,6 @@ void Game::Draw()
 	pDevice->SetRenderTarget(0, m_RenderTarget->getBackBuffer());
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
 
-	
-
 	//ssaoFX->SetTechnique(mhSSAOTech);
 	//cellFX->SetTechnique(cellTech);
 	if( SUCCEEDED( pDevice->BeginScene() ) )
@@ -401,6 +421,8 @@ void Game::Draw()
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );		
 
 			m_RenderTarget->Draw();
+
+			mDepthTarget->Draw();
 
 		m_Font->Draw();	
 
