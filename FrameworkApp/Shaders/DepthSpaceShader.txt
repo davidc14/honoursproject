@@ -5,11 +5,13 @@ tF32    HomogeniseX (tINT Xc,tF32 HomoHack)
 // Convert incoming screen x coordinate into -1 to +1 homogeneous space
 return ((Xc-HomoHack)*(InvWidthF*2.0f))-1.0f;
 }
+
 tF32    HomogeniseY (tINT Yc,tF32 HomoHack)
 {
 // Convert incoming screen y coordinate into -1 to +1 homogeneous space
 return 1.0f-((Yc-HomoHack)*(InvHeightF*2.0f));
 }
+
 tVOID    BuildFrustrumQuad (tVOID *Verts,RZView* View)
 {
 // This code gets coordinates in clipspace, accounting for DX9 pixel centre issue etc
@@ -74,4 +76,5 @@ Ptr[3].Vec.x=FarX;
 Ptr[3].Vec.y=-FarY;
 Ptr[3].Vec.z=Far;
 Ptr[3].Vec.w=0;
+
 }
