@@ -565,6 +565,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\DepthShader.fx"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\DepthShader.txt"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\DrawDepthNormal.fx"
 				>
 			</File>

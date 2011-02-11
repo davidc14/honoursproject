@@ -1,0 +1,64 @@
+//	Produce a matrix for the VS to translate model positions into camera space
+RZMatrix44	CamSpaceMatrix=ObjectToWorldSpaceMatrix*InverseCameraMatrix
+// Transpose it because that's how shaders like to have it
+CamSpaceMatrix.Transpose();
+
+// Set the whole matrix into some constants we can get at later
+VShaderMgr->SetConstant(VSC_MODELTOCAMERA_MATRIX_R0,CamSpaceMatrix.ROW1);
+VShaderMgr->SetConstant(VSC_MODELTOCAMERA_MATRIX_R1,CamSpaceMatrix.ROW2);
+VShaderMgr->SetConstant(VSC_MODELTOCAMERA_MATRIX_R2,CamSpaceMatrix.ROW3);
+VShaderMgr->SetConstant(VSC_MODELTOCAMERA_MATRIX_R3,CamSpaceMatrix.ROW4);
+// Get some constants together for the PS
+RZVector4	Vec;
+// Get pixel dimensions of our rendertarget, which should be the same size as the screen
+tRECT	 Rect=View->GetArea();
+Vec.VX=tF32(Rect.Width);
+Vec.VY=tF32(Rect.Height);
+// Get the near and far clipping distances
+Vec.VZ=View->GetNearClip();
+Vec.VW=View->GetFarClip();
+// Note, we currently only need the .VW part, the rest is for other use
+// Note also I hardcode the constant number here because in the Raz0r engine all this source is made on demand and I've removed all the sprintf type stuff for readability.
+PShaderMgr->SetConstant(10,Vec);
+
+struct OUT
+{
+// This is the standard VS projected point
+float4    Position:POSITION0;
+// The data we shall pass to the PS
+float4    Data:TEXCOORD0;
+};
+OUT main    (
+float4 Position:POSITION0,
+float3 Normal:NORMAL0,
+uniform float4x4 Proj:register(VSC_PROJECTION_MATRIX_R0),
+uniform float4x4 ModelToCam:register(VSC_MODELTOCAMERA_MATRIX_R0)
+)
+{
+OUT    Out;
+// Usual projection of point
+Out.Position=mul(Position,Proj);
+// Data.xyz is our normal in camera space that the PS wants
+Out.Data.xyz=mul(Normal,(float3x3)ModelToCam);
+// This projects the point into cameraspace, then uses
+// the resulting z coordinate as linear depth
+float4    CamPos=mul(Position,ModelToCam);
+Out.Data.w=CamPos.z;
+return Out;
+}
+
+float4 main(
+uniform float4	 ViewData:register(c10),
+float4	 Params:TEXCOORD0
+):COLOR
+{
+float4	Data;
+// Depth comes from the VS and gets normalised by camera->far
+float	Depth=Params.w/ViewData.w;
+// Store the x&y components of the normal in RG
+Data.rg=normalize(Params.xyz).xy*0.5+0.5;
+// Encode the linear depth across two channels in BA
+Data.b=floor(Depth*255)/255;
+Data.a=floor((Depth-Data.b)*255*255)/255;
+return Data;
+}
