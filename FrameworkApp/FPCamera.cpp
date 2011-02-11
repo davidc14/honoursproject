@@ -117,6 +117,13 @@ void FPCamera::Update(const float dtSeconds)
 	//FPCamera is the object (class) created to store the 
 	//variables and vectors needed to manipulate
 	//the gluLookAt() function
+	/*cosYaw = cosf(m_Yaw*Pi/180);
+	cosPitch = cosf(m_Pitch*Pi/180);
+	cosRoll = cosf(m_Roll*Pi/180);
+	sinYaw = sinf(m_Yaw*Pi/180);
+	sinPitch = sinf(m_Pitch*Pi/180);
+	sinRoll = sinf(m_Roll*Pi/180);*/
+
 	cosYaw = cosf(m_Yaw*Pi/180);
 	cosPitch = cosf(m_Pitch*Pi/180);
 	cosRoll = cosf(m_Roll*Pi/180);

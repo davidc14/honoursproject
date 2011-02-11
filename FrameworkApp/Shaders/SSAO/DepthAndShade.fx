@@ -17,7 +17,6 @@ struct VS_OUTPUT
    float4 Position: POSITION0;
    float3 Normal : TEXCOORD0;
    float4 vPositionVS : TEXCOORD1;
-   float4 Color : COLOR0;
 };
 
 
@@ -31,9 +30,6 @@ VS_OUTPUT DepthVertexShaderFunction(VS_INPUT IN)
    Output.vPositionVS = mul(IN.Position, WorldView);
    Output.Normal = mul(IN.Normal, ITWorldView);
    
-   Output.Color.rgb = Output.Normal;
-   Output.Color.a = 0;
-   
    return Output;
 }
 
@@ -41,7 +37,6 @@ float4 DepthPixelShaderFunction(VS_OUTPUT IN) : COLOR0
 {
 	float depth = IN.vPositionVS.z / FarClip;
 	IN.Normal = normalize(IN.Normal);
-	if(IN.Normal.z < 0) IN.Normal.z *= -1;
 	return float4(IN.Normal.x, IN.Normal.y, IN.Normal.z, depth);
 }
 
