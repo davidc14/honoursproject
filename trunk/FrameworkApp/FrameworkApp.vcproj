@@ -569,7 +569,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\DepthBuffer.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\DepthShader.txt"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\DepthSpace.fx"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\DepthSpaceShader.txt"
 				>
 			</File>
 			<File

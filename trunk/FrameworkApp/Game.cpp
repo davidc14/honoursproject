@@ -173,7 +173,7 @@ bool Game::LoadContent()
 	mSpotLight.spotPower = 24.0f;
 
 	ID3DXBuffer *m_Error;
-	D3DXCreateEffectFromFile(pDevice, "Shaders/CameraSpaceNormal.fx", 0, 0, D3DXSHADER_DEBUG,0, &mDepthFX, &m_Error);
+	D3DXCreateEffectFromFile(pDevice, "Shaders/DepthBuffer.fx", 0, 0, D3DXSHADER_DEBUG,0, &mDepthFX, &m_Error);
 	if(m_Error)
 	{
 		//Display the error in a message bos
@@ -305,20 +305,20 @@ void Game::Draw()
 		mDepthFX->Begin(&depthPasses, 0);
 		mDepthFX->BeginPass(0);
 			
-			mDepthFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
-			mDepthFX->SetMatrix(mhView, &matView);
-			mDepthFX->SetMatrix(mhProj, m_RenderTarget->getProjectionPointer());
+			//mDepthFX->SetMatrix(mhWorld, m_Citadel->GetWorldPointer());
+			//mDepthFX->SetMatrix(mhView, &matView);
+			//mDepthFX->SetMatrix(mhProj, m_RenderTarget->getProjectionPointer());
 			mDepthFX->SetMatrix(mhWorldView, &(m_Citadel->GetWorld() * matView));
-			mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
+			//mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
 			mDepthFX->CommitChanges();
 
 			m_Citadel->Draw(mDepthFX, 0);
 
-			mDepthFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
-			mDepthFX->SetMatrix(mhView, &matView);
-			mDepthFX->SetMatrix(mhProj, m_RenderTarget->getProjectionPointer());
+			//mDepthFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
+			//mDepthFX->SetMatrix(mhView, &matView);
+			//mDepthFX->SetMatrix(mhProj, m_RenderTarget->getProjectionPointer());
 			mDepthFX->SetMatrix(mhWorldView, &(m_Dwarf->GetWorld() * matView));
-			mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
+			//mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
 			mDepthFX->CommitChanges();
 
 			m_Dwarf->Draw(mDepthFX, 0);
@@ -331,11 +331,11 @@ void Game::Draw()
 		mDepthFX->Begin(&depthPasses, 0);
 		mDepthFX->BeginPass(0);
 
-			mDepthFX->SetMatrix(mhWorld, m_SkinnedMesh->GetWorld());
-			mDepthFX->SetMatrix(mhView, &matView);
-			mDepthFX->SetMatrix(mhProj, m_RenderTarget->getProjectionPointer());
+			//mDepthFX->SetMatrix(mhWorld, m_SkinnedMesh->GetWorld());
+			//mDepthFX->SetMatrix(mhView, &matView);
+			//mDepthFX->SetMatrix(mhProj, m_RenderTarget->getProjectionPointer());
 			mDepthFX->SetMatrix(mhWorldView, &(*m_SkinnedMesh->GetWorld() * matView));
-			mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());	
+			//mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());	
 			mDepthFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
 			mDepthFX->CommitChanges();
 
@@ -444,7 +444,7 @@ void Game::Draw()
 
 			m_RenderTarget->Draw();
 
-			mDepthTarget->Draw();
+			//mDepthTarget->Draw();
 
 		m_Font->Draw();	
 
