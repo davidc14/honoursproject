@@ -61,9 +61,9 @@ SpotLight mSpotLight;
 D3DXMATRIXA16 m_LightViewProj;
 
 ID3DXEffect* mDepthFX;
-//D3DXHANDLE mhDepthTechAni;
+D3DXHANDLE mhDepthTechAni;
 D3DXHANDLE mhDepthTech;
-//D3DXHANDLE mhFinalXForms;
+D3DXHANDLE mhFinalXForms;
 D3DXHANDLE mhWVP;
 D3DXHANDLE mhWorldViewIT;
 D3DXHANDLE mhWorldView;
@@ -180,10 +180,12 @@ bool Game::LoadContent()
 	}
 
 	mhDepthTech = mDepthFX->GetTechniqueByName("Depth");
+	mhDepthTechAni = mDepthFX->GetTechniqueByName("DepthAni");
 	mhWVP = mDepthFX->GetParameterByName(0, "WorldViewProjection");
 	mhWorldView = mDepthFX->GetParameterByName(0, "WorldView");
 	mhFarClip = mDepthFX->GetParameterByName(0, "FarClip");
 	mhWorldViewIT = mDepthFX->GetParameterByName(0, "ITWorldView");
+	mhFinalXForms = mDepthFX->GetParameterByName(0, "FinalXForms");
 
 	return true;
 }
@@ -317,35 +319,47 @@ void Game::Draw()
 
 			m_Citadel->Draw(mDepthFX, 0);
 
-			//mDepthFX->SetMatrix(mhWorld, m_Dwarf->GetWorldPointer());
-			//mDepthFX->SetMatrix(mhView, &matView);
-			//mDepthFX->SetMatrix(mhProj, m_RenderTarget->getProjectionPointer());
-			//mDepthFX->SetMatrix(mhWorldView, &(m_Dwarf->GetWorld() * matView));
-			//mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
-			//mDepthFX->CommitChanges();
+			mDepthFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+			//Matrix IWorldView = Matrix.Invert(World * View);
+            //effect.Parameters["ITWorldView"].SetValue(Matrix.Transpose(IWorldView));
+			//D3DXMATRIX worldView;
+			worldView = m_Dwarf->GetWorld() * matView;
+			mDepthFX->SetMatrix(mhWorldView, &(worldView));
+			//D3DXMATRIX WorldViewInverse, WorldViewIT;
+			D3DXMatrixInverse(&WorldViewInverse, 0, &worldView);
+			D3DXMatrixTranspose(&WorldViewIT, &WorldViewInverse);
+			mDepthFX->SetMatrix(mhWorldViewIT, &WorldViewIT);
+			mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
+			mDepthFX->CommitChanges();
 
-			//m_Dwarf->Draw(mDepthFX, 0);
+			m_Dwarf->Draw(mDepthFX, 0);
 
 		mDepthFX->EndPass();
 		mDepthFX->End();
 
-		//mDepthFX->SetTechnique(mhDepthTechAni);
+		mDepthFX->SetTechnique(mhDepthTechAni);
 
-		//mDepthFX->Begin(&depthPasses, 0);
-		//mDepthFX->BeginPass(0);
+		mDepthFX->Begin(&depthPasses, 0);
+		mDepthFX->BeginPass(0);
 
-		//	//mDepthFX->SetMatrix(mhWorld, m_SkinnedMesh->GetWorld());
-		//	//mDepthFX->SetMatrix(mhView, &matView);
-		//	//mDepthFX->SetMatrix(mhProj, m_RenderTarget->getProjectionPointer());
-		//	mDepthFX->SetMatrix(mhWorldView, &(*m_SkinnedMesh->GetWorld() * matView));
-		//	//mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());	
-		//	mDepthFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-		//	mDepthFX->CommitChanges();
+			mDepthFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+			//Matrix IWorldView = Matrix.Invert(World * View);
+            //effect.Parameters["ITWorldView"].SetValue(Matrix.Transpose(IWorldView));
+			//D3DXMATRIX worldView;
+			worldView = *m_SkinnedMesh->GetWorld() * matView;
+			mDepthFX->SetMatrix(mhWorldView, &(worldView));
+			//D3DXMATRIX WorldViewInverse, WorldViewIT;
+			D3DXMatrixInverse(&WorldViewInverse, 0, &worldView);
+			D3DXMatrixTranspose(&WorldViewIT, &WorldViewInverse);
+			mDepthFX->SetMatrix(mhWorldViewIT, &WorldViewIT);
+			mDepthFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
+			mDepthFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+			mDepthFX->CommitChanges();
 
-		//	m_SkinnedMesh->Draw();
+			m_SkinnedMesh->Draw();
 
-		//mDepthFX->EndPass();
-		//mDepthFX->End();
+		mDepthFX->EndPass();
+		mDepthFX->End();
 		
 	mDepthTarget->EndScene();
 
