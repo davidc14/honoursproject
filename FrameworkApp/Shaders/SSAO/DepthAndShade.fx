@@ -9,7 +9,7 @@ float FarClip;
 struct VS_INPUT 
 {
    float4 Position: POSITION0;
-   float3 Normal : NORMAL0;
+   float3 Normal : NORMAL;
 };
 
 struct VS_OUTPUT 
@@ -17,6 +17,7 @@ struct VS_OUTPUT
    float4 Position: POSITION0;
    float3 Normal : TEXCOORD0;
    float4 vPositionVS : TEXCOORD1;
+   float4 Color : COLOR0;
 };
 
 
@@ -24,9 +25,14 @@ VS_OUTPUT DepthVertexShaderFunction(VS_INPUT IN)
 {
    VS_OUTPUT Output;
    
+   float3 n = IN.Normal;
+   
    Output.Position = mul(IN.Position, WorldViewProjection);
    Output.vPositionVS = mul(IN.Position, WorldView);
    Output.Normal = mul(IN.Normal, ITWorldView);
+   
+   Output.Color.rgb = Output.Normal;
+   Output.Color.a = 0;
    
    return Output;
 }
@@ -49,6 +55,55 @@ technique Depth
     }
 }
 
+uniform extern float4x4 FinalXForms[35];
+
+struct VSANI_INPUT 
+{
+   float4 Position: POSITION0;
+   float3 Normal : NORMAL;
+   float weight0  : BLENDWEIGHT0;
+   int4 boneIndex : BLENDINDICES0;
+};
+
+struct VSANI_OUTPUT 
+{
+   float4 Position: POSITION0;
+   float3 Normal : TEXCOORD0;
+   float4 vPositionVS : TEXCOORD1;
+};
+
+
+VSANI_OUTPUT DepthVertexShaderFunctionAni(VSANI_INPUT IN)
+{
+   VSANI_OUTPUT Output;
+   
+   // Do the vertex blending calculation for posL and normalL.
+   float weight1 = 1.0f - IN.weight0;
+    
+   float4 p = IN.weight0 * mul(IN.Position, FinalXForms[IN.boneIndex[0]]);
+   p       += weight1 * mul(IN.Position, FinalXForms[IN.boneIndex[1]]);
+   p.w = 1.0f;   
+   
+   float4 n = IN.weight0 * mul(float4(IN.Normal, 0.0f), FinalXForms[IN.boneIndex[0]]);
+   n       += weight1 * mul(float4(IN.Normal, 0.0f), FinalXForms[IN.boneIndex[1]]);
+   n.w = 0.0f;
+   
+   Output.Position = mul(p, WorldViewProjection);
+   Output.vPositionVS = mul(p, WorldView);
+   Output.Normal = mul(n, ITWorldView).xyz;
+   
+   return Output;
+}
+
+technique DepthAni
+{
+    pass Pass1
+    {
+
+        VertexShader = compile vs_2_0 DepthVertexShaderFunctionAni();
+        PixelShader = compile ps_2_0 DepthPixelShaderFunction();
+    }
+}
 
 // TEXTURED TECHNIQUE
 

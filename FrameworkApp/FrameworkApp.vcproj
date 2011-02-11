@@ -604,10 +604,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Shaders\SSAO\DepthAndShade.fx"
-					>
-				</File>
-				<File
 					RelativePath=".\Shaders\SSAO\SSAOEffect.fx"
 					>
 				</File>
