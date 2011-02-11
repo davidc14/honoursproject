@@ -561,11 +561,11 @@
 			Name="Shaders"
 			>
 			<File
-				RelativePath=".\Shaders\CellShaderEffect.fx"
+				RelativePath=".\Shaders\CameraSpaceNormal.fx"
 				>
 			</File>
 			<File
-				RelativePath=".\Shaders\DepthShader.fx"
+				RelativePath=".\Shaders\CellShaderEffect.fx"
 				>
 			</File>
 			<File
