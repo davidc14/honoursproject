@@ -24,25 +24,23 @@ struct VSANIIN
 struct VSOUT
 {
 	// This is the standard VS projected point
-	float4    Position:POSITION0;
+	float4 Position:POSITION0;
 	// The data we shall pass to the PS
-	float4    Data:TEXCOORD0;
+	float3 Normal:TEXCOORD0;
+	float Depth:TEXCOORD1;
 };
 
 VSOUT DVertexShader(VSIN input)
 {
 	VSOUT output = (VSOUT)0;
-	
-	//Normal projection of vertex
-	output.Position = mul(mul(mul(input.Position, World), View), Projection);
-	
-	// Data.xyz is our normal in camera space that the PS wants
-	output.Data.xyz = mul(input.Normal, (float3x3)WorldView);
-	
-	// This projects the point into cameraspace, then uses
-	// the resulting z coordinate as linear depth
-	float4 CamPos = mul(input.Position, WorldView);
-	output.Data.w = CamPos.z;
+
+    output.Position = mul(input.Position, WorldViewProjection);
+
+	// You can store world space or view space normals, for SSAO you probably want view space
+	output.Normal = mul(input.Normal, (float3x3)WorldView);
+
+	// View space Z is a good value to store for depth
+	output.Depth = mul(input.Position, WorldView).z;
 	
 	return output;
 }
@@ -64,35 +62,20 @@ VSOUT DVertexShaderAni(VSANIIN input)
     n       += weight1 * mul(float4(input.Normal, 0.0f), FinalXForms[input.boneIndex[1]]);
     n.w = 0.0f;
 	
-	//Normal projection of vertex
-	output.Position = mul(mul(mul(p, World), View), Projection);
-	
-	// Data.xyz is our normal in camera space that the PS wants
-	output.Data.xyz = mul(n, (float3x3)WorldView);
-	
-	// This projects the point into cameraspace, then uses
-	// the resulting z coordinate as linear depth
-	float4 CamPos = mul(p, WorldView);
-	output.Data.w = CamPos.z;
+	output.Position = mul(p, WorldViewProjection);
+
+	// You can store world space or view space normals, for SSAO you probably want view space
+	output.Normal = mul(n, (float3x3)WorldView);
+
+	// View space Z is a good value to store for depth
+	output.Depth = mul(p, WorldView).z;
 	
 	return output;
 }
 
 float4 DPixelShader(VSOUT input) : COLOR0
 {	
-	float4 output = float4(0,0,0,0);
-	
-	// Depth comes from the VS and gets normalised by camera->far
-	float Depth = input.Data.w / FarClip;
-	
-	// Store the x&y components of the normal in RG
-	output.rg = normalize(input.Data.xyz).xy * 0.5 + 0.5;
-	
-	// Encode the linear depth across two channels in BA
-	output.b = floor(Depth*255)/255;
-	output.a = floor((Depth-output.b)*255*255)/255;
-	
-	return output;
+	return float4(input.Normal, input.Depth);
 }
 
 technique DrawDepth
