@@ -24,8 +24,6 @@ VS_OUTPUT DepthVertexShaderFunction(VS_INPUT IN)
 {
    VS_OUTPUT Output;
    
-   float3 n = IN.Normal;
-   
    Output.Position = mul(IN.Position, WorldViewProjection);
    Output.vPositionVS = mul(IN.Position, WorldView);
    Output.Normal = mul(IN.Normal, ITWorldView);
