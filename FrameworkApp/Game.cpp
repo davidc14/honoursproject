@@ -23,8 +23,6 @@
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
 
 D3DXMATRIX matWorld, matView, matProj, matWorldInverseTranspose;
-D3DXMATRIX View;
-D3DXVECTOR3 ViewAngle, ViewPosition;
 D3DXVECTOR4 vViewVector;
 
 D3DFont* m_Font;
@@ -66,10 +64,10 @@ D3DXMATRIXA16 m_LightViewProj;
 //ID3DXEffect* mDepthFX;
 //D3DXHANDLE mhDepthTechAni;
 //D3DXHANDLE mhDepthTech;
-//D3DXHANDLE mhFinalXForms;
-//D3DXHANDLE mhWVP;
+//D3DXHANDLE mhFinalXFormsD;
+//D3DXHANDLE mhWVPD;
 //D3DXHANDLE mhWorldViewIT;
-//D3DXHANDLE mhWorldView;
+//D3DXHANDLE mhWorldViewD;
 //D3DXHANDLE mhFarClip;
 //DrawableRenderTarget* mDepthTarget;
 
@@ -167,6 +165,7 @@ bool Game::LoadContent()
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, m_Camera->GetFarPlane());
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F , D3DFMT_D16, m_Camera->GetFarPlane());
+	//mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F , D3DFMT_D16, m_Camera->GetFarPlane());
 
 	// Create shadow map.
 	//D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
@@ -186,21 +185,21 @@ bool Game::LoadContent()
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.spotPower = 24.0f;
 
-	//ID3DXBuffer *m_Error = 0;
-	//D3DXCreateEffectFromFile(pDevice, "Shaders/SSAO/DepthAndShade.fx", 0, 0, D3DXSHADER_DEBUG,0, &mDepthFX, &m_Error);
-	//if(m_Error)
+	//ID3DXBuffer *m_ErrorD = 0;
+	//D3DXCreateEffectFromFile(pDevice, "Shaders/SSAO/DepthAndShade.fx", 0, 0, D3DXSHADER_DEBUG,0, &mDepthFX, &m_ErrorD);
+	//if(m_ErrorD)
 	//{
 	//	//Display the error in a message bos
-	//	MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
+	//	MessageBox(0, (char*)m_ErrorD->GetBufferPointer(),0,0);
 	//}
 
 	//mhDepthTech = mDepthFX->GetTechniqueByName("Depth");
 	//mhDepthTechAni = mDepthFX->GetTechniqueByName("DepthAni");
-	//mhWVP = mDepthFX->GetParameterByName(0, "WorldViewProjection");
-	//mhWorldView = mDepthFX->GetParameterByName(0, "WorldView");
+	//mhWVPD = mDepthFX->GetParameterByName(0, "WorldViewProjection");
+	//mhWorldViewD = mDepthFX->GetParameterByName(0, "WorldView");
 	//mhFarClip = mDepthFX->GetParameterByName(0, "FarClip");
 	//mhWorldViewIT = mDepthFX->GetParameterByName(0, "ITWorldView");
-	//mhFinalXForms = mDepthFX->GetParameterByName(0, "FinalXForms");
+	//mhFinalXFormsD = mDepthFX->GetParameterByName(0, "FinalXForms");
 
 	ID3DXBuffer *m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/WorldViewSpace.fx", 0, 0, D3DXSHADER_DEBUG,0, &mViewFX, &m_Error);
@@ -221,8 +220,6 @@ bool Game::LoadContent()
 	mCube = new D3DTexturedCube();
 
 	mCube->setBuffers(pDevice);
-
-	ViewPosition = ViewAngle = D3DXVECTOR3(0,0,0);
 
 	return true;
 }
@@ -247,57 +244,25 @@ void Game::HandleInput()
 	if(m_DInput->GetKeyState(1))
 	{
 		m_Camera->Move(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
-		ViewPosition -= D3DXVECTOR3(0, 0, 0.1f);
 	}
 	
 	//S
 	if(m_DInput->GetKeyState(2))
 	{
 		m_Camera->Move(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);
-		ViewPosition += D3DXVECTOR3(0, 0, 0.1f);
 	}
 
 	//A
 	if(m_DInput->GetKeyState(3))
 	{
 		m_Camera->Strafe(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
-		ViewPosition += D3DXVECTOR3(0.1f, 0, 0);
 	}
 
 	//D
 	if(m_DInput->GetKeyState(4))
 	{
 		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);	
-		ViewPosition -= D3DXVECTOR3(0.1f, 0, 0);
 	}
-
-	if(GetAsyncKeyState('Z'))
-	{
-		ViewPosition += D3DXVECTOR3(0, 0.1f, 0);
-	}
-
-	if(GetAsyncKeyState('X'))
-	{
-		ViewPosition -= D3DXVECTOR3(0, 0.1f, 0);
-	}
-
-	if(GetAsyncKeyState(VK_UP))
-	{
-		ViewAngle.x += 0.01f;
-	}
-	if(GetAsyncKeyState(VK_DOWN))
-	{
-		ViewAngle.x -= 0.01f;
-	}
-	if(GetAsyncKeyState(VK_RIGHT))
-	{
-		ViewAngle.y -= 0.01f;
-	}
-	if(GetAsyncKeyState(VK_LEFT))
-	{
-		ViewAngle.y += 0.01f;
-	}
-	
 }
 
 void Game::Update()
@@ -381,7 +346,7 @@ void Game::Draw()
 		mViewFX->Begin(&viewPasses, 0);
 		mViewFX->BeginPass(0);
 
-			mViewFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * View * *m_RenderTarget->getProjectionPointer()));
+			mViewFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			D3DXMATRIX worldView;
 			worldView = m_Citadel->GetWorld() * matView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
@@ -389,7 +354,7 @@ void Game::Draw()
 
 			m_Citadel->Draw(mViewFX, 0);
 
-			mViewFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * View * *m_RenderTarget->getProjectionPointer()));
+			mViewFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			worldView = m_Dwarf->GetWorld() * matView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
@@ -398,7 +363,7 @@ void Game::Draw()
 
 			D3DXMatrixIdentity(&matWorld);
 			D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
-			mViewFX->SetMatrix(mhWVP, &(matWorld * View * *m_RenderTarget->getProjectionPointer()));
+			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
 			worldView = matWorld * matView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
@@ -412,7 +377,7 @@ void Game::Draw()
 		mViewFX->Begin(&viewPasses, 0);
 		mViewFX->BeginPass(0);
 
-			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * View * *m_RenderTarget->getProjectionPointer()));
+			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			//D3DXMATRIX worldView;
 			worldView = *m_SkinnedMesh->GetWorld() * matView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));			
@@ -583,14 +548,6 @@ void Game::CalculateMatrices()
 	//D3DXMatrixLookAtLH( &matView, &vEyePt, &vLookatPt, &vUpVec );
 	D3DXMatrixLookAtLH( &matView, m_Camera->getPosition(), m_Camera->getLookAt(), m_Camera->getUp() );
 
-	D3DXMatrixIdentity(&View);
-	D3DXMATRIX mPos, mx, my, mz;
-	D3DXMatrixTranslation(&mPos, ViewPosition.x, ViewPosition.y, ViewPosition.z);
-	D3DXMatrixRotationZ(&mz, ViewAngle.z);
-	D3DXMatrixRotationY(&my, ViewAngle.y);
-	D3DXMatrixRotationX(&mx, ViewAngle.x);
-	View = mPos * mz * my * mx;
-
 	//D3DXMatrixPerspectiveFovLH(m_RenderTarget->getProjectionPointer(), D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, m_Camera->GetFarPlane());
 
     //pDevice->SetTransform( D3DTS_VIEW, &matView );
@@ -634,7 +591,7 @@ void Game::SetPhongShaderVariables(D3DXMATRIX World)
 void Game::SetAnimatedInterfaceVariables(D3DXMATRIX World)
 {
 	m_AnimatedContainer.m_EyePos = *m_Camera->getPosition();
-	m_AnimatedContainer.m_WVP = World * View * *m_RenderTarget->getProjectionPointer();
+	m_AnimatedContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
 	//m_AnimatedContainer.m_ShadowMap = mShadowMap->d3dTex();
 	m_AnimatedContainer.m_ShadowMap = mShadowTarget->getRenderTexture();
 
@@ -647,7 +604,7 @@ void Game::SetAnimatedInterfaceVariables(D3DXMATRIX World)
 void Game::SetSpotLightVariables(D3DXMATRIX World, Mtrl* material)
 {
 	m_SpotContainer.m_EyePosW = *m_Camera->getPosition();
-	m_SpotContainer.m_WVP = World * View * *m_RenderTarget->getProjectionPointer();
+	m_SpotContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
 	//m_SpotContainer.m_ShadowMap = mShadowMap->d3dTex();
 	m_SpotContainer.m_ShadowMap = mShadowTarget->getRenderTexture();
 	m_SpotContainer.m_World = World;
