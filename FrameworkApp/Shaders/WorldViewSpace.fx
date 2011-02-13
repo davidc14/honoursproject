@@ -111,7 +111,7 @@ technique DrawNormal
     {
         // Specify the vertex and pixel shader associated with this pass.
         vertexShader = compile vs_2_0 DVertexShader();
-        pixelShader  = compile ps_2_0 DPixelShader();
+        pixelShader  = compile ps_2_0 NPixelShader();
     }
 }
 
@@ -121,6 +121,6 @@ technique DrawNormalAni
     {
         // Specify the vertex and pixel shader associated with this pass.
         vertexShader = compile vs_2_0 DVertexShaderAni();
-        pixelShader  = compile ps_2_0 DPixelShader();
+        pixelShader  = compile ps_2_0 NPixelShader();
     }
 }
