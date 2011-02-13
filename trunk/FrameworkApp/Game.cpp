@@ -23,6 +23,8 @@
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
 
 D3DXMATRIX matWorld, matView, matProj, matWorldInverseTranspose;
+D3DXMATRIX View;
+D3DXVECTOR3 ViewAngle, ViewPosition;
 D3DXVECTOR4 vViewVector;
 
 D3DFont* m_Font;
@@ -220,6 +222,8 @@ bool Game::LoadContent()
 
 	mCube->setBuffers(pDevice);
 
+	ViewPosition = ViewAngle = D3DXVECTOR3(0,0,0);
+
 	return true;
 }
 
@@ -241,19 +245,59 @@ void Game::HandleInput()
 	//Check the key presses
 	//W
 	if(m_DInput->GetKeyState(1))
+	{
 		m_Camera->Move(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
+		ViewPosition -= D3DXVECTOR3(0, 0, 0.1f);
+	}
 	
 	//S
 	if(m_DInput->GetKeyState(2))
+	{
 		m_Camera->Move(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);
+		ViewPosition += D3DXVECTOR3(0, 0, 0.1f);
+	}
 
 	//A
 	if(m_DInput->GetKeyState(3))
+	{
 		m_Camera->Strafe(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
+		ViewPosition += D3DXVECTOR3(0.1f, 0, 0);
+	}
 
 	//D
 	if(m_DInput->GetKeyState(4))
-		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);			
+	{
+		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);	
+		ViewPosition -= D3DXVECTOR3(0.1f, 0, 0);
+	}
+
+	if(GetAsyncKeyState('Z'))
+	{
+		ViewPosition += D3DXVECTOR3(0, 0.1f, 0);
+	}
+
+	if(GetAsyncKeyState('X'))
+	{
+		ViewPosition -= D3DXVECTOR3(0, 0.1f, 0);
+	}
+
+	if(GetAsyncKeyState(VK_UP))
+	{
+		ViewAngle.x += 0.01f;
+	}
+	if(GetAsyncKeyState(VK_DOWN))
+	{
+		ViewAngle.x -= 0.01f;
+	}
+	if(GetAsyncKeyState(VK_RIGHT))
+	{
+		ViewAngle.y -= 0.01f;
+	}
+	if(GetAsyncKeyState(VK_LEFT))
+	{
+		ViewAngle.y += 0.01f;
+	}
+	
 }
 
 void Game::Update()
@@ -365,21 +409,21 @@ void Game::Draw()
 
 		mViewFX->SetTechnique(mhNormalTechAni);
 
-		//mViewFX->Begin(&viewPasses, 0);
-		//mViewFX->BeginPass(0);
+		mViewFX->Begin(&viewPasses, 0);
+		mViewFX->BeginPass(0);
 
-		//	mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-		//	//D3DXMATRIX worldView;
-		//	worldView = *m_SkinnedMesh->GetWorld() * matView;
-		//	mViewFX->SetMatrix(mhWorldView, &(worldView));			
-		//	mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-		//	mViewFX->CommitChanges();
+			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+			//D3DXMATRIX worldView;
+			worldView = *m_SkinnedMesh->GetWorld() * matView;
+			mViewFX->SetMatrix(mhWorldView, &(worldView));			
+			mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+			mViewFX->CommitChanges();
 
-		//	m_SkinnedMesh->Draw();
+			m_SkinnedMesh->Draw();
 
-		//mViewFX->EndPass();
-		//mViewFX->End();
-		//
+		mViewFX->EndPass();
+		mViewFX->End();
+		
 	mViewPos->EndScene();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -485,7 +529,7 @@ void Game::Draw()
 
 			m_RenderTarget->Draw();
 
-			mViewPos->Draw();
+			//mViewPos->Draw();
 
 		m_Font->Draw();	
 
@@ -539,6 +583,14 @@ void Game::CalculateMatrices()
 	//D3DXMatrixLookAtLH( &matView, &vEyePt, &vLookatPt, &vUpVec );
 	D3DXMatrixLookAtLH( &matView, m_Camera->getPosition(), m_Camera->getLookAt(), m_Camera->getUp() );
 
+	D3DXMatrixIdentity(&View);
+	D3DXMATRIX mPos, mx, my, mz;
+	D3DXMatrixTranslation(&mPos, ViewPosition.x, ViewPosition.y, ViewPosition.z);
+	D3DXMatrixRotationZ(&mz, ViewAngle.z);
+	D3DXMatrixRotationY(&my, ViewAngle.y);
+	D3DXMatrixRotationX(&mx, ViewAngle.x);
+	View = mPos * mz * my * mx;
+
 	//D3DXMatrixPerspectiveFovLH(m_RenderTarget->getProjectionPointer(), D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, m_Camera->GetFarPlane());
 
     //pDevice->SetTransform( D3DTS_VIEW, &matView );
@@ -582,7 +634,7 @@ void Game::SetPhongShaderVariables(D3DXMATRIX World)
 void Game::SetAnimatedInterfaceVariables(D3DXMATRIX World)
 {
 	m_AnimatedContainer.m_EyePos = *m_Camera->getPosition();
-	m_AnimatedContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
+	m_AnimatedContainer.m_WVP = World * View * *m_RenderTarget->getProjectionPointer();
 	//m_AnimatedContainer.m_ShadowMap = mShadowMap->d3dTex();
 	m_AnimatedContainer.m_ShadowMap = mShadowTarget->getRenderTexture();
 
@@ -595,7 +647,7 @@ void Game::SetAnimatedInterfaceVariables(D3DXMATRIX World)
 void Game::SetSpotLightVariables(D3DXMATRIX World, Mtrl* material)
 {
 	m_SpotContainer.m_EyePosW = *m_Camera->getPosition();
-	m_SpotContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
+	m_SpotContainer.m_WVP = World * View * *m_RenderTarget->getProjectionPointer();
 	//m_SpotContainer.m_ShadowMap = mShadowMap->d3dTex();
 	m_SpotContainer.m_ShadowMap = mShadowTarget->getRenderTexture();
 	m_SpotContainer.m_World = World;
