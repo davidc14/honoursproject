@@ -75,10 +75,15 @@ VSOUT DVertexShaderAni(VSANIIN input)
 
 float4 DPixelShader(VSOUT input) : COLOR0
 {	
+	return float4(input.Position, input.Depth);
+}
+
+float4 NPixelShader(VSOUT input) : COLOR0
+{	
 	return float4(input.Normal, input.Depth);
 }
 
-technique DrawDepth
+technique DrawPosition
 {
 	pass P0
     {
@@ -88,7 +93,27 @@ technique DrawDepth
     }
 }
 
-technique DrawDepthAni
+technique DrawPositionAni
+{
+	pass P0
+    {
+        // Specify the vertex and pixel shader associated with this pass.
+        vertexShader = compile vs_2_0 DVertexShaderAni();
+        pixelShader  = compile ps_2_0 DPixelShader();
+    }
+}
+
+technique DrawNormal
+{
+	pass P0
+    {
+        // Specify the vertex and pixel shader associated with this pass.
+        vertexShader = compile vs_2_0 DVertexShader();
+        pixelShader  = compile ps_2_0 DPixelShader();
+    }
+}
+
+technique DrawNormalAni
 {
 	pass P0
     {
