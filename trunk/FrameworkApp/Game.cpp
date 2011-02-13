@@ -18,6 +18,7 @@
 #include "App\Render Targets\DrawableRenderTarget.h"
 #include "App\Render Targets\DrawableTex2D.h"
 #include "App\Objects\Render Objects\Citadel.h"
+#include "d3dTexturedCube.h"
 
 //LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
 
@@ -79,6 +80,8 @@ D3DXHANDLE mhWVP;
 D3DXHANDLE mhWorldView;
 D3DXHANDLE mhFinalXForms;
 DrawableRenderTarget* mViewPos;
+
+D3DTexturedCube* mCube;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -213,6 +216,10 @@ bool Game::LoadContent()
 	mhWorldView = mViewFX->GetParameterByName(0, "WorldView");
 	mhFinalXForms = mViewFX->GetParameterByName(0, "FinalXForms");
 
+	mCube = new D3DTexturedCube();
+
+	mCube->setBuffers(pDevice);
+
 	return true;
 }
 
@@ -345,26 +352,34 @@ void Game::Draw()
 
 			m_Dwarf->Draw(mViewFX, 0);
 
+			D3DXMatrixIdentity(&matWorld);
+			D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
+			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
+			worldView = matWorld * matView;
+			mViewFX->SetMatrix(mhWorldView, &(worldView));
+			mViewFX->CommitChanges();
+			mCube->Render(pDevice, mViewFX);
+
 		mViewFX->EndPass();
 		mViewFX->End();
 
 		mViewFX->SetTechnique(mhNormalTechAni);
 
-		mViewFX->Begin(&viewPasses, 0);
-		mViewFX->BeginPass(0);
+		//mViewFX->Begin(&viewPasses, 0);
+		//mViewFX->BeginPass(0);
 
-			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			//D3DXMATRIX worldView;
-			worldView = *m_SkinnedMesh->GetWorld() * matView;
-			mViewFX->SetMatrix(mhWorldView, &(worldView));			
-			mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-			mViewFX->CommitChanges();
+		//	mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+		//	//D3DXMATRIX worldView;
+		//	worldView = *m_SkinnedMesh->GetWorld() * matView;
+		//	mViewFX->SetMatrix(mhWorldView, &(worldView));			
+		//	mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+		//	mViewFX->CommitChanges();
 
-			m_SkinnedMesh->Draw();
+		//	m_SkinnedMesh->Draw();
 
-		mViewFX->EndPass();
-		mViewFX->End();
-		
+		//mViewFX->EndPass();
+		//mViewFX->End();
+		//
 	mViewPos->EndScene();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -432,6 +447,11 @@ void Game::Draw()
 
 		SetSpotLightVariables(m_Dwarf->GetWorld(), m_Dwarf->GetMaterial());
 		m_Dwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+
+		D3DXMatrixIdentity(&matWorld);
+		D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
+		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());
+		mCube->Render(pDevice, m_SpotInterface->GetEffect());
 
 	m_SpotInterface->GetEffect()->EndPass();
 	m_SpotInterface->GetEffect()->End();

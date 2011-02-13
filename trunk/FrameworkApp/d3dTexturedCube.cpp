@@ -15,19 +15,19 @@ void D3DTexturedCube::setBuffers(IDirect3DDevice9 * Device)
 
 void D3DTexturedCube::Render(IDirect3DDevice9 * Device, ID3DXEffect *mFX)
 {
-	//Begin passes
-	UINT numPasses=1;
+	////Begin passes
+	//UINT numPasses=1;
 
-	mFX->Begin(&numPasses,0);
-	for(int i=0; i < (int)numPasses; ++i)
-	{
-		mFX->BeginPass(i);
+	//mFX->Begin(&numPasses,0);
+	//for(int i=0; i < (int)numPasses; ++i)
+	//{
+	//	mFX->BeginPass(i);
 		Device->SetFVF(D3DFVF_TEXTUREDVERTEX);
 		Device->SetStreamSource(0, VB, 0, sizeof(TexturedVertexStruct));
 		Device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 12);
-		mFX->EndPass();
+		/*mFX->EndPass();
 	}
-	mFX->End();
+	mFX->End();*/
 }
 
 void D3DTexturedCube::initBuffers(IDirect3DDevice9 * Device)
