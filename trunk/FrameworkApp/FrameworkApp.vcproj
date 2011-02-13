@@ -561,10 +561,6 @@
 			Name="Shaders"
 			>
 			<File
-				RelativePath=".\Shaders\CameraSpaceNormal.fx"
-				>
-			</File>
-			<File
 				RelativePath=".\Shaders\CellShaderEffect.fx"
 				>
 			</File>
@@ -594,6 +590,10 @@
 			</File>
 			<File
 				RelativePath=".\Shaders\vblend2.fx"
+				>
+			</File>
+			<File
+				RelativePath=".\Shaders\WorldViewSpace.fx"
 				>
 			</File>
 			<Filter

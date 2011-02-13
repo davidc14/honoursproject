@@ -221,5 +221,5 @@ void XModel::Release()
 	//Release the model
 	m_Mesh->Release();
 
-	pDevice->Release();
+	//pDevice->Release();
 }

@@ -1,11 +1,6 @@
-uniform extern float4x4 View;
-uniform extern float4x4 World;
+uniform extern float4x4 WorldViewProjection;
 uniform extern float4x4 WorldView;
-uniform extern float4x4 Projection; 
-
 uniform extern float4x4 FinalXForms[35];
-
-uniform extern float FarClip;
 
 struct VSIN
 {
@@ -27,7 +22,8 @@ struct VSOUT
 	float4 Position:POSITION0;
 	// The data we shall pass to the PS
 	float3 Normal:TEXCOORD0;
-	float Depth:TEXCOORD1;
+	float4 PosData:TEXCOORD1;
+	float Depth:TEXCOORD2;
 };
 
 VSOUT DVertexShader(VSIN input)
@@ -35,6 +31,8 @@ VSOUT DVertexShader(VSIN input)
 	VSOUT output = (VSOUT)0;
 
     output.Position = mul(input.Position, WorldViewProjection);
+    
+    output.PosData = mul(input.Position, WorldView);
 
 	// You can store world space or view space normals, for SSAO you probably want view space
 	output.Normal = mul(input.Normal, (float3x3)WorldView);
@@ -63,6 +61,8 @@ VSOUT DVertexShaderAni(VSANIIN input)
     n.w = 0.0f;
 	
 	output.Position = mul(p, WorldViewProjection);
+	
+	output.PosData = mul(p, WorldView);
 
 	// You can store world space or view space normals, for SSAO you probably want view space
 	output.Normal = mul(n, (float3x3)WorldView);
@@ -75,12 +75,14 @@ VSOUT DVertexShaderAni(VSANIIN input)
 
 float4 DPixelShader(VSOUT input) : COLOR0
 {	
-	return float4(input.Position, input.Depth);
+	return float4(input.PosData.xyz, 1);
 }
 
 float4 NPixelShader(VSOUT input) : COLOR0
 {	
-	return float4(input.Normal, input.Depth);
+	float3 viewSpaceNormalizedNormals = 0.5 * normalize (input.Normal) + 0.5;
+	
+	return float4(viewSpaceNormalizedNormals, 1);
 }
 
 technique DrawPosition
