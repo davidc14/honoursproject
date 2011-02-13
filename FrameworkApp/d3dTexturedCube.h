@@ -1,10 +1,27 @@
 #ifndef _D3DTEXTUREDCUBE_H
 #define _D3DTEXTUREDCUBE_H
 
-#include "d3dlitcube.h"
+//#include "d3dlitcube.h"
+#include <d3d9.h>
+#include <d3dx9.h>
+
+//The textured vertex
+struct TexturedVertexStruct
+{
+	TexturedVertexStruct(float _x, float _y, float _z, float _nx, float _ny, float _nz, float _u, float _v)
+	{
+		x = _x;	 y = _y;  z = _z; 
+		nx = _nx; ny = _ny; nz = _nz;
+		u = _u; v=_v;
+	}
+
+	float x, y, z;
+	float nx, ny, nz;
+	float u, v;
+};
 
 //Inherits from the lit cube class
-class D3DTexturedCube : d3dLitCube
+class D3DTexturedCube
 {
 public:
 	

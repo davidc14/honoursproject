@@ -407,6 +407,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\d3dTexturedCube.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\d3dTexturedCube.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Dwarf.cpp"
 						>
 					</File>
