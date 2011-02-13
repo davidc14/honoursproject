@@ -104,7 +104,9 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
     pWindow->CleanupDevice();
 	pGame->Unload();
 	
-    return ( int )msg.wParam;
 	delete pWindow;
 	delete pGame;
+	
+    return ( int )msg.wParam;
+	
 }
