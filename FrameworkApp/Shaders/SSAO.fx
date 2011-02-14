@@ -111,7 +111,7 @@ PS_OUTPUT main(PS_INPUT i)
 	 ao/=(float)iterations*4.0;
 	 //**END**//
 
-	o.color.rgba = finalColor/16;
+	o.color.rgb = finalColor/16;
 	//Do stuff here with your occlusion value “ao”: modulate ambient lighting, write it to a buffer for later //use, etc.
 	return o;
 }
