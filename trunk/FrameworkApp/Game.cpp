@@ -80,8 +80,22 @@ D3DXHANDLE mhWVP;
 D3DXHANDLE mhWorldView;
 D3DXHANDLE mhFinalXForms;
 DrawableRenderTarget* mViewPos;
+DrawableRenderTarget* mViewNormal;
 
 D3DTexturedCube* mCube;
+
+ID3DXEffect* mSSAOFX;
+D3DXHANDLE mhSSAOTech;
+D3DXHANDLE mhNormalTex;
+D3DXHANDLE mhPositionTex;
+D3DXHANDLE mhRandomTex;
+D3DXHANDLE mhRandomSize;
+D3DXHANDLE mhSampleRadius;
+D3DXHANDLE mhIntensity;
+D3DXHANDLE mhScale;
+D3DXHANDLE mhBias;
+D3DXHANDLE mhScreenSize;
+DrawableRenderTarget* mSSAOTarget;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -165,8 +179,9 @@ bool Game::LoadContent()
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, m_Camera->GetFarPlane());
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F , D3DFMT_D16, m_Camera->GetFarPlane());
-	//mDepthTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F , D3DFMT_D16, m_Camera->GetFarPlane());
-
+	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F , D3DFMT_D16, m_Camera->GetFarPlane());
+	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F , D3DFMT_D16, m_Camera->GetFarPlane());
+	
 	// Create shadow map.
 	//D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
 	//mShadowMap = new DrawableTex2D(pDevice, 512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
@@ -185,21 +200,8 @@ bool Game::LoadContent()
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.spotPower = 24.0f;
 
-	//ID3DXBuffer *m_ErrorD = 0;
-	//D3DXCreateEffectFromFile(pDevice, "Shaders/SSAO/DepthAndShade.fx", 0, 0, D3DXSHADER_DEBUG,0, &mDepthFX, &m_ErrorD);
-	//if(m_ErrorD)
-	//{
-	//	//Display the error in a message bos
-	//	MessageBox(0, (char*)m_ErrorD->GetBufferPointer(),0,0);
-	//}
-
-	//mhDepthTech = mDepthFX->GetTechniqueByName("Depth");
-	//mhDepthTechAni = mDepthFX->GetTechniqueByName("DepthAni");
-	//mhWVPD = mDepthFX->GetParameterByName(0, "WorldViewProjection");
-	//mhWorldViewD = mDepthFX->GetParameterByName(0, "WorldView");
-	//mhFarClip = mDepthFX->GetParameterByName(0, "FarClip");
-	//mhWorldViewIT = mDepthFX->GetParameterByName(0, "ITWorldView");
-	//mhFinalXFormsD = mDepthFX->GetParameterByName(0, "FinalXForms");
+	mCube = new D3DTexturedCube();
+	mCube->setBuffers(pDevice);
 
 	ID3DXBuffer *m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/WorldViewSpace.fx", 0, 0, D3DXSHADER_DEBUG,0, &mViewFX, &m_Error);
@@ -217,9 +219,24 @@ bool Game::LoadContent()
 	mhWorldView = mViewFX->GetParameterByName(0, "WorldView");
 	mhFinalXForms = mViewFX->GetParameterByName(0, "FinalXForms");
 
-	mCube = new D3DTexturedCube();
+	m_Error = 0;
+	D3DXCreateEffectFromFile(pDevice, "Shaders/SSAO.fx", 0, 0, D3DXSHADER_DEBUG,0, &mSSAOFX, &m_Error);
+	if(m_Error)
+	{
+		//Display the error in a message bos
+		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
+	}
 
-	mCube->setBuffers(pDevice);
+	mhSSAOTech = mSSAOFX->GetTechniqueByName("SSAO");
+	mhNormalTex = mSSAOFX->GetParameterByName(0, "normalTex");
+	mhPositionTex = mSSAOFX->GetParameterByName(0, "positionTex");
+	mhRandomTex = mSSAOFX->GetParameterByName(0, "randomTex");
+	mhRandomSize = mSSAOFX->GetParameterByName(0, "random_size");
+	mhSampleRadius = mSSAOFX->GetParameterByName(0, "g_sample_rad");
+	mhIntensity = mSSAOFX->GetParameterByName(0, "g_intensity");
+	mhScale = mSSAOFX->GetParameterByName(0, "g_scale");
+	mhBias = mSSAOFX->GetParameterByName(0, "g_bias");
+	mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
 
 	return true;
 }
@@ -336,7 +353,7 @@ void Game::Update()
 #define D3DFVF_POSNORMAL (D3DFVF_XYZ | D3DFVF_NORMAL)
 void Game::Draw()
 {	
-	mViewPos->BeginScene();
+	mViewNormal->BeginScene();
 
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 	
@@ -389,7 +406,79 @@ void Game::Draw()
 		mViewFX->EndPass();
 		mViewFX->End();
 		
+	mViewNormal->EndScene();
+
+	mViewPos->BeginScene();
+
+	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+	
+	mViewFX->SetTechnique(mhPosTech);
+
+		//UINT viewPasses = 1;
+		mViewFX->Begin(&viewPasses, 0);
+		mViewFX->BeginPass(0);
+
+			mViewFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+			//D3DXMATRIX worldView;
+			worldView = m_Citadel->GetWorld() * matView;
+			mViewFX->SetMatrix(mhWorldView, &(worldView));
+			mViewFX->CommitChanges();
+
+			m_Citadel->Draw(mViewFX, 0);
+
+			mViewFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+			worldView = m_Dwarf->GetWorld() * matView;
+			mViewFX->SetMatrix(mhWorldView, &(worldView));
+			mViewFX->CommitChanges();
+
+			m_Dwarf->Draw(mViewFX, 0);
+
+			D3DXMatrixIdentity(&matWorld);
+			D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
+			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
+			worldView = matWorld * matView;
+			mViewFX->SetMatrix(mhWorldView, &(worldView));
+			mViewFX->CommitChanges();
+			mCube->Render(pDevice, mViewFX);
+
+		mViewFX->EndPass();
+		mViewFX->End();
+
+		mViewFX->SetTechnique(mhPosTechAni);
+
+		mViewFX->Begin(&viewPasses, 0);
+		mViewFX->BeginPass(0);
+
+			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
+			//D3DXMATRIX worldView;
+			worldView = *m_SkinnedMesh->GetWorld() * matView;
+			mViewFX->SetMatrix(mhWorldView, &(worldView));			
+			mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+			mViewFX->CommitChanges();
+
+			m_SkinnedMesh->Draw();
+
+		mViewFX->EndPass();
+		mViewFX->End();
+		
 	mViewPos->EndScene();
+
+	mSSAOTarget->BeginScene();
+
+	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+
+	mSSAOFX->SetTechnique(mhSSAOTech);
+	UINT ssaoPasses = 1;
+
+	mSSAOFX->Begin(&ssaoPasses, 0);
+	mSSAOFX->BeginPass(0);
+
+		
+
+	mSSAOFX->EndPass();
+	mSSAOFX->End();
+		
+	mSSAOTarget->EndScene();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -398,37 +487,37 @@ void Game::Draw()
 	// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 
-	m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
-	UINT numberOfShadowPasses = 1;
-	m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
-	m_SpotInterface->GetEffect()->BeginPass(0);
+	//m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
+	//UINT numberOfShadowPasses = 1;
+	//m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
+	//m_SpotInterface->GetEffect()->BeginPass(0);
 
-		m_SpotInterface->UpdateShadowHandles(&(m_Dwarf->GetWorld() * m_LightViewProj));
+	//	m_SpotInterface->UpdateShadowHandles(&(m_Dwarf->GetWorld() * m_LightViewProj));
 
-		m_Dwarf->DrawToShadowMap();
+	//	//m_Dwarf->DrawToShadowMap();
 
-		m_SpotInterface->UpdateShadowHandles(&(m_Citadel->GetWorld() * m_LightViewProj));
+	//	m_SpotInterface->UpdateShadowHandles(&(m_Citadel->GetWorld() * m_LightViewProj));
 
-		m_Citadel->DrawToShadowMap();
+	//	//m_Citadel->DrawToShadowMap();
 
-	//End the pass
-	m_SpotInterface->GetEffect()->EndPass();
-	m_SpotInterface->GetEffect()->End();	
+	////End the pass
+	//m_SpotInterface->GetEffect()->EndPass();
+	//m_SpotInterface->GetEffect()->End();	
 
-	UINT numOfPasses = 0;
-		
-	m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
+	//UINT numOfPasses = 0;
+	//	
+	//m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
 
-	m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
-	m_AnimatedInterface->GetEffect()->BeginPass(0);		
+	//m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
+	//m_AnimatedInterface->GetEffect()->BeginPass(0);		
 
-		m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
-			m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+	//	m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
+	//		m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
 
-		m_SkinnedMesh->Draw();
+	//	//m_SkinnedMesh->Draw();
 
-		m_AnimatedInterface->GetEffect()->EndPass();
-		m_AnimatedInterface->GetEffect()->End();
+	//m_AnimatedInterface->GetEffect()->EndPass();
+	//m_AnimatedInterface->GetEffect()->End();
 
 	mShadowTarget->EndScene();
 
@@ -494,7 +583,7 @@ void Game::Draw()
 
 			m_RenderTarget->Draw();
 
-			mViewPos->Draw();
+			//mViewNormal->Draw();
 
 		m_Font->Draw();	
 
@@ -526,11 +615,16 @@ void Game::Unload()
 
 	m_RenderTarget->Release();
 
-//mDepthFX->Release();
+	//mDepthFX->Release();
 	//mDepthTarget->Release();
 
 	mViewFX->Release();
 	mViewPos->Release();
+
+	mViewNormal->Release();
+
+	if(mSSAOFX != NULL) mSSAOFX->Release();
+	if(mSSAOTarget != NULL) mSSAOTarget->Release();
 }
 
 void Game::CalculateMatrices()
