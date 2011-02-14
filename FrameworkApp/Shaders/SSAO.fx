@@ -93,19 +93,20 @@ PS_OUTPUT main(PS_INPUT i)
 	 int iterations = 4;
 	 for (int j = 0; j < iterations; ++j)
 	 {
-	  float2 coord1 = reflect(vec[j],rand)*rad;
-	  float2 coord2 = float2(coord1.x*0.707 - coord1.y*0.707,
-				  coord1.x*0.707 + coord1.y*0.707);
-	  
-	  ao += doAmbientOcclusion(i.uv,coord1*0.25, p, n);
-	  ao += doAmbientOcclusion(i.uv,coord2*0.5, p, n);
-	  ao += doAmbientOcclusion(i.uv,coord1*0.75, p, n);
-	  ao += doAmbientOcclusion(i.uv,coord2, p, n);
+		  float2 coord1 = reflect(vec[j],rand)*rad;
+		  float2 coord2 = float2(coord1.x*0.707 - coord1.y*0.707,
+					  coord1.x*0.707 + coord1.y*0.707);
+		  
+		  ao += doAmbientOcclusion(i.uv,coord1*0.25, p, n);
+		  ao += doAmbientOcclusion(i.uv,coord2*0.5, p, n);
+		  ao += doAmbientOcclusion(i.uv,coord1*0.75, p, n);
+		  ao += doAmbientOcclusion(i.uv,coord2, p, n);
 	 } 
 	 ao/=(float)iterations*4.0;
 	 //**END**//
 
-	//o.color.r = 0;
+	float test = 0;
+	o.color.r = test;
 	//Do stuff here with your occlusion value “ao”: modulate ambient lighting, write it to a buffer for later //use, etc.
 	return o;
 }
