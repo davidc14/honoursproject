@@ -481,7 +481,7 @@ void Game::Draw()
 	mSSAOFX->SetTexture(mhPositionTex, mViewPos->getRenderTexture());
 	mSSAOFX->SetTexture(mhRandomTex, mRandomTexture);
 	mSSAOFX->SetFloat(mhRandomSize, 64.0f);
-	mSSAOFX->SetFloat(mhSampleRadius, 15.0f);
+	mSSAOFX->SetFloat(mhSampleRadius, 30.0f);
 	mSSAOFX->SetFloat(mhIntensity, 10.0f);
 	mSSAOFX->SetFloat(mhBias, 0.5f);
 	mSSAOFX->SetFloat(mhScale, 1.0f);
