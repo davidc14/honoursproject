@@ -97,7 +97,7 @@ D3DXHANDLE mhBias;
 D3DXHANDLE mhScreenSize;
 DrawableRenderTarget* mSSAOTarget;
 
-LPDIRECT3DTEXTURE9 mRandomTexture;
+IDirect3DTexture9* mRandomTexture;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -240,7 +240,7 @@ bool Game::LoadContent()
 	mhBias = mSSAOFX->GetParameterByName(0, "g_bias");
 	mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
 
-	D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &mRandomTexture);
+	HR(D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &mRandomTexture));
 
 	return true;
 }
@@ -479,17 +479,16 @@ void Game::Draw()
 
 	mSSAOFX->SetTexture(mhNormalTex, mViewNormal->getRenderTexture());
 	mSSAOFX->SetTexture(mhPositionTex, mViewPos->getRenderTexture());
-	mSSAOFX->SetTexture(mhRandomSize, mRandomTexture);
+	mSSAOFX->SetTexture(mhRandomTex, mRandomTexture);
+	mSSAOFX->SetFloat(mhRandomSize, 0.0f);
+	mSSAOFX->SetFloat(mhSampleRadius, 0.0f);
+	mSSAOFX->SetFloat(mhIntensity, 0.0f);
+	mSSAOFX->SetFloat(mhBias, 0.0f);
+	D3DXVECTOR2 screenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
+	mSSAOFX->SetValue(mhScreenSize, &screenSize, sizeof(D3DXVECTOR2));
+	mSSAOFX->CommitChanges();
 
-		/*D3DXHANDLE mhNormalTex;
-D3DXHANDLE mhPositionTex;
-D3DXHANDLE mhRandomTex;
-D3DXHANDLE mhRandomSize;
-D3DXHANDLE mhSampleRadius;
-D3DXHANDLE mhIntensity;
-D3DXHANDLE mhScale;
-D3DXHANDLE mhBias;
-D3DXHANDLE mhScreenSize;*/
+	mSSAOTarget->DrawPrimitive();
 
 	mSSAOFX->EndPass();
 	mSSAOFX->End();
