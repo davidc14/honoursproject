@@ -66,7 +66,7 @@ float2 getRandom(in float2 uv)
  return normalize(tex2D(g_random, g_screen_size * uv / random_size).xy * 2.0f - 1.0f);
 }
 
-float doAmbientOcclusion(in float2 tcoord,in float2 uv, in float3 p, in float3 cnorm)
+float doAmbientOcclusion(in float2 tcoord,in float2 uv, in float3 p, in float3 cnorm) : COLOR1
 {
  float3 diff = getPosition(tcoord + uv) - p;
  const float3 v = normalize(diff);
