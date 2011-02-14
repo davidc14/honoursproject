@@ -488,7 +488,7 @@ void Game::Draw()
 	mSSAOFX->SetValue(mhScreenSize, &screenSize, sizeof(D3DXVECTOR2));
 	mSSAOFX->CommitChanges();
 
-	mSSAOTarget->DrawPrimitive();
+	mSSAOTarget->DrawUntextured();
 
 	mSSAOFX->EndPass();
 	mSSAOFX->End();
