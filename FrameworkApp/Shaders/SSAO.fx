@@ -76,37 +76,38 @@ float doAmbientOcclusion(in float2 tcoord,in float2 uv, in float3 p, in float3 c
 
 PS_OUTPUT main(PS_INPUT i)
 {
- PS_OUTPUT o = (PS_OUTPUT)0;
- 
- o.color.rgb = 1.0f;
- const float2 vec[4] = {float2(1,0),float2(-1,0),
-            float2(0,1),float2(0,-1)};
+	 PS_OUTPUT o = (PS_OUTPUT)0;
+	 
+	 o.color.rgb = 1.0f;
+	 const float2 vec[4] = {float2(1,0),float2(-1,0),
+				float2(0,1),float2(0,-1)};
 
- float3 p = getPosition(i.uv);
- float3 n = getNormal(i.uv);
- float2 rand = getRandom(i.uv);
+	 float3 p = getPosition(i.uv);
+	 float3 n = getNormal(i.uv);
+	 float2 rand = getRandom(i.uv);
 
- float ao = 0.0f;
- float rad = g_sample_rad/p.z;
+	 float ao = 0.0f;
+	 float rad = g_sample_rad/p.z;
 
- //**SSAO Calculation**//
- int iterations = 4;
- for (int j = 0; j < iterations; ++j)
- {
-  float2 coord1 = reflect(vec[j],rand)*rad;
-  float2 coord2 = float2(coord1.x*0.707 - coord1.y*0.707,
-              coord1.x*0.707 + coord1.y*0.707);
-  
-  ao += doAmbientOcclusion(i.uv,coord1*0.25, p, n);
-  ao += doAmbientOcclusion(i.uv,coord2*0.5, p, n);
-  ao += doAmbientOcclusion(i.uv,coord1*0.75, p, n);
-  ao += doAmbientOcclusion(i.uv,coord2, p, n);
- } 
- ao/=(float)iterations*4.0;
- //**END**//
+	 //**SSAO Calculation**//
+	 int iterations = 4;
+	 for (int j = 0; j < iterations; ++j)
+	 {
+	  float2 coord1 = reflect(vec[j],rand)*rad;
+	  float2 coord2 = float2(coord1.x*0.707 - coord1.y*0.707,
+				  coord1.x*0.707 + coord1.y*0.707);
+	  
+	  ao += doAmbientOcclusion(i.uv,coord1*0.25, p, n);
+	  ao += doAmbientOcclusion(i.uv,coord2*0.5, p, n);
+	  ao += doAmbientOcclusion(i.uv,coord1*0.75, p, n);
+	  ao += doAmbientOcclusion(i.uv,coord2, p, n);
+	 } 
+	 ao/=(float)iterations*4.0;
+	 //**END**//
 
-//Do stuff here with your occlusion value “ao”: modulate ambient lighting, write it to a buffer for later //use, etc.
- return o;
+	//o.color.r = 0;
+	//Do stuff here with your occlusion value “ao”: modulate ambient lighting, write it to a buffer for later //use, etc.
+	return o;
 }
 
 technique SSAO
