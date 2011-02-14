@@ -484,6 +484,7 @@ void Game::Draw()
 	mSSAOFX->SetFloat(mhSampleRadius, 15.0f);
 	mSSAOFX->SetFloat(mhIntensity, 10.0f);
 	mSSAOFX->SetFloat(mhBias, 0.5f);
+	mSSAOFX->SetFloat(mhScale, 1.0f);
 	D3DXVECTOR2 screenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
 	mSSAOFX->SetValue(mhScreenSize, &screenSize, sizeof(D3DXVECTOR2));
 	mSSAOFX->CommitChanges();
