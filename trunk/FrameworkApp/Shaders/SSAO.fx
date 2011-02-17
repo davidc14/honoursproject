@@ -1,6 +1,7 @@
 texture normalTex;
 texture positionTex;
 texture randomTex;
+texture sceneTexture;
 float random_size;
 float g_sample_rad;
 float g_intensity;
@@ -12,33 +13,44 @@ sampler g_buffer_norm : register(s0) = sampler_state
 {
     Texture = (normalTex);
     
-    MinFilter = Linear;
-    MagFilter = Linear;
-    
-    AddressU = Clamp;
-    AddressV = Clamp;
+    //MinFilter = Linear;
+    //MagFilter = Linear;
+   
+    //AddressU = Clamp;
+    //AddressV = Clamp;
 };
 
-sampler g_buffer_pos: register(s1) = sampler_state
+sampler g_buffer_pos : register(s1) = sampler_state
 {
     Texture = (positionTex);
     
-    MinFilter = Linear;
-    MagFilter = Linear;
+    //MinFilter = Linear;
+    //MagFilter = Linear;
     
-    AddressU = Clamp;
-    AddressV = Clamp;
+    //AddressU = Clamp;
+    //AddressV = Clamp;
 };
 
-sampler g_random: register(s2) = sampler_state
+sampler g_random : register(s2) = sampler_state
 {
     Texture = (randomTex);
     
-    MinFilter = Linear;
-    MagFilter = Linear;
+    //MinFilter = Linear;
+    //MagFilter = Linear;
     
-    AddressU = Clamp;
-    AddressV = Clamp;
+    //AddressU = Clamp;
+    //AddressV = Clamp;
+};
+
+sampler sceneSampler : register(s3) = sampler_state
+{
+    Texture = (sceneTexture);
+    
+    //MinFilter = Linear;
+    //MagFilter = Linear;
+    
+    //AddressU = Clamp;
+    //AddressV = Clamp;
 };
 
 struct PS_INPUT
@@ -89,7 +101,7 @@ PS_OUTPUT main(PS_INPUT i)
 	 float ao = 0.0f;
 	 float rad = g_sample_rad/p.z;
 	 
-	 float finalColor = 0.0f;
+	 //float finalColor = 0.0f;
 
 	 //**SSAO Calculation**//
 	 int iterations = 4;
@@ -103,15 +115,19 @@ PS_OUTPUT main(PS_INPUT i)
 		  ao += doAmbientOcclusion(i.uv,coord2*0.5, p, n);
 		  ao += doAmbientOcclusion(i.uv,coord1*0.75, p, n);
 		  ao += doAmbientOcclusion(i.uv,coord2, p, n);
-		  
-		 
-			finalColor += 1.0f / (1.0f + ao * ao * 0.1);
-			
 	 } 
 	 ao/=(float)iterations*4.0;
 	 //**END**//
 
-	o.color.rgb = finalColor/16;
+	//o.color.rgb = ao;
+	
+	//float4 finalColor = tex2D(sceneSampler, i.uv);
+	
+	//finalColor.xyz *= ao;
+	
+	//o.color = finalColor;
+	
+	o.color.rgb = ao;
 	//Do stuff here with your occlusion value “ao”: modulate ambient lighting, write it to a buffer for later //use, etc.
 	return o;
 }

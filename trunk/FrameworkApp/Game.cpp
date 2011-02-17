@@ -481,10 +481,12 @@ void Game::Draw()
 	mSSAOFX->SetTexture(mhPositionTex, mViewPos->getRenderTexture());
 	mSSAOFX->SetTexture(mhRandomTex, mRandomTexture);
 	mSSAOFX->SetFloat(mhRandomSize, 64.0f);
-	mSSAOFX->SetFloat(mhSampleRadius, 30.0f);
+	mSSAOFX->SetFloat(mhSampleRadius, -0.03f);
 	mSSAOFX->SetFloat(mhIntensity, 10.0f);
-	mSSAOFX->SetFloat(mhBias, 0.5f);
-	mSSAOFX->SetFloat(mhScale, 1.0f);
+	mSSAOFX->SetFloat(mhBias, -0.04f);
+	mSSAOFX->SetFloat(mhScale, 2.0f);
+
+
 	D3DXVECTOR2 screenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
 	mSSAOFX->SetValue(mhScreenSize, &screenSize, sizeof(D3DXVECTOR2));
 	mSSAOFX->CommitChanges();
@@ -599,9 +601,8 @@ void Game::Draw()
 
 			m_RenderTarget->Draw();
 
-			mViewNormal->Draw();
-			//mViewPos->Draw();
-			//mSSAOTarget->Draw();
+			//mViewNormal->Draw();
+			mSSAOTarget->Draw();
 
 		m_Font->Draw();	
 

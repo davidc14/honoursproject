@@ -577,6 +577,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\GEGSSAO.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\LightShadow.fx"
 				>
 			</File>

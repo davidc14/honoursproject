@@ -22,8 +22,11 @@ struct VSOUT
 	float4 Position:POSITION0;
 	// The data we shall pass to the PS
 	float3 Normal:TEXCOORD0;
+	
 	float4 PosData:TEXCOORD1;
 	float Depth:TEXCOORD2;
+	
+	float3 NormData : TEXCOORD3;
 };
 
 VSOUT DVertexShader(VSIN input)
@@ -36,6 +39,8 @@ VSOUT DVertexShader(VSIN input)
 
 	// You can store world space or view space normals, for SSAO you probably want view space
 	output.Normal = mul(input.Normal, (float3x3)WorldView);
+	
+	output.NormData = mul(input.Normal, WorldView);
 
 	// View space Z is a good value to store for depth
 	output.Depth = mul(input.Position, WorldView).z;
@@ -66,6 +71,8 @@ VSOUT DVertexShaderAni(VSANIIN input)
 
 	// You can store world space or view space normals, for SSAO you probably want view space
 	output.Normal = mul(n, (float3x3)WorldView);
+	
+	output.NormData = mul(n, WorldView);
 
 	// View space Z is a good value to store for depth
 	output.Depth = mul(p, WorldView).z;
@@ -80,7 +87,7 @@ float4 DPixelShader(VSOUT input) : COLOR0
 
 float4 NPixelShader(VSOUT input) : COLOR0
 {	
-	float3 viewSpaceNormalizedNormals = 0.5 * normalize (input.Normal) + 0.5;
+	float3 viewSpaceNormalizedNormals = 0.5 * normalize (input.NormData) + 0.5;
 	
 	return float4(viewSpaceNormalizedNormals, input.Depth);
 }
