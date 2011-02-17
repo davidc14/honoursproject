@@ -81,8 +81,10 @@ VSOUT DVertexShaderAni(VSANIIN input)
 }
 
 float4 DPixelShader(VSOUT input) : COLOR0
-{	
-	return float4(input.PosData.xyz, input.Depth);
+{
+	float4 viewSpaceNormalizedNormals = 0.5 * normalize (input.PosData) + 0.5;	
+
+	return float4(viewSpaceNormalizedNormals.xyz, input.Depth);
 }
 
 float4 NPixelShader(VSOUT input) : COLOR0
