@@ -55,6 +55,7 @@ sampler sceneSampler : register(s3) = sampler_state
 
 struct PS_INPUT
 {
+	float4 pos : POSITION0;
 	float2 uv : TEXCOORD0;
 };
 
@@ -86,11 +87,22 @@ float doAmbientOcclusion(float2 tcoord , float2 uv, float3 p, float3 cnorm)
 	return max(0.0,dot(cnorm,v)-g_bias)*(1.0/(1.0+d))*g_intensity;
 }
 
-PS_OUTPUT main(PS_INPUT i)
+
+PS_INPUT AOVertexShader(float4 position : POSITION0, float2 TexCoord : TEXCOORD0)
+{
+	PS_INPUT o = (PS_INPUT)0;
+	
+	o.pos = position;
+	o.uv = TexCoord;
+	
+	return o;
+}
+
+PS_OUTPUT AOPixelShader(PS_INPUT i)
 {
 	 PS_OUTPUT o = (PS_OUTPUT)0;
 	 
-	 o.color.rgb = 1.0f;
+	 o.color.rgb = 0.0f;
 	 const float2 vec[4] = {float2(1,0),float2(-1,0),
 				float2(0,1),float2(0,-1)};
 
@@ -103,7 +115,7 @@ PS_OUTPUT main(PS_INPUT i)
 	 
 	 //float finalColor = 0.0f;
 
-	 //**SSAO Calculation**//
+	 //SSAO Calculation
 	 int iterations = 4;
 	 for (int j = 0; j < iterations; ++j)
 	 {
@@ -117,17 +129,17 @@ PS_OUTPUT main(PS_INPUT i)
 		  ao += doAmbientOcclusion(i.uv,coord2, p, n);
 	 } 
 	 ao/=(float)iterations*4.0;
-	 //**END**//
+	 //END
 
 	//o.color.rgb = ao;
 	
-	//float4 finalColor = tex2D(sceneSampler, i.uv);
+	float4 finalColor = tex2D(sceneSampler, i.uv);
 	
 	//finalColor.xyz *= ao;
 	
-	//o.color = finalColor;
+	o.color = finalColor;
 	
-	o.color.rgb = ao;
+	//o.color.rgb = ao;
 	
 	//Do stuff here with your occlusion value “ao”: modulate ambient lighting, write it to a buffer for later //use, etc.
 	return o;
@@ -137,6 +149,7 @@ technique SSAO
 {
 	pass P0
     {
-        PixelShader = compile ps_3_0 main();
+		VertexShader = compile vs_3_0 AOVertexShader();
+        PixelShader = compile ps_3_0 AOPixelShader();
     }
 }

@@ -89,6 +89,7 @@ D3DXHANDLE mhSSAOTech;
 D3DXHANDLE mhNormalTex;
 D3DXHANDLE mhPositionTex;
 D3DXHANDLE mhRandomTex;
+D3DXHANDLE mhSceneTex;
 D3DXHANDLE mhRandomSize;
 D3DXHANDLE mhSampleRadius;
 D3DXHANDLE mhIntensity;
@@ -180,9 +181,9 @@ bool Game::LoadContent()
 
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, m_Camera->GetFarPlane());
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8, m_Camera->GetFarPlane());
-	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F , D3DFMT_D16, m_Camera->GetFarPlane());
-	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F , D3DFMT_D16, m_Camera->GetFarPlane());
-	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F , D3DFMT_D16, m_Camera->GetFarPlane());
+	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A8R8G8B8 , D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A8R8G8B8 , D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A8R8G8B8 , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	
 	// Create shadow map.
 	//D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
@@ -232,6 +233,7 @@ bool Game::LoadContent()
 	mhSSAOTech = mSSAOFX->GetTechniqueByName("SSAO");
 	mhNormalTex = mSSAOFX->GetParameterByName(0, "normalTex");
 	mhPositionTex = mSSAOFX->GetParameterByName(0, "positionTex");
+	mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneTexture");
 	mhRandomTex = mSSAOFX->GetParameterByName(0, "randomTex");
 	mhRandomSize = mSSAOFX->GetParameterByName(0, "random_size");
 	mhSampleRadius = mSSAOFX->GetParameterByName(0, "g_sample_rad");
@@ -480,6 +482,7 @@ void Game::Draw()
 	mSSAOFX->SetTexture(mhNormalTex, mViewNormal->getRenderTexture());
 	mSSAOFX->SetTexture(mhPositionTex, mViewPos->getRenderTexture());
 	mSSAOFX->SetTexture(mhRandomTex, mRandomTexture);
+	mSSAOFX->SetTexture(mhSceneTex, m_RenderTarget->getRenderTexture());
 	mSSAOFX->SetFloat(mhRandomSize, 64.0f);
 	mSSAOFX->SetFloat(mhSampleRadius, -0.03f);
 	mSSAOFX->SetFloat(mhIntensity, 10.0f);

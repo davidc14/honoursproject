@@ -573,6 +573,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\CopyShader.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\DrawDepthNormal.fx"
 				>
 			</File>
