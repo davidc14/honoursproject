@@ -76,20 +76,20 @@ void D3DTexturedCube::initBuffers(IDirect3DDevice9 * Device)
 	texturedVertex[22]=TexturedVertexStruct(1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 1.0f,1.0f );
 
 	//right face
-	texturedVertex[25]=TexturedVertexStruct(-1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,1.0f);
-	texturedVertex[24]=TexturedVertexStruct(-1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,1.0f );
-	texturedVertex[26]=TexturedVertexStruct(-1.0f, 1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,0.0f );	
-	texturedVertex[27]=TexturedVertexStruct(-1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,1.0f );
-	texturedVertex[29]=TexturedVertexStruct(-1.0f, 1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,0.0f );
-	texturedVertex[28]=TexturedVertexStruct(-1.0f, 1.0f, 1.0f,  1.0f, 0.0f, 0.0f, 0.0f,0.0f );
+	texturedVertex[25]=TexturedVertexStruct(-1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f,1.0f);
+	texturedVertex[24]=TexturedVertexStruct(-1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,1.0f );
+	texturedVertex[26]=TexturedVertexStruct(-1.0f, 1.0f, -1.0f,  -1.0f, 0.0f, 0.0f, 1.0f,0.0f );	
+	texturedVertex[27]=TexturedVertexStruct(-1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f,1.0f );
+	texturedVertex[29]=TexturedVertexStruct(-1.0f, 1.0f, -1.0f,  -1.0f, 0.0f, 0.0f, 1.0f,0.0f );
+	texturedVertex[28]=TexturedVertexStruct(-1.0f, 1.0f, 1.0f,  -1.0f, 0.0f, 0.0f, 0.0f,0.0f );
 
 	//left face
-	texturedVertex[30]=TexturedVertexStruct(1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f,1.0f);
-	texturedVertex[31]=TexturedVertexStruct(1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,1.0f );
-	texturedVertex[32]=TexturedVertexStruct(1.0f, 1.0f, -1.0f,  -1.0f, 0.0f, 0.0f, 0.0f,0.0f );	
-	texturedVertex[33]=TexturedVertexStruct(1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f,1.0f );
-	texturedVertex[34]=TexturedVertexStruct(1.0f, 1.0f, -1.0f,  -1.0f, 0.0f, 0.0f, 0.0f,0.0f );
-	texturedVertex[35]=TexturedVertexStruct(1.0f, 1.0f, 1.0f,  -1.0f, 0.0f, 0.0f, 1.0f,0.0f );
+	texturedVertex[30]=TexturedVertexStruct(1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,1.0f);
+	texturedVertex[31]=TexturedVertexStruct(1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,1.0f );
+	texturedVertex[32]=TexturedVertexStruct(1.0f, 1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0.0f,0.0f );	
+	texturedVertex[33]=TexturedVertexStruct(1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,1.0f );
+	texturedVertex[34]=TexturedVertexStruct(1.0f, 1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0.0f,0.0f );
+	texturedVertex[35]=TexturedVertexStruct(1.0f, 1.0f, 1.0f,  1.0f, 0.0f, 0.0f, 1.0f,0.0f );
 
 
 	VB->Unlock();
