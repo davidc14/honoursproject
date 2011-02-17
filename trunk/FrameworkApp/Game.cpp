@@ -489,6 +489,11 @@ void Game::Draw()
 	mSSAOFX->SetFloat(mhBias, -0.04f);
 	mSSAOFX->SetFloat(mhScale, 2.0f);
 
+//	Intensity = 3.0;
+//Scale = between 1.0 and 2.0;
+//Bias = 0.05; (negative values should give "incorrect" results, but sometimes look good)
+//Sample radius = between 0.5 and 2.0;
+
 	D3DXVECTOR2 screenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
 	mSSAOFX->SetValue(mhScreenSize, &screenSize, sizeof(D3DXVECTOR2));
 	mSSAOFX->CommitChanges();
@@ -603,9 +608,9 @@ void Game::Draw()
 
 			m_RenderTarget->Draw();
 
-			mViewNormal->Draw();
-			/*mViewPos->Draw();
-			mSSAOTarget->Draw();*/
+			//mViewNormal->Draw();
+			mViewPos->Draw();
+			mSSAOTarget->Draw();
 
 		m_Font->Draw();	
 
