@@ -619,6 +619,10 @@
 					RelativePath=".\Shaders\SSAO\SSAOFinalPass.fx"
 					>
 				</File>
+				<File
+					RelativePath=".\ssaoglsl.txt"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>

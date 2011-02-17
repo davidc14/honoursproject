@@ -67,6 +67,7 @@ struct PS_OUTPUT
 
 float3 getPosition(in float2 uv)
 {
+	//vec3 point = vec3(uv.x * in_FarPlaneWidth - HalfWidth, uv.y * in_FarPlaneHeight - HalfHeight, -in_FarPlane) * texture(Buffer0, uv).w;
 	return tex2D(g_buffer_pos,uv).xyz;
 }
 
