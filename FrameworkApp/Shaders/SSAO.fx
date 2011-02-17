@@ -27,7 +27,7 @@ sampler g_buffer_pos : register(s1) = sampler_state
     //MinFilter = Linear;
     //MagFilter = Linear;
     
-    //AddressU = Clamp;
+	//AddressU = Clamp;
     //AddressV = Clamp;
 };
 
