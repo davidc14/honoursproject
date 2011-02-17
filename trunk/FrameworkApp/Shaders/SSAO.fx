@@ -86,6 +86,8 @@ float doAmbientOcclusion(float2 tcoord , float2 uv, float3 p, float3 cnorm)
 	return max(0.0,dot(cnorm,v)-g_bias)*(1.0/(1.0+d))*g_intensity;
 }
 
+float2 blurDirection;
+
 PS_OUTPUT main(PS_INPUT i)
 {
 	 PS_OUTPUT o = (PS_OUTPUT)0;
@@ -128,6 +130,34 @@ PS_OUTPUT main(PS_INPUT i)
 	//o.color = finalColor;
 	
 	o.color.rgb = ao;
+	
+	float2 TexCoord = i.uv;
+	
+	TexCoord.x += 1.0/1600.0;
+	TexCoord.y += 1.0/1200.0;
+    float depth = tex2D( g_buffer_norm, TexCoord).a;
+    float3 normal = n;
+    float color = o.color;
+   
+    float num = 1;
+    int blurSamples = 8; 
+	
+	for( int i = -blurSamples/2; i <= blurSamples/2; i+=1)
+	{
+		float4 newTexCoord = float4(TexCoord + i * blurDirection.xy, 0, 0);
+		
+		float sample = tex2D(baseSampler, newTexCoord).r;
+		float3 samplenormal = tex2D(DepthMap, newTexCoord).rgb;
+			
+		if (dot(samplenormal, normal) > 0.99 )	
+		{
+			num += (blurSamples/2 - abs(i));
+			color += sample * (blurSamples/2 - abs(i));
+		}
+	}
+
+	return color / num;
+	
 	//Do stuff here with your occlusion value “ao”: modulate ambient lighting, write it to a buffer for later //use, etc.
 	return o;
 }
