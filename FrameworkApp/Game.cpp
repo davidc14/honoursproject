@@ -95,7 +95,6 @@ D3DXHANDLE mhIntensity;
 D3DXHANDLE mhScale;
 D3DXHANDLE mhBias;
 D3DXHANDLE mhScreenSize;
-D3DXHANDLE mhBlurDirection;
 DrawableRenderTarget* mSSAOTarget;
 
 IDirect3DTexture9* mRandomTexture;
@@ -240,7 +239,6 @@ bool Game::LoadContent()
 	mhScale = mSSAOFX->GetParameterByName(0, "g_scale");
 	mhBias = mSSAOFX->GetParameterByName(0, "g_bias");
 	mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
-	mhBlurDirection = mSSAOFX->GetParameterByName(0, "blurDirection");
 
 	HR(D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &mRandomTexture));
 
@@ -487,8 +485,6 @@ void Game::Draw()
 	mSSAOFX->SetFloat(mhIntensity, 10.0f);
 	mSSAOFX->SetFloat(mhBias, -0.04f);
 	mSSAOFX->SetFloat(mhScale, 2.0f);
-	D3DXVECTOR2 blurDir = D3DXVECTOR2(1/800.0f, 0.0f);
-	mSSAOFX->SetValue(mhBlurDirection, &blurDir, sizeof(D3DXVECTOR2));
 
 	D3DXVECTOR2 screenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
 	mSSAOFX->SetValue(mhScreenSize, &screenSize, sizeof(D3DXVECTOR2));
