@@ -75,14 +75,14 @@ VSOUT DVertexShaderAni(VSANIIN input)
 
 float4 DPixelShader(VSOUT input) : COLOR0
 {	
-	return float4(input.PosData.xyz, 1);
+	return float4(input.PosData.xyz, input.Depth);
 }
 
 float4 NPixelShader(VSOUT input) : COLOR0
 {	
 	float3 viewSpaceNormalizedNormals = 0.5 * normalize (input.Normal) + 0.5;
 	
-	return float4(viewSpaceNormalizedNormals, 1);
+	return float4(viewSpaceNormalizedNormals, input.Depth);
 }
 
 technique DrawPosition

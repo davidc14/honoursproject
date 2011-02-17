@@ -599,8 +599,9 @@ void Game::Draw()
 
 			m_RenderTarget->Draw();
 
-			//mViewNormal->Draw();
-			mSSAOTarget->Draw();
+			mViewNormal->Draw();
+			//mViewPos->Draw();
+			//mSSAOTarget->Draw();
 
 		m_Font->Draw();	
 
