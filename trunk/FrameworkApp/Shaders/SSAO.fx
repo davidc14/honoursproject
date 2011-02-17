@@ -137,7 +137,7 @@ PS_OUTPUT main(PS_INPUT i)
 	TexCoord.y += 1.0/1200.0;
     float depth = tex2D( g_buffer_norm, TexCoord).a;
     float3 normal = n;
-    float color = o.color;
+    float color = o.color.r;
    
     float num = 1;
     int blurSamples = 8; 
@@ -146,8 +146,8 @@ PS_OUTPUT main(PS_INPUT i)
 	{
 		float4 newTexCoord = float4(TexCoord + i * blurDirection.xy, 0, 0);
 		
-		float sample = tex2D(baseSampler, newTexCoord).r;
-		float3 samplenormal = tex2D(DepthMap, newTexCoord).rgb;
+		float sample = o.color.r;
+		float3 samplenormal = n;
 			
 		if (dot(samplenormal, normal) > 0.99 )	
 		{
@@ -156,7 +156,7 @@ PS_OUTPUT main(PS_INPUT i)
 		}
 	}
 
-	return color / num;
+	o.color = color / num;
 	
 	//Do stuff here with your occlusion value “ao”: modulate ambient lighting, write it to a buffer for later //use, etc.
 	return o;
