@@ -24,8 +24,9 @@ sampler g_buffer_pos : register(s1) = sampler_state
 {
     Texture = (positionTex);
     
-    //MinFilter = Linear;
-    //MagFilter = Linear;
+    //MipFilter = LINEAR;
+    //MinFilter = LINEAR;
+    //MagFilter = LINEAR;
     
 	//AddressU = Clamp;
     //AddressV = Clamp;
@@ -135,11 +136,11 @@ PS_OUTPUT AOPixelShader(PS_INPUT i)
 	
 	float4 finalColor = tex2D(sceneSampler, i.uv);
 	
-	//finalColor.xyz *= ao;
+	finalColor.xyz *= ao;
 	
 	o.color = finalColor;
 	
-	//o.color.rgb = ao;
+	o.color.rgb = ao;
 	
 	//Do stuff here with your occlusion value “ao”: modulate ambient lighting, write it to a buffer for later //use, etc.
 	return o;
