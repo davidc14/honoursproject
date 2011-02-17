@@ -487,7 +487,8 @@ void Game::Draw()
 	mSSAOFX->SetFloat(mhIntensity, 10.0f);
 	mSSAOFX->SetFloat(mhBias, -0.04f);
 	mSSAOFX->SetFloat(mhScale, 2.0f);
-
+	D3DXVECTOR2 blurDir = D3DXVECTOR2(1/800.0f, 0.0f);
+	mSSAOFX->SetValue(mhBlurDirection, &blurDir, sizeof(D3DXVECTOR2));
 
 	D3DXVECTOR2 screenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
 	mSSAOFX->SetValue(mhScreenSize, &screenSize, sizeof(D3DXVECTOR2));
