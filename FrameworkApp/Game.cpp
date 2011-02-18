@@ -252,7 +252,7 @@ bool Game::LoadContent()
 	mhBias = mSSAOFX->GetParameterByName(0, "g_bias");
 	mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
 
-	HR(D3DXCreateTextureFromFile(pDevice, "Textures/noise.png", &mRandomTexture));
+	HR(D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &mRandomTexture));
 
 	//m_Error = 0;
 	//D3DXCreateEffectFromFile(pDevice, "Shaders/GLSSAO.fx", 0, 0, D3DXSHADER_DEBUG,0, &sFX, &m_Error);
@@ -671,8 +671,8 @@ void Game::Draw()
 			m_RenderTarget->Draw();
 
 			//mViewNormal->Draw();
-			mViewPos->Draw();
-			//mSSAOTarget->Draw();
+			//mViewPos->Draw();
+			mSSAOTarget->Draw();
 
 		m_Font->Draw();	
 
