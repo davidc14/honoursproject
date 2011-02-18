@@ -35,6 +35,7 @@ sampler randomSampler : register(s1) = sampler_state
 struct VSIN
 {
 	float4 Position: POSITION0;
+	float2 TexCoord : TEXCOORD0;
 };
 
 struct VSOUT
@@ -47,17 +48,19 @@ VSOUT VShader(VSIN input)
 {
 	VSOUT output = (VSOUT)0;
 	
-	output.Position = mul(input.Position, WVP);
+	/*output.Position = mul(input.Position, WVP);
 	output.Position = sign(output.Position);
 	
-	output.TexCoord = (float2(output.Position.x, - output.Position.y) + float2(1.0f, 1.0f)) * 0.5f;
+	//output.TexCoord = input.TexCoord;
+	
+	output.TexCoord = (float2(output.Position.x, - output.Position.y) + float2(1.0f, 1.0f)) * 0.5f;*/
 
 	return output;
 }
 
 float4 PShader(VSOUT input) : COLOR
 {
-	float3 pSphere[10] = {
+	/*float3 pSphere[10] = {
 		float3(-0.010735935, 0.01647018, 0.0062425877),
 		float3(-0.06533369, 0.3647007, -0.13746321),
 		float3(-0.6539235, -0.016726388, -0.53000957),
@@ -107,9 +110,9 @@ float4 PShader(VSOUT input) : COLOR
 	float4 finalColor;
 	finalColor = float4(0,0,0,0);
 	// output the result
-	finalColor.r = 1.0+bl*invSamples;
+	finalColor.r = 1.0+bl*invSamples;*/
 
-	return float4(1,0,0,0);
+	return float4(1,0,0,1);
 }
 
 technique SSAO

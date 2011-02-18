@@ -106,6 +106,8 @@ D3DXHANDLE mhSWVP;
 
 IDirect3DTexture9* mRandomTexture;
 
+ID3DXEffect* redFX;
+
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
 	pDevice = g_pd3dDevice;
@@ -262,6 +264,14 @@ bool Game::LoadContent()
 	mhSRandomTexture = sFX->GetParameterByName(0, "rnm");
 	mhSNormalTexture = sFX->GetParameterByName(0, "normalMap");
 	mhSWVP = sFX->GetParameterByName(0, "WVP");
+
+	m_Error = 0;
+	D3DXCreateEffectFromFile(pDevice, "Shaders/Red.fx", 0, 0, D3DXSHADER_DEBUG,0, &redFX, &m_Error);
+	if(m_Error)
+	{
+		//Display the error in a message bos
+		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
+	}
 
 	return true;
 }
@@ -522,21 +532,28 @@ void Game::Draw()
 	mSSAOFX->EndPass();
 	mSSAOFX->End();*/
 
-	sFX->SetTechnique(mhSTech);
+	//sFX->SetTechnique(mhSTech);
 
-	sFX->Begin(&ssaoPasses, 0);
-	sFX->BeginPass(0);
-	sFX->SetTexture(mhSNormalTexture, mViewNormal->getRenderTexture());
-	sFX->SetTexture(mhSRandomTexture, mRandomTexture);
-	D3DXMATRIX newWorld;
-	D3DXMatrixIdentity(&newWorld);
-	sFX->SetMatrix(mhWVP, &newWorld);
-	sFX->CommitChanges();
+	//sFX->Begin(&ssaoPasses, 0);
+	//sFX->BeginPass(0);
+
+	//sFX->SetTexture(mhSNormalTexture, mViewNormal->getRenderTexture());
+	//sFX->SetTexture(mhSRandomTexture, mRandomTexture);
+	//D3DXMATRIX newWorld;
+	//D3DXMatrixIdentity(&newWorld);
+	//sFX->SetMatrix(mhWVP, &newWorld);
+	//sFX->CommitChanges();
+
+	redFX->Begin(&ssaoPasses, 0);
+	redFX->BeginPass(0);
 
 	mSSAOTarget->DrawUntextured();
 
-	sFX->EndPass();
-	sFX->End();
+	redFX->EndPass();
+	redFX->End();
+
+	//sFX->EndPass();
+	//sFX->End();
 		
 	mSSAOTarget->EndScene();
 
