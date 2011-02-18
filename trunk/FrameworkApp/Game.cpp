@@ -265,14 +265,6 @@ bool Game::LoadContent()
 	mhSNormalTexture = sFX->GetParameterByName(0, "normalMap");
 	mhSWVP = sFX->GetParameterByName(0, "WVP");
 
-	m_Error = 0;
-	D3DXCreateEffectFromFile(pDevice, "Shaders/Red.fx", 0, 0, D3DXSHADER_DEBUG,0, &redFX, &m_Error);
-	if(m_Error)
-	{
-		//Display the error in a message bos
-		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
-	}
-
 	return true;
 }
 
@@ -501,11 +493,11 @@ void Game::Draw()
 	mSSAOTarget->BeginScene();
 
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
-
-	//mSSAOFX->SetTechnique(mhSSAOTech);
 	UINT ssaoPasses = 1;
 
-	/*mSSAOFX->Begin(&ssaoPasses, 0);
+	/*mSSAOFX->SetTechnique(mhSSAOTech);	
+
+	mSSAOFX->Begin(&ssaoPasses, 0);
 	mSSAOFX->BeginPass(0);
 
 	mSSAOFX->SetTexture(mhNormalTex, mViewNormal->getRenderTexture());
@@ -532,28 +524,22 @@ void Game::Draw()
 	mSSAOFX->EndPass();
 	mSSAOFX->End();*/
 
-	//sFX->SetTechnique(mhSTech);
+	sFX->SetTechnique(mhSTech);
 
-	//sFX->Begin(&ssaoPasses, 0);
-	//sFX->BeginPass(0);
+	sFX->Begin(&ssaoPasses, 0);
+	sFX->BeginPass(0);
 
-	//sFX->SetTexture(mhSNormalTexture, mViewNormal->getRenderTexture());
-	//sFX->SetTexture(mhSRandomTexture, mRandomTexture);
-	//D3DXMATRIX newWorld;
-	//D3DXMatrixIdentity(&newWorld);
-	//sFX->SetMatrix(mhWVP, &newWorld);
-	//sFX->CommitChanges();
-
-	redFX->Begin(&ssaoPasses, 0);
-	redFX->BeginPass(0);
+	sFX->SetTexture(mhSNormalTexture, mViewNormal->getRenderTexture());
+	sFX->SetTexture(mhSRandomTexture, mRandomTexture);
+	D3DXMATRIX newWorld;
+	D3DXMatrixIdentity(&newWorld);
+	sFX->SetMatrix(mhWVP, &(newWorld * matView * *m_RenderTarget->getProjectionPointer()));
+	sFX->CommitChanges();
 
 	mSSAOTarget->DrawUntextured();
 
-	redFX->EndPass();
-	redFX->End();
-
-	//sFX->EndPass();
-	//sFX->End();
+	sFX->EndPass();
+	sFX->End();
 		
 	mSSAOTarget->EndScene();
 

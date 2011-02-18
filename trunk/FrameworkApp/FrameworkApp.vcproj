@@ -573,7 +573,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Shaders\CopyShader.fx"
+				RelativePath=".\Shaders\copySSAO.fx"
 				>
 			</File>
 			<File
@@ -590,10 +590,6 @@
 			</File>
 			<File
 				RelativePath=".\Shaders\PhongDirLtTex.fx"
-				>
-			</File>
-			<File
-				RelativePath=".\Shaders\Red.fx"
 				>
 			</File>
 			<File

@@ -48,12 +48,12 @@ VSOUT VShader(VSIN input)
 {
 	VSOUT output = (VSOUT)0;
 	
-	/*output.Position = mul(input.Position, WVP);
+	output.Position = mul(input.Position, WVP);
 	output.Position = sign(output.Position);
 	
 	//output.TexCoord = input.TexCoord;
 	
-	output.TexCoord = (float2(output.Position.x, - output.Position.y) + float2(1.0f, 1.0f)) * 0.5f;*/
+	output.TexCoord = (float2(output.Position.x, - output.Position.y) + float2(1.0f, 1.0f)) * 0.5f;
 
 	return output;
 }
@@ -112,7 +112,8 @@ float4 PShader(VSOUT input) : COLOR
 	// output the result
 	finalColor.r = 1.0+bl*invSamples;*/
 
-	return float4(1,0,0,1);
+	float4 finalColor = float4(1,0,0,0);
+	return finalColor;
 }
 
 technique SSAO
