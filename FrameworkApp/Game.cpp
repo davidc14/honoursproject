@@ -78,6 +78,7 @@ D3DXHANDLE mhNormalTech;
 D3DXHANDLE mhNormalTechAni;
 D3DXHANDLE mhWVP;
 D3DXHANDLE mhWorldView;
+D3DXHANDLE mhITViewProj;
 D3DXHANDLE mhView;
 D3DXHANDLE mhProjection;
 D3DXHANDLE mhFinalXForms;
@@ -228,6 +229,7 @@ bool Game::LoadContent()
 	mhNormalTechAni = mViewFX->GetTechniqueByName("DrawNormalAni");;
 	mhWVP = mViewFX->GetParameterByName(0, "WorldViewProjection");
 	mhWorldView = mViewFX->GetParameterByName(0, "WorldView");
+	mhITViewProj = mViewFX->GetParameterByName(0, "ITViewProj");
 	mhView = mViewFX->GetParameterByName(0, "View");
 	mhProjection = mViewFX->GetParameterByName(0, "Projection");
 	mhFinalXForms = mViewFX->GetParameterByName(0, "FinalXForms");
@@ -395,6 +397,10 @@ void Game::Draw()
 			mViewFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			D3DXMATRIX worldView;
 			worldView = m_Citadel->GetWorld() * matView;
+			D3DXMATRIX ITViewProj = matView * *m_RenderTarget->getProjectionPointer();
+			D3DXMatrixInverse(&ITViewProj, 0, &ITViewProj);
+			D3DXMatrixTranspose(&ITViewProj, &ITViewProj);
+			mViewFX->SetMatrix(mhITViewProj, &ITViewProj);
 			mViewFX->SetMatrix(mhView, &(matView));
 			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
@@ -404,6 +410,10 @@ void Game::Draw()
 
 			mViewFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			worldView = m_Dwarf->GetWorld() * matView;
+			ITViewProj = matView * *m_RenderTarget->getProjectionPointer();
+			D3DXMatrixInverse(&ITViewProj, 0, &ITViewProj);
+			D3DXMatrixTranspose(&ITViewProj, &ITViewProj);
+			mViewFX->SetMatrix(mhITViewProj, &ITViewProj);
 			mViewFX->SetMatrix(mhView, &(matView));
 			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
@@ -415,6 +425,10 @@ void Game::Draw()
 			D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
 			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
 			worldView = matWorld * matView;
+			ITViewProj = matView * *m_RenderTarget->getProjectionPointer();
+			D3DXMatrixInverse(&ITViewProj, 0, &ITViewProj);
+			D3DXMatrixTranspose(&ITViewProj, &ITViewProj);
+			mViewFX->SetMatrix(mhITViewProj, &ITViewProj);
 			mViewFX->SetMatrix(mhView, &(matView));
 			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
@@ -432,6 +446,10 @@ void Game::Draw()
 			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			//D3DXMATRIX worldView;
 			worldView = *m_SkinnedMesh->GetWorld() * matView;
+			ITViewProj = matView * *m_RenderTarget->getProjectionPointer();
+			D3DXMatrixInverse(&ITViewProj, 0, &ITViewProj);
+			D3DXMatrixTranspose(&ITViewProj, &ITViewProj);
+			mViewFX->SetMatrix(mhITViewProj, &ITViewProj);
 			mViewFX->SetMatrix(mhView, &(matView));
 			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));			
@@ -458,6 +476,10 @@ void Game::Draw()
 			mViewFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			//D3DXMATRIX worldView;
 			worldView = m_Citadel->GetWorld() * matView;
+			ITViewProj = matView * *m_RenderTarget->getProjectionPointer();
+			D3DXMatrixInverse(&ITViewProj, 0, &ITViewProj);
+			D3DXMatrixTranspose(&ITViewProj, &ITViewProj);
+			mViewFX->SetMatrix(mhITViewProj, &ITViewProj);
 			mViewFX->SetMatrix(mhView, &(matView));
 			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
@@ -467,6 +489,10 @@ void Game::Draw()
 
 			mViewFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			worldView = m_Dwarf->GetWorld() * matView;
+			ITViewProj = matView * *m_RenderTarget->getProjectionPointer();
+			D3DXMatrixInverse(&ITViewProj, 0, &ITViewProj);
+			D3DXMatrixTranspose(&ITViewProj, &ITViewProj);
+			mViewFX->SetMatrix(mhITViewProj, &ITViewProj);
 			mViewFX->SetMatrix(mhView, &(matView));
 			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
@@ -478,6 +504,10 @@ void Game::Draw()
 			D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
 			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
 			worldView = matWorld * matView;
+			ITViewProj = matView * *m_RenderTarget->getProjectionPointer();
+			D3DXMatrixInverse(&ITViewProj, 0, &ITViewProj);
+			D3DXMatrixTranspose(&ITViewProj, &ITViewProj);
+			mViewFX->SetMatrix(mhITViewProj, &ITViewProj);
 			mViewFX->SetMatrix(mhView, &(matView));
 			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
@@ -495,6 +525,10 @@ void Game::Draw()
 			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			//D3DXMATRIX worldView;
 			worldView = *m_SkinnedMesh->GetWorld() * matView;
+			ITViewProj = matView * *m_RenderTarget->getProjectionPointer();
+			D3DXMatrixInverse(&ITViewProj, 0, &ITViewProj);
+			D3DXMatrixTranspose(&ITViewProj, &ITViewProj);
+			mViewFX->SetMatrix(mhITViewProj, &ITViewProj);
 			mViewFX->SetMatrix(mhView, &(matView));
 			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));			
@@ -672,7 +706,7 @@ void Game::Draw()
 
 			mViewNormal->Draw();
 			mViewPos->Draw();
-			//mSSAOTarget->Draw();
+			mSSAOTarget->Draw();
 
 		m_Font->Draw();	
 
