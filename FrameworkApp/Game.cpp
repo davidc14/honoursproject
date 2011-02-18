@@ -100,15 +100,13 @@ D3DXHANDLE mhBias;
 D3DXHANDLE mhScreenSize;
 DrawableRenderTarget* mSSAOTarget;
 
-ID3DXEffect* sFX;
-D3DXHANDLE mhSTech;
-D3DXHANDLE mhSRandomTexture;
-D3DXHANDLE mhSNormalTexture;
-D3DXHANDLE mhSWVP;
+//ID3DXEffect* sFX;
+//D3DXHANDLE mhSTech;
+//D3DXHANDLE mhSRandomTexture;
+//D3DXHANDLE mhSNormalTexture;
+//D3DXHANDLE mhSWVP;
 
 IDirect3DTexture9* mRandomTexture;
-
-ID3DXEffect* redFX;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -256,18 +254,18 @@ bool Game::LoadContent()
 
 	HR(D3DXCreateTextureFromFile(pDevice, "Textures/noise.png", &mRandomTexture));
 
-	m_Error = 0;
-	D3DXCreateEffectFromFile(pDevice, "Shaders/GLSSAO.fx", 0, 0, D3DXSHADER_DEBUG,0, &sFX, &m_Error);
-	if(m_Error)
-	{
-		//Display the error in a message bos
-		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
-	}
+	//m_Error = 0;
+	//D3DXCreateEffectFromFile(pDevice, "Shaders/GLSSAO.fx", 0, 0, D3DXSHADER_DEBUG,0, &sFX, &m_Error);
+	//if(m_Error)
+	//{
+	//	//Display the error in a message bos
+	//	MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
+	//}
 
-	mhSTech = sFX->GetTechniqueByName("SSAO");
-	mhSRandomTexture = sFX->GetParameterByName(0, "rnm");
-	mhSNormalTexture = sFX->GetParameterByName(0, "normalMap");
-	mhSWVP = sFX->GetParameterByName(0, "WVP");
+	//mhSTech = sFX->GetTechniqueByName("SSAO");
+	//mhSRandomTexture = sFX->GetParameterByName(0, "rnm");
+	//mhSNormalTexture = sFX->GetParameterByName(0, "normalMap");
+	//mhSWVP = sFX->GetParameterByName(0, "WVP");
 
 	return true;
 }
@@ -673,8 +671,8 @@ void Game::Draw()
 			m_RenderTarget->Draw();
 
 			//mViewNormal->Draw();
-			//mViewPos->Draw();
-			mSSAOTarget->Draw();
+			mViewPos->Draw();
+			//mSSAOTarget->Draw();
 
 		m_Font->Draw();	
 
