@@ -522,17 +522,17 @@ void Game::Draw()
 	mSSAOFX->SetTexture(mhPositionTex, mViewPos->getRenderTexture());
 	mSSAOFX->SetTexture(mhRandomTex, mRandomTexture);
 	mSSAOFX->SetTexture(mhSceneTex, m_RenderTarget->getRenderTexture());
-	/*mSSAOFX->SetFloat(mhRandomSize, 64.0f);
+	mSSAOFX->SetFloat(mhRandomSize, 64.0f);
 	mSSAOFX->SetFloat(mhSampleRadius, -0.03f);
 	mSSAOFX->SetFloat(mhIntensity, 10.0f);
 	mSSAOFX->SetFloat(mhBias, -0.04f);
-	mSSAOFX->SetFloat(mhScale, 2.0f);*/
-
-	mSSAOFX->SetFloat(mhRandomSize, 64.0f);
-	mSSAOFX->SetFloat(mhSampleRadius, 0.5f);
-	mSSAOFX->SetFloat(mhIntensity, 3.0f);
-	mSSAOFX->SetFloat(mhBias, 0.05f);
 	mSSAOFX->SetFloat(mhScale, 2.0f);
+
+	//mSSAOFX->SetFloat(mhRandomSize, 64.0f);
+	//mSSAOFX->SetFloat(mhSampleRadius, 0.5f);
+	//mSSAOFX->SetFloat(mhIntensity, 3.0f);
+	//mSSAOFX->SetFloat(mhBias, 0.05f);
+	//mSSAOFX->SetFloat(mhScale, 2.0f);
 
 	//	Intensity = 3.0;
 	//Scale = between 1.0 and 2.0;
@@ -670,9 +670,9 @@ void Game::Draw()
 
 			m_RenderTarget->Draw();
 
-			//mViewNormal->Draw();
-			//mViewPos->Draw();
-			mSSAOTarget->Draw();
+			mViewNormal->Draw();
+			mViewPos->Draw();
+			//mSSAOTarget->Draw();
 
 		m_Font->Draw();	
 
