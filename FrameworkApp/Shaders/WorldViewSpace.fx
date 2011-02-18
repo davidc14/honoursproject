@@ -32,13 +32,15 @@ struct VSOUT
 VSOUT DVertexShader(VSIN input)
 {
 	VSOUT output = (VSOUT)0;
+	
+	float4x4 vp = View * Projection;
 
     output.Position = mul(input.Position, WorldViewProjection);
     
-    output.PosData = mul(input.Position, WorldView);
+    output.PosData = mul(input.Position, WorldViewProjection);
 
 	// You can store world space or view space normals, for SSAO you probably want view space
-	output.Normal = mul(input.Normal, WorldView);
+	output.Normal = mul(input.Normal, (float3x3)WorldView);
 
 	// View space Z is a good value to store for depth
 	output.Depth = mul(input.Position, WorldView).z;
@@ -49,6 +51,8 @@ VSOUT DVertexShader(VSIN input)
 VSOUT DVertexShaderAni(VSANIIN input)
 {
 	VSOUT output = (VSOUT)0;
+	
+	float4x4 vp = View * Projection;
 	
 	// Do the vertex blending calculation for posL and normalL.
 	float weight1 = 1.0f - input.weight0;
@@ -65,10 +69,10 @@ VSOUT DVertexShaderAni(VSANIIN input)
 	
 	output.Position = mul(p, WorldViewProjection);
 	
-	output.PosData = mul(p, WorldView);
+	output.PosData = mul(p, WorldViewProjection);
 
 	// You can store world space or view space normals, for SSAO you probably want view space
-	output.Normal = mul(n, WorldView);
+	output.Normal = mul(n, (float3x3)WorldView);
 
 	// View space Z is a good value to store for depth
 	output.Depth = mul(p, WorldView).z;
