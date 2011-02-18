@@ -573,10 +573,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Shaders\copySSAO.fx"
-				>
-			</File>
-			<File
 				RelativePath=".\Shaders\DrawDepthNormal.fx"
 				>
 			</File>

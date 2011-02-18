@@ -79,6 +79,7 @@ D3DXHANDLE mhNormalTechAni;
 D3DXHANDLE mhWVP;
 D3DXHANDLE mhWorldView;
 D3DXHANDLE mhView;
+D3DXHANDLE mhProjection;
 D3DXHANDLE mhFinalXForms;
 DrawableRenderTarget* mViewPos;
 DrawableRenderTarget* mViewNormal;
@@ -230,6 +231,7 @@ bool Game::LoadContent()
 	mhWVP = mViewFX->GetParameterByName(0, "WorldViewProjection");
 	mhWorldView = mViewFX->GetParameterByName(0, "WorldView");
 	mhView = mViewFX->GetParameterByName(0, "View");
+	mhProjection = mViewFX->GetParameterByName(0, "Projection");
 	mhFinalXForms = mViewFX->GetParameterByName(0, "FinalXForms");
 
 	m_Error = 0;
@@ -396,6 +398,7 @@ void Game::Draw()
 			D3DXMATRIX worldView;
 			worldView = m_Citadel->GetWorld() * matView;
 			mViewFX->SetMatrix(mhView, &(matView));
+			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 
@@ -404,6 +407,7 @@ void Game::Draw()
 			mViewFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			worldView = m_Dwarf->GetWorld() * matView;
 			mViewFX->SetMatrix(mhView, &(matView));
+			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 
@@ -414,6 +418,7 @@ void Game::Draw()
 			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
 			worldView = matWorld * matView;
 			mViewFX->SetMatrix(mhView, &(matView));
+			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 			mCube->Render(pDevice, mViewFX);
@@ -430,6 +435,7 @@ void Game::Draw()
 			//D3DXMATRIX worldView;
 			worldView = *m_SkinnedMesh->GetWorld() * matView;
 			mViewFX->SetMatrix(mhView, &(matView));
+			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));			
 			mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
 			mViewFX->CommitChanges();
@@ -455,6 +461,7 @@ void Game::Draw()
 			//D3DXMATRIX worldView;
 			worldView = m_Citadel->GetWorld() * matView;
 			mViewFX->SetMatrix(mhView, &(matView));
+			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 
@@ -463,6 +470,7 @@ void Game::Draw()
 			mViewFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			worldView = m_Dwarf->GetWorld() * matView;
 			mViewFX->SetMatrix(mhView, &(matView));
+			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 
@@ -473,6 +481,7 @@ void Game::Draw()
 			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
 			worldView = matWorld * matView;
 			mViewFX->SetMatrix(mhView, &(matView));
+			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 			mCube->Render(pDevice, mViewFX);
@@ -489,6 +498,7 @@ void Game::Draw()
 			//D3DXMATRIX worldView;
 			worldView = *m_SkinnedMesh->GetWorld() * matView;
 			mViewFX->SetMatrix(mhView, &(matView));
+			mViewFX->SetMatrix(mhProjection, m_RenderTarget->getProjectionPointer());
 			mViewFX->SetMatrix(mhWorldView, &(worldView));			
 			mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
 			mViewFX->CommitChanges();
@@ -514,10 +524,16 @@ void Game::Draw()
 	mSSAOFX->SetTexture(mhPositionTex, mViewPos->getRenderTexture());
 	mSSAOFX->SetTexture(mhRandomTex, mRandomTexture);
 	mSSAOFX->SetTexture(mhSceneTex, m_RenderTarget->getRenderTexture());
-	mSSAOFX->SetFloat(mhRandomSize, 64.0f);
+	/*mSSAOFX->SetFloat(mhRandomSize, 64.0f);
 	mSSAOFX->SetFloat(mhSampleRadius, -0.03f);
 	mSSAOFX->SetFloat(mhIntensity, 10.0f);
 	mSSAOFX->SetFloat(mhBias, -0.04f);
+	mSSAOFX->SetFloat(mhScale, 2.0f);*/
+
+	mSSAOFX->SetFloat(mhRandomSize, 64.0f);
+	mSSAOFX->SetFloat(mhSampleRadius, 0.5f);
+	mSSAOFX->SetFloat(mhIntensity, 3.0f);
+	mSSAOFX->SetFloat(mhBias, 0.05f);
 	mSSAOFX->SetFloat(mhScale, 2.0f);
 
 	//	Intensity = 3.0;
@@ -657,8 +673,8 @@ void Game::Draw()
 			m_RenderTarget->Draw();
 
 			//mViewNormal->Draw();
-			mViewPos->Draw();
-			//mSSAOTarget->Draw();
+			//mViewPos->Draw();
+			mSSAOTarget->Draw();
 
 		m_Font->Draw();	
 
