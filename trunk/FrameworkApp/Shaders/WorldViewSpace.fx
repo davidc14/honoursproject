@@ -1,6 +1,7 @@
 uniform extern float4x4 WorldViewProjection;
 uniform extern float4x4 WorldView;
 uniform extern float4x4 View;
+uniform extern float4x4 Projection;
 uniform extern float4x4 FinalXForms[35];
 
 struct VSIN
@@ -34,10 +35,10 @@ VSOUT DVertexShader(VSIN input)
 
     output.Position = mul(input.Position, WorldViewProjection);
     
-    output.PosData = mul(input.Position, WorldView);
+    output.PosData = mul(input.Position, WorldViewProjection);
 
 	// You can store world space or view space normals, for SSAO you probably want view space
-	output.Normal = mul(input.Normal, (float3x3)WorldView);
+	output.Normal = mul(input.Normal, (float3x3)WorldViewProjection);
 
 	// View space Z is a good value to store for depth
 	output.Depth = mul(input.Position, WorldView).z;
@@ -64,10 +65,10 @@ VSOUT DVertexShaderAni(VSANIIN input)
 	
 	output.Position = mul(p, WorldViewProjection);
 	
-	output.PosData = mul(p, WorldView);
+	output.PosData = mul(p, WorldViewProjection);
 
 	// You can store world space or view space normals, for SSAO you probably want view space
-	output.Normal = mul(n, (float3x3)WorldView);
+	output.Normal = mul(n, (float3x3)WorldViewProjection);
 
 	// View space Z is a good value to store for depth
 	output.Depth = mul(p, WorldView).z;
