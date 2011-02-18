@@ -141,7 +141,7 @@ PS_OUTPUT AOPixelShader(PS_INPUT i)
 	
 	o.color = finalColor;
 	
-	o.color.rgb = ao;
+	//o.color.rgb = ao;
 	
 	//Do stuff here with your occlusion value “ao”: modulate ambient lighting, write it to a buffer for later //use, etc.
 	return o;
