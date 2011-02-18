@@ -55,7 +55,7 @@ VSOUT VShader(VSIN input)
 	return output;
 }
 
-float4 PShader(VSOUT input) : COLOR0
+float4 PShader(VSOUT input) : COLOR
 {
 	float3 pSphere[10] = {
 		float3(-0.010735935, 0.01647018, 0.0062425877),
@@ -109,7 +109,7 @@ float4 PShader(VSOUT input) : COLOR0
 	// output the result
 	finalColor.r = 1.0+bl*invSamples;
 
-	return finalColor;
+	return float4(1,0,0,0);
 }
 
 technique SSAO

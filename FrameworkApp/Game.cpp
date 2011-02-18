@@ -248,7 +248,7 @@ bool Game::LoadContent()
 	mhBias = mSSAOFX->GetParameterByName(0, "g_bias");
 	mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
 
-	HR(D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &mRandomTexture));
+	HR(D3DXCreateTextureFromFile(pDevice, "Textures/noise.png", &mRandomTexture));
 
 	m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/GLSSAO.fx", 0, 0, D3DXSHADER_DEBUG,0, &sFX, &m_Error);
@@ -257,6 +257,11 @@ bool Game::LoadContent()
 		//Display the error in a message bos
 		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
 	}
+
+	mhSTech = sFX->GetTechniqueByName("SSAO");
+	mhSRandomTexture = sFX->GetParameterByName(0, "rnm");
+	mhSNormalTexture = sFX->GetParameterByName(0, "normalMap");
+	mhSWVP = sFX->GetParameterByName(0, "WVP");
 
 	return true;
 }
@@ -487,10 +492,10 @@ void Game::Draw()
 
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 
-	mSSAOFX->SetTechnique(mhSSAOTech);
+	//mSSAOFX->SetTechnique(mhSSAOTech);
 	UINT ssaoPasses = 1;
 
-	mSSAOFX->Begin(&ssaoPasses, 0);
+	/*mSSAOFX->Begin(&ssaoPasses, 0);
 	mSSAOFX->BeginPass(0);
 
 	mSSAOFX->SetTexture(mhNormalTex, mViewNormal->getRenderTexture());
@@ -503,10 +508,10 @@ void Game::Draw()
 	mSSAOFX->SetFloat(mhBias, -0.04f);
 	mSSAOFX->SetFloat(mhScale, 2.0f);
 
-//	Intensity = 3.0;
-//Scale = between 1.0 and 2.0;
-//Bias = 0.05; (negative values should give "incorrect" results, but sometimes look good)
-//Sample radius = between 0.5 and 2.0;
+	//	Intensity = 3.0;
+	//Scale = between 1.0 and 2.0;
+	//Bias = 0.05; (negative values should give "incorrect" results, but sometimes look good)
+	//Sample radius = between 0.5 and 2.0;
 
 	D3DXVECTOR2 screenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
 	mSSAOFX->SetValue(mhScreenSize, &screenSize, sizeof(D3DXVECTOR2));
@@ -515,7 +520,23 @@ void Game::Draw()
 	mSSAOTarget->DrawUntextured();
 
 	mSSAOFX->EndPass();
-	mSSAOFX->End();
+	mSSAOFX->End();*/
+
+	sFX->SetTechnique(mhSTech);
+
+	sFX->Begin(&ssaoPasses, 0);
+	sFX->BeginPass(0);
+	sFX->SetTexture(mhSNormalTexture, mViewNormal->getRenderTexture());
+	sFX->SetTexture(mhSRandomTexture, mRandomTexture);
+	D3DXMATRIX newWorld;
+	D3DXMatrixIdentity(&newWorld);
+	sFX->SetMatrix(mhWVP, &newWorld);
+	sFX->CommitChanges();
+
+	mSSAOTarget->DrawUntextured();
+
+	sFX->EndPass();
+	sFX->End();
 		
 	mSSAOTarget->EndScene();
 
@@ -623,7 +644,7 @@ void Game::Draw()
 			m_RenderTarget->Draw();
 
 			//mViewNormal->Draw();
-			mViewPos->Draw();
+			//mViewPos->Draw();
 			mSSAOTarget->Draw();
 
 		m_Font->Draw();	
