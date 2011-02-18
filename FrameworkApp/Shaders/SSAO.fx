@@ -139,7 +139,7 @@ PS_OUTPUT AOPixelShader(PS_INPUT i)
 	
 	finalColor.xyz *= ao;
 	
-	o.color = finalColor;
+	o.color = finalColor * 0.9f;
 	
 	//o.color.rgb = ao;
 	
