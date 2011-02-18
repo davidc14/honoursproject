@@ -581,6 +581,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\GLSSAO.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\LightShadow.fx"
 				>
 			</File>

@@ -98,6 +98,12 @@ D3DXHANDLE mhBias;
 D3DXHANDLE mhScreenSize;
 DrawableRenderTarget* mSSAOTarget;
 
+ID3DXEffect* sFX;
+D3DXHANDLE mhSTech;
+D3DXHANDLE mhSRandomTexture;
+D3DXHANDLE mhSNormalTexture;
+D3DXHANDLE mhSWVP;
+
 IDirect3DTexture9* mRandomTexture;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
@@ -243,6 +249,14 @@ bool Game::LoadContent()
 	mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
 
 	HR(D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &mRandomTexture));
+
+	m_Error = 0;
+	D3DXCreateEffectFromFile(pDevice, "Shaders/GLSSAO.fx", 0, 0, D3DXSHADER_DEBUG,0, &sFX, &m_Error);
+	if(m_Error)
+	{
+		//Display the error in a message bos
+		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
+	}
 
 	return true;
 }
