@@ -381,7 +381,8 @@ void Game::Update()
 D3DXMATRIX invView;
 void Game::Draw()
 {	
-	D3DXMatrixInverse(&invView,0, &matView);
+	invView = matView;
+	//D3DXMatrixInverse(&invView,0, &matView);
 	mViewNormal->BeginScene();
 
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
@@ -655,9 +656,9 @@ void Game::Draw()
 
 			m_RenderTarget->Draw();
 
-			//mViewNormal->Draw();
+			mViewNormal->Draw();
 			//mViewPos->Draw();
-			mSSAOTarget->Draw();
+			//mSSAOTarget->Draw();
 
 		m_Font->Draw();	
 
