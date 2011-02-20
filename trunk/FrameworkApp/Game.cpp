@@ -639,6 +639,7 @@ void Game::Draw()
 	m_AnimatedInterface->GetEffect()->End();
 
 	pDevice->EndScene();
+	
 
 	//render scene with texture
 	//set back buffer
