@@ -94,6 +94,7 @@ float4 NPixelShader(VSOUT input) : COLOR0
 	return float4(viewSpaceNormalizedNormals, depth);
 }
 
+
 technique DrawPosition
 {
 	pass P0
