@@ -2,21 +2,6 @@ texture normalBuffer;
 texture positionBuffer;
 texture randomBuffer;
 
-sampler g_buffer = sampler_state
-{
-	Texture = <normalBuffer>;
-};
-
-sampler g_buffer_pos = sampler_state
-{
-	Texture = <positionBuffer>;
-};
-
-sampler g_random = sampler_state
-{
-	Texture = <randomBuffer>;
-};
-
 float4x4 g_screen_to_camera;
 
 bool g_use_ambient_occlusion;
@@ -32,6 +17,21 @@ float g_near_clip;
 
 float2 g_screen_size;
 float2 g_inv_screen_size;
+
+sampler g_buffer = sampler_state
+{
+	Texture = <normalBuffer>;
+};
+
+sampler g_buffer_pos = sampler_state
+{
+	Texture = <positionBuffer>;
+};
+
+sampler g_random = sampler_state
+{
+	Texture = <randomBuffer>;
+};
 
 struct VS_INPUT
 {

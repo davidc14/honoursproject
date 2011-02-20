@@ -85,17 +85,24 @@ DrawableRenderTarget* mViewNormal;
 D3DTexturedCube* mCube;
 
 ID3DXEffect* mSSAOFX;
-D3DXHANDLE mhSSAOTech;
-D3DXHANDLE mhNormalTex;
-D3DXHANDLE mhPositionTex;
-D3DXHANDLE mhRandomTex;
-D3DXHANDLE mhSceneTex;
-D3DXHANDLE mhRandomSize;
+D3DXHANDLE mhNormalBuffer;
+D3DXHANDLE mhPositionBuffer;
+D3DXHANDLE mhRandomBuffer;
+D3DXHANDLE mhProjectionInverse;
+
+D3DXHANDLE mhUseAO;
+D3DXHANDLE mhUseLighting;
+
 D3DXHANDLE mhSampleRadius;
+D3DXHANDLE mhJitter;
 D3DXHANDLE mhIntensity;
 D3DXHANDLE mhScale;
-D3DXHANDLE mhBias;
+
+D3DXHANDLE mhFarClip;
+D3DXHANDLE mhNearClip;
+
 D3DXHANDLE mhScreenSize;
+D3DXHANDLE mhInvScreenSize;
 DrawableRenderTarget* mSSAOTarget;
 
 //ID3DXEffect* sFX;
