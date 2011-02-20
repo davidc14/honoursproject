@@ -529,7 +529,7 @@ void Game::Draw()
 	D3DXMatrixInverse(&matProjInv, 0, m_RenderTarget->getProjectionPointer());
 	mSSAOFX->SetMatrix(mhProjectionInverse, &matProjInv);
 	mSSAOFX->SetBool(mhUseAO, true);
-	mSSAOFX->SetBool(mhUseLighting, true);
+	mSSAOFX->SetBool(mhUseLighting, false);
 	mSSAOFX->SetFloat(mhSampleRadius, 0.05f);
 	mSSAOFX->SetFloat(mhJitter, 1.0f);
 	mSSAOFX->SetFloat(mhIntensity, 2.0f);
