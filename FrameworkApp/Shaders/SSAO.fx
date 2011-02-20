@@ -20,6 +20,7 @@ float2 g_inv_screen_size;
 
 sampler g_buffer = sampler_state
 {
+
 	Texture = <normalBuffer>;
 };
 
