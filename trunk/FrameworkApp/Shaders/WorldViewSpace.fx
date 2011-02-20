@@ -74,20 +74,24 @@ VSOUT DVertexShaderAni(VSANIIN input)
 	return output;
 }
 
+float g_near_clip, g_far_clip;
+
 float4 DPixelShader(VSOUT input) : COLOR0
-{
-	//float3 viewSpaceNormalizedNormals = normalize (input.PosData.xyz) + 0.5;
-	
-	return float4(input.PosData.xyz, input.Depth);
-	//return float4(input.PosData.xyz, input.Depth);
+{	
+	return float4(input.PosData.xyz, 1.0f);
 }
 
 float4 NPixelShader(VSOUT input) : COLOR0
 {
-	float3 viewSpaceNormalizedNormals = 0.5 * normalize (input.Normal) + 0.5;
+
+	float depth = (length(input.PosData.xyz) - g_near_clip) / (g_far_clip - g_near_clip);
+  
+	depth = length(input.PosData.xyz);
+	
+	float3 viewSpaceNormalizedNormals = (0.5 * normalize (input.Normal)) + 0.5;
 	//float3 viewSpaceNormalizedNormals = normalize (input.Normal);
 	
-	return float4(viewSpaceNormalizedNormals, input.Depth);
+	return float4(viewSpaceNormalizedNormals, depth);
 }
 
 technique DrawPosition
