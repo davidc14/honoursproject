@@ -100,6 +100,7 @@ D3DXHANDLE mhFarClip;
 D3DXHANDLE mhNearClip;
 D3DXHANDLE mhScreenSize;
 D3DXHANDLE mhInvScreenSize;
+D3DXHANDLE mhSceneTex;
 DrawableRenderTarget* mSSAOTarget;
 
 //ID3DXEffect* sFX;
@@ -191,9 +192,9 @@ bool Game::LoadContent()
 
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, m_Camera->GetFarPlane());
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8, m_Camera->GetFarPlane());
-	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
-	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
-	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D16, m_Camera->GetFarPlane());
+	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D16, m_Camera->GetFarPlane());
+	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D16, m_Camera->GetFarPlane());
 	
 	// Create shadow map.
 	//D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
@@ -258,6 +259,7 @@ bool Game::LoadContent()
 	mhNearClip = mSSAOFX->GetParameterByName(0, "g_near_clip");
 	mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
 	mhInvScreenSize = mSSAOFX->GetParameterByName(0, "g_inv_screen_size");
+	mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneBuffer");
 	//mhNormalTex = mSSAOFX->GetParameterByName(0, "normalTex");
 	//mhPositionTex = mSSAOFX->GetParameterByName(0, "positionTex");
 	//mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneTexture");
@@ -532,8 +534,8 @@ void Game::Draw()
 	mSSAOFX->SetBool(mhUseLighting, false);
 	mSSAOFX->SetFloat(mhSampleRadius, 0.5f);
 	mSSAOFX->SetFloat(mhJitter, 1.0f);
-	mSSAOFX->SetFloat(mhIntensity, 1.0f);
-	mSSAOFX->SetFloat(mhScale, 23.0f);
+	mSSAOFX->SetFloat(mhIntensity, 5.0f);
+	mSSAOFX->SetFloat(mhScale, 20.0f);
 	mSSAOFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
 	mSSAOFX->SetFloat(mhNearClip, 1.0f);
 	D3DXVECTOR2 vScreenSize, vInvScreenSize;
@@ -541,6 +543,7 @@ void Game::Draw()
 	vInvScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);
 	mSSAOFX->SetValue(mhScreenSize, &vScreenSize, sizeof(D3DXVECTOR2));
 	mSSAOFX->SetValue(mhInvScreenSize, &vInvScreenSize, sizeof(D3DXVECTOR2));
+	mSSAOFX->SetTexture(mhSceneTex, m_RenderTarget->getRenderTexture());
 
 	mSSAOFX->CommitChanges();
 
