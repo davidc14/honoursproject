@@ -114,7 +114,7 @@ PS_OUTPUT AOPShader(PS_INPUT i)
   float dx0 = incx;
   float dy0 = incy;
   float ang = 0.0;
-  float iterations = 64.0;
+  float iterations = 16.0;
   for (int j = 0; j < iterations; ++j)
   {
     float dzx =  (dx0 + r.x * g_jitter)/d;

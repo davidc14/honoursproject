@@ -38,7 +38,7 @@ void D3DFont::Update(float deltaTime, float width, float height)
 void D3DFont::Draw()
 {
 	//Draw the font last so it is above everything
-	m_Font->DrawText(0, m_DeltaTimeString, -1, &rect, DT_TOP | DT_LEFT /*draw in the top left corner*/, D3DCOLOR_ARGB(255,255,255,0));// yellow text
+	m_Font->DrawText(0, m_DeltaTimeString, -1, &rect, DT_TOP | DT_LEFT /*draw in the top left corner*/, D3DCOLOR_ARGB(255,0,0,0));// yellow text
 }
 
 void D3DFont::Release()
