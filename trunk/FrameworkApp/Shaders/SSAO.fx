@@ -1,6 +1,7 @@
 texture normalBuffer;
 texture positionBuffer;
 texture randomBuffer;
+texture sceneBuffer;
 
 float4x4 g_screen_to_camera;
 
@@ -33,6 +34,12 @@ sampler g_random = sampler_state
 {
 	Texture = <randomBuffer>;
 };
+
+sampler g_scene = sampler_state
+{
+	Texture = <sceneBuffer>;
+};
+
 
 struct VS_INPUT
 {
@@ -137,6 +144,8 @@ PS_OUTPUT AOPShader(PS_INPUT i)
  
   if (g_use_ambient_occlusion)
     o.color.rgb -= saturate(ao*g_intensity);
+    
+   o.color.rgb *= tex2D(g_scene, i.uv);
  
   return o;
 }
