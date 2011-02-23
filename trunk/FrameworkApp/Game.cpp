@@ -561,37 +561,37 @@ void Game::Draw()
 	// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 
-	//m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
-	//UINT numberOfShadowPasses = 1;
-	//m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
-	//m_SpotInterface->GetEffect()->BeginPass(0);
+	m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
+	UINT numberOfShadowPasses = 1;
+	m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
+	m_SpotInterface->GetEffect()->BeginPass(0);
 
-	//	m_SpotInterface->UpdateShadowHandles(&(m_Dwarf->GetWorld() * m_LightViewProj));
+		m_SpotInterface->UpdateShadowHandles(&(m_Dwarf->GetWorld() * m_LightViewProj));
 
-	//	//m_Dwarf->DrawToShadowMap();
+		m_Dwarf->DrawToShadowMap();
 
-	//	m_SpotInterface->UpdateShadowHandles(&(m_Citadel->GetWorld() * m_LightViewProj));
+		m_SpotInterface->UpdateShadowHandles(&(m_Citadel->GetWorld() * m_LightViewProj));
 
-	//	//m_Citadel->DrawToShadowMap();
+		m_Citadel->DrawToShadowMap();
 
-	////End the pass
-	//m_SpotInterface->GetEffect()->EndPass();
-	//m_SpotInterface->GetEffect()->End();	
+	//End the pass
+	m_SpotInterface->GetEffect()->EndPass();
+	m_SpotInterface->GetEffect()->End();	
 
-	//UINT numOfPasses = 0;
-	//	
-	//m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
+	UINT numOfPasses = 0;
+		
+	m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
 
-	//m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
-	//m_AnimatedInterface->GetEffect()->BeginPass(0);		
+	m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
+	m_AnimatedInterface->GetEffect()->BeginPass(0);		
 
-	//	m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
-	//		m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+		m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
+			m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
 
-	//	//m_SkinnedMesh->Draw();
+		m_SkinnedMesh->Draw();
 
-	//m_AnimatedInterface->GetEffect()->EndPass();
-	//m_AnimatedInterface->GetEffect()->End();
+	m_AnimatedInterface->GetEffect()->EndPass();
+	m_AnimatedInterface->GetEffect()->End();
 
 	mShadowTarget->EndScene();
 
@@ -795,20 +795,4 @@ void Game::SetPacketVariables()
 void Game::SendPacket()
 {
 	
-}
-
-D3DXVECTOR3 Game::SetCornerFrustrum()
-{
-	/*private Vector3 calculateCorner()
-        {
-            float farY = (float)Math.Tan(Math.PI / 3.0 / 2.0) * camera.FarPlane;
-            float farX = farY * camera.AspectRatio;
-
-            return new Vector3(farX, farY, camera.FarPlane);
-        }*/
-
-	static float farY = (float)tan(D3DX_PI / 3.0 / 2.0) * m_Camera->GetFarPlane();
-	static float farX = farY * (m_WindowWidth/m_WindowHeight);
-
-	return D3DXVECTOR3(farX, farY, m_Camera->GetFarPlane());
 }

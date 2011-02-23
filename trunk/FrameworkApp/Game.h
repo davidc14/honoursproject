@@ -85,7 +85,6 @@ private:
 
 	void SetSpotLightVariables(D3DXMATRIX World, Mtrl* material);
 
-	D3DXVECTOR3 SetCornerFrustrum();
 	//void SetShaderVariables();
 };
 
