@@ -23,36 +23,36 @@ sampler g_buffer = sampler_state
 {
 	Texture = <normalBuffer>;
 	
-	/*MINFILTER = LINEAR;
-	MAGFILTER = LINEAR;
-	MIPFILTER = LINEAR;*/
+	magfilter = POINT; 
+	minfilter = POINT; 
+	mipfilter=LINEAR;
 };
 
 sampler g_buffer_pos = sampler_state
 {
 	Texture = <positionBuffer>;
 	
-	/*MINFILTER = LINEAR;
-	MAGFILTER = LINEAR;
-	MIPFILTER = LINEAR;*/
+	magfilter = POINT; 
+	minfilter = POINT; 
+	mipfilter=LINEAR;
 };
 
 sampler g_random = sampler_state
 {
 	Texture = <randomBuffer>;
 	
-	/*MINFILTER = LINEAR;
-	MAGFILTER = LINEAR;
-	MIPFILTER = LINEAR;*/
+	magfilter = POINT; 
+	minfilter = POINT; 
+	mipfilter=LINEAR;
 };
 
 sampler g_scene = sampler_state
 {
 	Texture = <sceneBuffer>;
 	
-	/*MINFILTER = LINEAR;
-	MAGFILTER = LINEAR;
-	MIPFILTER = LINEAR;*/
+	magfilter = POINT; 
+	minfilter = POINT; 
+	mipfilter=LINEAR;
 };
 
 
@@ -159,6 +159,8 @@ PS_OUTPUT AOPShader(PS_INPUT i)
  
   if (g_use_ambient_occlusion)
     o.color.rgb -= saturate(ao*g_intensity);
+ 
+  return o;
     
    //o.color.rgb *= tex2D(g_scene, i.uv);
  
