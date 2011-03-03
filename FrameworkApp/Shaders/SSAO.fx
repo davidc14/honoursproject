@@ -151,7 +151,7 @@ PS_OUTPUT AOPShader(PS_INPUT i)
     dy0 += incy;
     ang+=360.0/8.5;
   }  
-  ao/=24.0;
+  ao/=iterations;
   o.color.rgb = 1.0f;
      
   if (g_use_lighting)
@@ -159,8 +159,6 @@ PS_OUTPUT AOPShader(PS_INPUT i)
  
   if (g_use_ambient_occlusion)
     o.color.rgb -= saturate(ao*g_intensity);
- 
-  return o;
     
    //o.color.rgb *= tex2D(g_scene, i.uv);
  
