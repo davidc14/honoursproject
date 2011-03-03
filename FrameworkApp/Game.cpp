@@ -523,10 +523,10 @@ void Game::Draw()
 	mSSAOFX->SetMatrix(mhProjectionInverse, &matProjInv);
 	mSSAOFX->SetBool(mhUseAO, true);
 	mSSAOFX->SetBool(mhUseLighting, false);
-	mSSAOFX->SetFloat(mhSampleRadius, 1.0f);
-	mSSAOFX->SetFloat(mhJitter, 1.0f);
-	mSSAOFX->SetFloat(mhIntensity, 1.5f);
-	mSSAOFX->SetFloat(mhScale, 20.0f);
+	mSSAOFX->SetFloat(mhSampleRadius, 0.5f);
+	mSSAOFX->SetFloat(mhJitter, 0.9f);
+	mSSAOFX->SetFloat(mhIntensity, 2.0f);
+	mSSAOFX->SetFloat(mhScale, 1.0f);
 	mSSAOFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
 	mSSAOFX->SetFloat(mhNearClip, 1.0f);
 	D3DXVECTOR2 vScreenSize, vInvScreenSize;
@@ -558,7 +558,6 @@ void Game::Draw()
 	//Set the depth and ssao texture for bluring
 	mBlurFX->SetTexture(mhSceneTexture, mSSAOTarget->getRenderTexture());
 	SetupBlurComponents(1.0f / m_WindowWidth, 1.0f / m_WindowHeight);
-	
 
 	//Commit changes
 	mBlurFX->CommitChanges();
@@ -677,8 +676,8 @@ void Game::Draw()
 
 			//mViewNormal->Draw();
 			//mViewPos->Draw();
-			//mSSAOTarget->Draw();
-			mBlurTarget->Draw();
+			mSSAOTarget->Draw();
+			//mBlurTarget->Draw();
 
 		m_Font->Draw();	
 
