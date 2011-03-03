@@ -569,6 +569,10 @@
 			Name="Shaders"
 			>
 			<File
+				RelativePath=".\Shaders\BlurEffect.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\LightShadow.fx"
 				>
 			</File>
@@ -591,10 +595,6 @@
 			<Filter
 				Name="SSAO"
 				>
-				<File
-					RelativePath=".\Shaders\SSAO\BlurEffect.fx"
-					>
-				</File>
 				<File
 					RelativePath=".\Shaders\SSAO\DepthAndShade.fx"
 					>

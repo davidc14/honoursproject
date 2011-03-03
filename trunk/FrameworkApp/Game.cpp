@@ -103,11 +103,12 @@ D3DXHANDLE mhInvScreenSize;
 D3DXHANDLE mhSceneTex;
 DrawableRenderTarget* mSSAOTarget;
 
-//ID3DXEffect* sFX;
-//D3DXHANDLE mhSTech;
-//D3DXHANDLE mhSRandomTexture;
-//D3DXHANDLE mhSNormalTexture;
-//D3DXHANDLE mhSWVP;
+ID3DXEffect* mBlurFX;
+D3DXHANDLE mhBlur;
+D3DXHANDLE mhSampleOffsets;
+D3DXHANDLE mhSampleWeights;
+D3DXHANDLE mhSceneTexture;
+DrawableRenderTarget* mBlurTarget;
 
 IDirect3DTexture9* mRandomTexture;
 
@@ -195,7 +196,8 @@ bool Game::LoadContent()
 	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
-	
+	mBlurTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
+
 	// Create shadow map.
 	//D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
 	//mShadowMap = new DrawableTex2D(pDevice, 512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
@@ -260,31 +262,20 @@ bool Game::LoadContent()
 	mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
 	mhInvScreenSize = mSSAOFX->GetParameterByName(0, "g_inv_screen_size");
 	mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneBuffer");
-	//mhNormalTex = mSSAOFX->GetParameterByName(0, "normalTex");
-	//mhPositionTex = mSSAOFX->GetParameterByName(0, "positionTex");
-	//mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneTexture");
-	//mhRandomTex = mSSAOFX->GetParameterByName(0, "randomTex");
-	//mhRandomSize = mSSAOFX->GetParameterByName(0, "random_size");
-	//mhSampleRadius = mSSAOFX->GetParameterByName(0, "g_sample_rad");
-	//mhIntensity = mSSAOFX->GetParameterByName(0, "g_intensity");
-	//mhScale = mSSAOFX->GetParameterByName(0, "g_scale");
-	//mhBias = mSSAOFX->GetParameterByName(0, "g_bias");
-	//mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
 
-	//HR(D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &mRandomTexture));
+	m_Error = 0;
+	D3DXCreateEffectFromFile(pDevice, "Shaders/BlurEffect.fx", 0, 0, D3DXSHADER_DEBUG,0, &mBlurFX, &m_Error);
+	if(m_Error)
+	{
+		//Display the error in a message bos
+		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
+	}
 
-	//m_Error = 0;
-	//D3DXCreateEffectFromFile(pDevice, "Shaders/GLSSAO.fx", 0, 0, D3DXSHADER_DEBUG,0, &sFX, &m_Error);
-	//if(m_Error)
-	//{
-	//	//Display the error in a message bos
-	//	MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
-	//}
+	mhBlur = mBlurFX->GetTechniqueByName("GaussianBlur");
+	mhSampleOffsets = mBlurFX->GetParameterByName(0, "SampleOffsets");
+	mhSampleWeights = mBlurFX->GetParameterByName(0, "SampleWeights");
+	mhSceneTexture = mBlurFX->GetParameterByName(0, "SSAOTexture");
 
-	//mhSTech = sFX->GetTechniqueByName("SSAO");
-	//mhSRandomTexture = sFX->GetParameterByName(0, "rnm");
-	//mhSNormalTexture = sFX->GetParameterByName(0, "normalMap");
-	//mhSWVP = sFX->GetParameterByName(0, "WVP");
 
 	return true;
 }
@@ -554,9 +545,35 @@ void Game::Draw()
 
 	mSSAOTarget->EndScene();
 
+	//Begin the blur scene
+	mBlurTarget->BeginScene();
+
+	//Clear the buffer
+	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
+
+	UINT blurPasses = 1;
+	mBlurFX->Begin(&blurPasses, 0);
+	mBlurFX->BeginPass(0);
+
+	//Set the depth and ssao texture for bluring
+	mBlurFX->SetTexture(mhSceneTexture, mSSAOTarget->getRenderTexture());
+	SetupBlurComponents(0, 1.0f / m_WindowHeight);
+	
+
+	//Commit changes
+	mBlurFX->CommitChanges();
+
+	//Draw an untextured quad
+	mBlurTarget->DrawUntextured();
+
+	mBlurFX->EndPass();
+	mBlurFX->End();
+
+	mBlurTarget->EndScene();
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	mShadowTarget->BeginScene();
+	/*mShadowTarget->BeginScene();
 
 	// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
@@ -593,7 +610,7 @@ void Game::Draw()
 	m_AnimatedInterface->GetEffect()->EndPass();
 	m_AnimatedInterface->GetEffect()->End();
 
-	mShadowTarget->EndScene();
+	mShadowTarget->EndScene();*/
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -660,7 +677,8 @@ void Game::Draw()
 
 			//mViewNormal->Draw();
 			//mViewPos->Draw();
-			mSSAOTarget->Draw();
+			//mSSAOTarget->Draw();
+			mBlurTarget->Draw();
 
 		m_Font->Draw();	
 
@@ -670,6 +688,69 @@ void Game::Draw()
 
     // Present the backbuffer contents to the display
     pDevice->Present( NULL, NULL, NULL, NULL );
+}
+
+float Game::ComputeGaussian(float n)
+{
+    float theta = 4.0f;
+
+	return (float)((1.0 / sqrt(2 * D3DX_PI * theta)) *
+                   exp(-(n * n) / (2 * theta * theta)));
+}
+
+void Game::SetupBlurComponents(float dx, float dy)
+{
+	 // Look up how many samples our gaussian blur effect supports.
+    const int sampleCount = 15;
+
+    // Create temporary arrays for computing our filter settings.
+    float sampleWeights[sampleCount];
+    D3DXVECTOR2 sampleOffsets[sampleCount];
+
+	// The first sample always has a zero offset.
+    sampleWeights[0] = ComputeGaussian(0);
+    sampleOffsets[0] = D3DXVECTOR2(0,0);
+
+    // Maintain a sum of all the weighting values.
+    float totalWeights = sampleWeights[0];
+
+	// Add pairs of additional sample taps, positioned
+    // along a line in both directions from the center.
+    for (int i = 0; i < sampleCount / 2; i++)
+    {
+        // Store weights for the positive and negative taps.
+        float weight = ComputeGaussian((float)i + 1);
+
+        sampleWeights[i * 2 + 1] = weight;
+        sampleWeights[i * 2 + 2] = weight;
+
+        totalWeights += weight * 2;
+
+        // To get the maximum amount of blurring from a limited number of
+        // pixel shader samples, we take advantage of the bilinear filtering
+        // hardware inside the texture fetch unit. If we position our texture
+        // coordinates exactly halfway between two texels, the filtering unit
+        // will average them for us, giving two samples for the price of one.
+        // This allows us to step in units of two texels per sample, rather
+        // than just one at a time. The 1.5 offset kicks things off by
+        // positioning us nicely in between two texels.
+        float sampleOffset = i * 2 + 1.5f;
+
+        D3DXVECTOR2 delta = D3DXVECTOR2(dx, dy) * sampleOffset;
+
+        // Store texture coordinate offsets for the positive and negative taps.
+        sampleOffsets[i * 2 + 1] = delta;
+        sampleOffsets[i * 2 + 2] = -delta;
+    }
+
+    // Normalize the list of sample weightings, so they will always sum to one.
+    for (int i = 0; i < sampleCount; i++)
+    {
+        sampleWeights[i] /= totalWeights;
+    }
+
+	mBlurFX->SetFloatArray(mhSampleWeights, sampleWeights, sampleCount);
+	mBlurFX->SetValue(mhSampleOffsets, sampleOffsets, sizeof(sampleOffsets));
 }
 
 void Game::Unload()
@@ -702,6 +783,9 @@ void Game::Unload()
 
 	if(mSSAOFX != NULL) mSSAOFX->Release();
 	if(mSSAOTarget != NULL) mSSAOTarget->Release();
+
+	mBlurFX->Release();
+	mBlurTarget->Release();
 }
 
 void Game::CalculateMatrices()
