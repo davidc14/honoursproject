@@ -85,6 +85,9 @@ private:
 
 	void SetSpotLightVariables(D3DXMATRIX World, Mtrl* material);
 
+	float ComputeGaussian(float n);
+	void SetupBlurComponents(float dx, float dy);
+
 	//void SetShaderVariables();
 };
 
