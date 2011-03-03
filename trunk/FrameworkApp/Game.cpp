@@ -557,7 +557,7 @@ void Game::Draw()
 
 	//Set the depth and ssao texture for bluring
 	mBlurFX->SetTexture(mhSceneTexture, mSSAOTarget->getRenderTexture());
-	SetupBlurComponents(0, 1.0f / m_WindowHeight);
+	SetupBlurComponents(1.0f / m_WindowWidth, 1.0f / m_WindowHeight);
 	
 
 	//Commit changes
