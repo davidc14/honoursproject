@@ -569,18 +569,6 @@
 			Name="Shaders"
 			>
 			<File
-				RelativePath=".\Shaders\CellShaderEffect.fx"
-				>
-			</File>
-			<File
-				RelativePath=".\Shaders\DrawDepthNormal.fx"
-				>
-			</File>
-			<File
-				RelativePath=".\Shaders\GLSSAO.fx"
-				>
-			</File>
-			<File
 				RelativePath=".\Shaders\LightShadow.fx"
 				>
 			</File>
@@ -617,10 +605,6 @@
 				</File>
 				<File
 					RelativePath=".\Shaders\SSAO\SSAOFinalPass.fx"
-					>
-				</File>
-				<File
-					RelativePath=".\ssaoglsl.txt"
 					>
 				</File>
 			</Filter>

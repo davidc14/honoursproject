@@ -532,9 +532,9 @@ void Game::Draw()
 	mSSAOFX->SetMatrix(mhProjectionInverse, &matProjInv);
 	mSSAOFX->SetBool(mhUseAO, true);
 	mSSAOFX->SetBool(mhUseLighting, false);
-	mSSAOFX->SetFloat(mhSampleRadius, 0.5f);
+	mSSAOFX->SetFloat(mhSampleRadius, 1.0f);
 	mSSAOFX->SetFloat(mhJitter, 1.0f);
-	mSSAOFX->SetFloat(mhIntensity, 5.0f);
+	mSSAOFX->SetFloat(mhIntensity, 1.5f);
 	mSSAOFX->SetFloat(mhScale, 20.0f);
 	mSSAOFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
 	mSSAOFX->SetFloat(mhNearClip, 1.0f);
