@@ -103,34 +103,6 @@ D3DXHANDLE mhInvScreenSize;
 D3DXHANDLE mhSceneTex;
 DrawableRenderTarget* mSSAOTarget;
 
-ID3DXEffect* mNewFX;
-D3DXHANDLE newTech;
-D3DXHANDLE normalBuffer;
-D3DXHANDLE positionBuffer;
-D3DXHANDLE randomTexture;
-D3DXHANDLE g_light;
-D3DXHANDLE g_sample_rad;
-D3DXHANDLE g_intensity;
-D3DXHANDLE g_scale;
-D3DXHANDLE g_bias;
-D3DXHANDLE g_self_occlusion;
-D3DXHANDLE g_far_clip;
-D3DXHANDLE g_near_clip;
-D3DXHANDLE g_screen_size;
-D3DXHANDLE g_inv_screen_size;
-
-DrawableRenderTarget* mBlurTarget;
-ID3DXEffect* mBlurFX;
-D3DXHANDLE blurTech;
-D3DXHANDLE blur_inv_screen_size;
-D3DXHANDLE ssaoTexture;
-D3DXHANDLE diffuseTexture;
-D3DXHANDLE blurNormalBuffer;
-D3DXHANDLE g_screen_to_camera;
-D3DXHANDLE g_use_ambient_occlusion;
-D3DXHANDLE blur_use_lighting;
-D3DXHANDLE g_blur;
-
 IDirect3DTexture9* mRandomTexture;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
@@ -217,8 +189,6 @@ bool Game::LoadContent()
 	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D16, m_Camera->GetFarPlane());
 	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D16, m_Camera->GetFarPlane());
 	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D16, m_Camera->GetFarPlane());
-	mBlurTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D16, m_Camera->GetFarPlane());
-
 	// Create shadow map.
 	//D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
 	//mShadowMap = new DrawableTex2D(pDevice, 512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
@@ -284,47 +254,6 @@ bool Game::LoadContent()
 	mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
 	mhInvScreenSize = mSSAOFX->GetParameterByName(0, "g_inv_screen_size");
 	mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneBuffer");
-
-	m_Error = 0;
-	D3DXCreateEffectFromFile(pDevice, "Shaders/NewSSAO.fx", 0, 0, D3DXSHADER_DEBUG,0, &mNewFX, &m_Error);
-	if(m_Error)
-	{
-		//Display the error in a message bos
-		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
-	}
-
-	newTech = mNewFX->GetTechniqueByName("SSAO");
-	normalBuffer = mNewFX->GetParameterByName(0, "normalBuffer");
-	positionBuffer = mNewFX->GetParameterByName(0, "positionBuffer");
-	randomTexture = mNewFX->GetParameterByName(0, "randomTexture");
-	g_light = mNewFX->GetParameterByName(0, "g_light");
-	g_sample_rad = mNewFX->GetParameterByName(0, "g_sample_rad");
-	g_intensity = mNewFX->GetParameterByName(0, "g_intensity");
-	g_scale = mNewFX->GetParameterByName(0, "g_scale");
-	g_bias = mNewFX->GetParameterByName(0, "g_bias");
-	g_self_occlusion = mNewFX->GetParameterByName(0, "g_self_occlusion");
-	g_far_clip = mNewFX->GetParameterByName(0, "g_far_clip");
-	g_near_clip = mNewFX->GetParameterByName(0, "g_near_clip");
-	g_screen_size = mNewFX->GetParameterByName(0, "g_screen_size");
-	g_inv_screen_size = mNewFX->GetParameterByName(0, "g_inv_screen_size");
-
-	m_Error = 0;
-	D3DXCreateEffectFromFile(pDevice, "Shaders/SSAOBlur.fx", 0, 0, D3DXSHADER_DEBUG,0, &mBlurFX, &m_Error);
-	if(m_Error)
-	{
-		//Display the error in a message bos
-		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
-	}
-
-	blurTech = mBlurFX->GetTechniqueByName("Blur");
-	blur_inv_screen_size = mBlurFX->GetParameterByName(0, "g_inv_screen_size");
-	ssaoTexture = mBlurFX->GetParameterByName(0, "ssaoTexture");
-	diffuseTexture = mBlurFX->GetParameterByName(0, "diffuseTexture");
-	blurNormalBuffer = mBlurFX->GetParameterByName(0, "normalBuffer");
-	g_screen_to_camera = mBlurFX->GetParameterByName(0, "g_screen_to_camera");
-	g_use_ambient_occlusion = mBlurFX->GetParameterByName(0, "g_use_ambient_occlusion");
-	blur_use_lighting = mBlurFX->GetParameterByName(0, "g_use_lighting");
-	g_blur = mBlurFX->GetParameterByName(0, "g_blur");
 
 	return true;
 }
@@ -609,36 +538,7 @@ void Game::Draw()
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
 	UINT ssaoPasses = 1;
 
-	mNewFX->SetTechnique(newTech);
-
-	mNewFX->Begin(&ssaoPasses, 0);
-	mNewFX->BeginPass(0);
-
-	mNewFX->SetTexture(normalBuffer, mViewNormal->getRenderTexture());
-	mNewFX->SetTexture(positionBuffer, mViewPos->getRenderTexture());
-	mNewFX->SetTexture(randomTexture, mRandomTexture);
-	mNewFX->SetBool(g_light, false);
-	mNewFX->SetFloat(g_sample_rad, 2.32640f);
-	mNewFX->SetFloat(g_intensity, 5.6f);
-	mNewFX->SetFloat(g_scale, 1.5f);
-	mNewFX->SetFloat(g_bias, 0.04f);
-	mNewFX->SetFloat(g_self_occlusion, 0.34000f);
-	mNewFX->SetFloat(g_far_clip, m_Camera->GetFarPlane());
-	mNewFX->SetFloat(g_near_clip, 1.0f);
-	D3DXVECTOR2 vScreenSize, vInvScreenSize;
-	vScreenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
-	vInvScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);
-	mNewFX->SetValue(g_screen_size, &vScreenSize, sizeof(D3DXVECTOR2));
-	mNewFX->SetValue(g_inv_screen_size, &vInvScreenSize, sizeof(D3DXVECTOR2));
-
-	mNewFX->CommitChanges();
-
-	mSSAOTarget->DrawUntextured();
-
-	mNewFX->EndPass();
-	mNewFX->End();
-
-	/*mSSAOFX->SetTechnique(mhSSAOTech);	
+	mSSAOFX->SetTechnique(mhSSAOTech);	
 
 	mSSAOFX->Begin(&ssaoPasses, 0);
 	mSSAOFX->BeginPass(0);
@@ -669,38 +569,9 @@ void Game::Draw()
 	mSSAOTarget->DrawUntextured();
 
 	mSSAOFX->EndPass();
-	mSSAOFX->End();*/
+	mSSAOFX->End();
 
 	mSSAOTarget->EndScene();
-
-	mBlurTarget->BeginScene();
-
-	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
-	UINT blurPasses = 1;
-
-	mBlurFX->SetTechnique(blurTech);
-
-	mBlurFX->Begin(&blurPasses, 0);
-	mBlurFX->BeginPass(0);
-
-	mBlurFX->SetValue(blur_inv_screen_size, &vInvScreenSize, sizeof(D3DXVECTOR2));
-	mBlurFX->SetTexture(ssaoTexture, mSSAOTarget->getRenderTexture());
-	mBlurFX->SetTexture(diffuseTexture, m_RenderTarget->getRenderTexture());
-	mBlurFX->SetTexture(normalBuffer, mViewNormal->getRenderTexture());
-	D3DXMATRIX matProjInv; 
-	D3DXMatrixInverse(&matProjInv, 0, m_RenderTarget->getProjectionPointer());
-	mBlurFX->SetMatrix(g_screen_to_camera, &matProjInv);
-	mBlurFX->SetBool(g_use_ambient_occlusion, true);
-	mBlurFX->SetBool(blur_use_lighting, true);
-	mBlurFX->SetFloat(g_blur, 1.0f);
-	mBlurFX->CommitChanges();
-
-	mBlurTarget->DrawUntextured();
-
-	mBlurFX->EndPass();
-	mBlurFX->End();
-
-	mBlurTarget->EndScene();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -759,8 +630,7 @@ void Game::Draw()
 
 			//mViewNormal->Draw();
 			//mViewPos->Draw();
-			//mSSAOTarget->Draw();
-			mBlurTarget->Draw();
+			mSSAOTarget->Draw();
 
 		m_Font->Draw();	
 
