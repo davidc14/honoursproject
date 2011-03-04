@@ -577,6 +577,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\NewSSAO.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\PhongDirLtTex.fx"
 				>
 			</File>
