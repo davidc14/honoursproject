@@ -23,36 +23,36 @@ sampler g_buffer = sampler_state
 {
 	Texture = <normalBuffer>;
 	
-	magfilter = POINT; 
+	/*magfilter = POINT; 
 	minfilter = POINT; 
-	mipfilter=LINEAR;
+	mipfilter = POINT;*/
 };
 
 sampler g_buffer_pos = sampler_state
 {
 	Texture = <positionBuffer>;
 	
-	magfilter = POINT; 
+	/*magfilter = POINT; 
 	minfilter = POINT; 
-	mipfilter=LINEAR;
+	mipfilter = POINT;*/
 };
 
 sampler g_random = sampler_state
 {
 	Texture = <randomBuffer>;
 	
-	magfilter = POINT; 
+	/*magfilter = POINT; 
 	minfilter = POINT; 
-	mipfilter=LINEAR;
+	mipfilter = POINT;*/
 };
 
 sampler g_scene = sampler_state
 {
 	Texture = <sceneBuffer>;
 	
-	magfilter = POINT; 
+	/*magfilter = POINT; 
 	minfilter = POINT; 
-	mipfilter=LINEAR;
+	mipfilter = POINT;*/
 };
 
 
@@ -136,7 +136,7 @@ PS_OUTPUT AOPShader(PS_INPUT i)
   float dx0 = incx;
   float dy0 = incy;
   float ang = 0.0;
-  float iterations = 16.0;
+  float iterations = 32.0;
   for (int j = 0; j < iterations; ++j)
   {
     float dzx =  (dx0 + r.x * g_jitter)/d;
@@ -160,7 +160,7 @@ PS_OUTPUT AOPShader(PS_INPUT i)
   if (g_use_ambient_occlusion)
     o.color.rgb -= saturate(ao*g_intensity);
     
-   //o.color.rgb *= tex2D(g_scene, i.uv);
+   o.color.rgb *= tex2D(g_scene, i.uv);
  
   return o;
 }
