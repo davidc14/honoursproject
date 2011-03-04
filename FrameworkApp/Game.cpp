@@ -103,12 +103,27 @@ D3DXHANDLE mhInvScreenSize;
 D3DXHANDLE mhSceneTex;
 DrawableRenderTarget* mSSAOTarget;
 
-ID3DXEffect* mBlurFX;
-D3DXHANDLE mhBlur;
-D3DXHANDLE mhSampleOffsets;
-D3DXHANDLE mhSampleWeights;
-D3DXHANDLE mhSceneTexture;
-DrawableRenderTarget* mBlurTarget;
+//ID3DXEffect* mBlurFX;
+//D3DXHANDLE mhBlur;
+//D3DXHANDLE mhSampleOffsets;
+//D3DXHANDLE mhSampleWeights;
+//D3DXHANDLE mhSceneTexture;
+//DrawableRenderTarget* mBlurTarget;
+ID3DXEffect* mNewFX;
+D3DXHANDLE newTech;
+D3DXHANDLE normalBuffer;
+D3DXHANDLE positionBuffer;
+D3DXHANDLE randomTexture;
+D3DXHANDLE g_light;
+D3DXHANDLE g_sample_rad;
+D3DXHANDLE g_intensity;
+D3DXHANDLE g_scale;
+D3DXHANDLE g_bias;
+D3DXHANDLE g_self_occlusion;
+D3DXHANDLE g_far_clip;
+D3DXHANDLE g_near_clip;
+D3DXHANDLE g_screen_size;
+D3DXHANDLE g_inv_screen_size;
 
 IDirect3DTexture9* mRandomTexture;
 
@@ -195,8 +210,8 @@ bool Game::LoadContent()
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
-	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth/2, (UINT)m_WindowHeight/2, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
-	mBlurTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
+//	mBlurTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 
 	// Create shadow map.
 	//D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
@@ -208,6 +223,7 @@ bool Game::LoadContent()
 	m_SpotInterface = new SpotLightingInterface(pDevice);
 
 	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_WhiteTexture);
+	D3DXCreateTextureFromFile(pDevice, "Textures/reflect2.png", &mRandomTexture);
 
 	// Set some light properties; other properties are set in update function,
 	// where they are animated.
@@ -264,17 +280,31 @@ bool Game::LoadContent()
 	mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneBuffer");
 
 	m_Error = 0;
-	D3DXCreateEffectFromFile(pDevice, "Shaders/BlurEffect.fx", 0, 0, D3DXSHADER_DEBUG,0, &mBlurFX, &m_Error);
+	D3DXCreateEffectFromFile(pDevice, "Shaders/NewSSAO.fx", 0, 0, D3DXSHADER_DEBUG,0, &mNewFX, &m_Error);
 	if(m_Error)
 	{
 		//Display the error in a message bos
 		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
 	}
 
-	mhBlur = mBlurFX->GetTechniqueByName("GaussianBlur");
-	mhSampleOffsets = mBlurFX->GetParameterByName(0, "SampleOffsets");
-	mhSampleWeights = mBlurFX->GetParameterByName(0, "SampleWeights");
-	mhSceneTexture = mBlurFX->GetParameterByName(0, "SSAOTexture");
+	newTech = mNewFX->GetTechniqueByName("SSAO");
+	normalBuffer = mNewFX->GetParameterByName(0, "normalBuffer");
+	positionBuffer = mNewFX->GetParameterByName(0, "positionBuffer");
+	randomTexture = mNewFX->GetParameterByName(0, "randomTexture");
+	g_light = mNewFX->GetParameterByName(0, "g_light");
+	g_sample_rad = mNewFX->GetParameterByName(0, "g_sample_rad");
+	g_intensity = mNewFX->GetParameterByName(0, "g_intensity");
+	g_scale = mNewFX->GetParameterByName(0, "g_scale");
+	g_bias = mNewFX->GetParameterByName(0, "g_bias");
+	g_self_occlusion = mNewFX->GetParameterByName(0, "g_self_occlusion");
+	g_far_clip = mNewFX->GetParameterByName(0, "g_far_clip");
+	g_near_clip = mNewFX->GetParameterByName(0, "g_near_clip");
+	g_screen_size = mNewFX->GetParameterByName(0, "g_screen_size");
+	g_inv_screen_size = mNewFX->GetParameterByName(0, "g_inv_screen_size");
+	//mhBlur = mBlurFX->GetTechniqueByName("GaussianBlur");
+	//mhSampleOffsets = mBlurFX->GetParameterByName(0, "SampleOffsets");
+	//mhSampleWeights = mBlurFX->GetParameterByName(0, "SampleWeights");
+	//mhSceneTexture = mBlurFX->GetParameterByName(0, "SSAOTexture");
 
 
 	return true;
@@ -510,7 +540,36 @@ void Game::Draw()
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
 	UINT ssaoPasses = 1;
 
-	mSSAOFX->SetTechnique(mhSSAOTech);	
+	mNewFX->SetTechnique(newTech);
+
+	mNewFX->Begin(&ssaoPasses, 0);
+	mNewFX->BeginPass(0);
+
+	mNewFX->SetTexture(normalBuffer, mViewNormal->getRenderTexture());
+	mNewFX->SetTexture(positionBuffer, mViewPos->getRenderTexture());
+	mNewFX->SetTexture(randomTexture, mRandomTexture);
+	mNewFX->SetBool(g_light, false);
+	mNewFX->SetFloat(g_sample_rad, 2.32640f);
+	mNewFX->SetFloat(g_intensity, 5.6f);
+	mNewFX->SetFloat(g_scale, 1.5f);
+	mNewFX->SetFloat(g_bias, 0.04f);
+	mNewFX->SetFloat(g_self_occlusion, 0.34000f);
+	mNewFX->SetFloat(g_far_clip, m_Camera->GetFarPlane());
+	mNewFX->SetFloat(g_near_clip, 1.0f);
+	D3DXVECTOR2 vScreenSize, vInvScreenSize;
+	vScreenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
+	vInvScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);
+	mNewFX->SetValue(g_screen_size, &vScreenSize, sizeof(D3DXVECTOR2));
+	mNewFX->SetValue(g_inv_screen_size, &vInvScreenSize, sizeof(D3DXVECTOR2));
+
+	mNewFX->CommitChanges();
+
+	mSSAOTarget->DrawUntextured();
+
+	mNewFX->EndPass();
+	mNewFX->End();
+
+	/*mSSAOFX->SetTechnique(mhSSAOTech);	
 
 	mSSAOFX->Begin(&ssaoPasses, 0);
 	mSSAOFX->BeginPass(0);
@@ -541,34 +600,9 @@ void Game::Draw()
 	mSSAOTarget->DrawUntextured();
 
 	mSSAOFX->EndPass();
-	mSSAOFX->End();
+	mSSAOFX->End();*/
 
 	mSSAOTarget->EndScene();
-
-	//Begin the blur scene
-	mBlurTarget->BeginScene();
-
-	//Clear the buffer
-	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
-
-	UINT blurPasses = 1;
-	mBlurFX->Begin(&blurPasses, 0);
-	mBlurFX->BeginPass(0);
-
-	//Set the depth and ssao texture for bluring
-	mBlurFX->SetTexture(mhSceneTexture, mSSAOTarget->getRenderTexture());
-	SetupBlurComponents(1.0f / m_WindowWidth, 1.0f / m_WindowHeight);
-
-	//Commit changes
-	mBlurFX->CommitChanges();
-
-	//Draw an untextured quad
-	mBlurTarget->DrawUntextured();
-
-	mBlurFX->EndPass();
-	mBlurFX->End();
-
-	mBlurTarget->EndScene();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -748,8 +782,8 @@ void Game::SetupBlurComponents(float dx, float dy)
         sampleWeights[i] /= totalWeights;
     }
 
-	mBlurFX->SetFloatArray(mhSampleWeights, sampleWeights, sampleCount);
-	mBlurFX->SetValue(mhSampleOffsets, sampleOffsets, sizeof(sampleOffsets));
+	//mBlurFX->SetFloatArray(mhSampleWeights, sampleWeights, sampleCount);
+	//mBlurFX->SetValue(mhSampleOffsets, sampleOffsets, sizeof(sampleOffsets));
 }
 
 void Game::Unload()
@@ -783,8 +817,8 @@ void Game::Unload()
 	if(mSSAOFX != NULL) mSSAOFX->Release();
 	if(mSSAOTarget != NULL) mSSAOTarget->Release();
 
-	mBlurFX->Release();
-	mBlurTarget->Release();
+	//mBlurFX->Release();
+	//mBlurTarget->Release();
 }
 
 void Game::CalculateMatrices()
