@@ -199,7 +199,7 @@ bool Game::LoadContent()
 	m_SpotInterface = new SpotLightingInterface(pDevice);
 
 	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_WhiteTexture);
-	D3DXCreateTextureFromFile(pDevice, "Textures/reflect2.png", &mRandomTexture);
+	D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &mRandomTexture);
 
 	// Set some light properties; other properties are set in update function,
 	// where they are animated.
@@ -552,6 +552,7 @@ void Game::Draw()
 	mSSAOFX->SetBool(mhUseAO, true);
 	mSSAOFX->SetBool(mhUseLighting, false);
 	mSSAOFX->SetFloat(mhSampleRadius, 19.80624f);
+	//mSSAOFX->SetFloat(mhSampleRadius, 75.0f);
 	mSSAOFX->SetFloat(mhJitter, 1.0f);
 	mSSAOFX->SetFloat(mhIntensity, 2.0f);
 	mSSAOFX->SetFloat(mhScale, 23.0f);
