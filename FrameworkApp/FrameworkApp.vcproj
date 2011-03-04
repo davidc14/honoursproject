@@ -589,6 +589,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\SSAOBlur.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\vblend2.fx"
 				>
 			</File>
