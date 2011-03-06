@@ -101,7 +101,10 @@ D3DXHANDLE mhNearClip;
 D3DXHANDLE mhScreenSize;
 D3DXHANDLE mhInvScreenSize;
 D3DXHANDLE mhSceneTex;
+D3DXHANDLE mhUseColour;
 DrawableRenderTarget* mSSAOTarget;
+bool mUseAO = true;
+bool mUseColour = true;
 
 IDirect3DTexture9* mRandomTexture;
 
@@ -254,6 +257,7 @@ bool Game::LoadContent()
 	mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
 	mhInvScreenSize = mSSAOFX->GetParameterByName(0, "g_inv_screen_size");
 	mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneBuffer");
+	mhUseColour = mSSAOFX->GetParameterByName(0, "useColour");
 
 	return true;
 }
@@ -297,6 +301,11 @@ void Game::HandleInput()
 	{
 		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);	
 	}
+
+	if(GetAsyncKeyState('P'))
+		mUseColour = !mUseColour;
+	if(GetAsyncKeyState('O'))
+		mUseAO = !mUseAO;
 }
 
 void Game::Update()
@@ -549,15 +558,16 @@ void Game::Draw()
 	D3DXMATRIX matProjInv; 
 	D3DXMatrixInverse(&matProjInv, 0, m_RenderTarget->getProjectionPointer());
 	mSSAOFX->SetMatrix(mhProjectionInverse, &matProjInv);
-	mSSAOFX->SetBool(mhUseAO, true);
+	mSSAOFX->SetBool(mhUseAO, mUseAO);
 	mSSAOFX->SetBool(mhUseLighting, false);
 	mSSAOFX->SetFloat(mhSampleRadius, 19.80624f);
-	//mSSAOFX->SetFloat(mhSampleRadius, 75.0f);
+	//mSSAOFX->SetFloat(mhSampleRadius, 0.0f);
 	mSSAOFX->SetFloat(mhJitter, 1.0f);
 	mSSAOFX->SetFloat(mhIntensity, 2.0f);
 	mSSAOFX->SetFloat(mhScale, 23.0f);
 	mSSAOFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
 	mSSAOFX->SetFloat(mhNearClip, 1.0f);
+	mSSAOFX->SetBool(mhUseColour, mUseColour);
 	D3DXVECTOR2 vScreenSize, vInvScreenSize;
 	vScreenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
 	vInvScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);

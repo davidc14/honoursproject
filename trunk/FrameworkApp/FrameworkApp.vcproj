@@ -306,6 +306,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Input"
+				>
+				<File
+					RelativePath=".\DirectInput.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DirectInput.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Window Framework"
@@ -365,18 +377,6 @@
 				</File>
 				<File
 					RelativePath=".\Window.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Input"
-				>
-				<File
-					RelativePath=".\DirectInput.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DirectInput.h"
 					>
 				</File>
 			</Filter>
