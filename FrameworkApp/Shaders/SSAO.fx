@@ -7,6 +7,7 @@ float4x4 g_screen_to_camera;
 
 bool g_use_ambient_occlusion;
 bool g_use_lighting;
+bool useColour;
 
 float g_sample_rad;
 float g_jitter;
@@ -159,8 +160,9 @@ PS_OUTPUT AOPShader(PS_INPUT i)
  
   if (g_use_ambient_occlusion)
     o.color.rgb -= saturate(ao*g_intensity);
-    
-   o.color.rgb *= tex2D(g_scene, i.uv);
+  
+  if(useColour)  
+	o.color.rgb *= tex2D(g_scene, i.uv);
  
   return o;
 }
