@@ -25,39 +25,49 @@ void DirectInput::Update()
 	//the control maps are part of the base class and
 	//we check them in the actual application and take action on them. 
 	if(KeyBuffer[DIK_ESCAPE] & 0x80)
-		DigitalControlMap[0]=true;
+		DigitalControlMap[DIK_ESCAPE]=true;
 	else
-		DigitalControlMap[0]=false;
+		DigitalControlMap[DIK_ESCAPE]=false;
 
 	if(KeyBuffer[DIK_W] & 0x80)
-		DigitalControlMap[1]=true;
+		DigitalControlMap[DIK_W]=true;
 	else
-		DigitalControlMap[1]=false;
+		DigitalControlMap[DIK_W]=false;
 
 	if(KeyBuffer[DIK_S] & 0x80)
-		DigitalControlMap[2]=true;
+		DigitalControlMap[DIK_S]=true;
 	else
-		DigitalControlMap[2]=false;
+		DigitalControlMap[DIK_S]=false;
 
 	if(KeyBuffer[DIK_A] & 0x80)
-		DigitalControlMap[3]=true;
+		DigitalControlMap[DIK_A]=true;
 	else
-		DigitalControlMap[3]=false;
+		DigitalControlMap[DIK_A]=false;
 
 	if(KeyBuffer[DIK_D] & 0x80)
-		DigitalControlMap[4]=true;
+		DigitalControlMap[DIK_D]=true;
 	else
-		DigitalControlMap[4]=false;
+		DigitalControlMap[DIK_D]=false;
 
 	if(KeyBuffer[DIK_Q] & 0x80)
-		DigitalControlMap[5]=true;
+		DigitalControlMap[DIK_Q]=true;
 	else
-		DigitalControlMap[5]=false;
+		DigitalControlMap[DIK_Q]=false;
 
 	if(KeyBuffer[DIK_E] & 0x80)
-		DigitalControlMap[6]=true;
+		DigitalControlMap[DIK_E]=true;
 	else
-		DigitalControlMap[6]=false;
+		DigitalControlMap[DIK_E]=false;
+
+	if(KeyBuffer[DIK_P] & 0x80)
+		DigitalControlMap[DIK_P]=true;
+	else
+		DigitalControlMap[DIK_P]=false;
+
+	if(KeyBuffer[DIK_O] & 0x80)
+		DigitalControlMap[DIK_O]=true;
+	else
+		DigitalControlMap[DIK_O]=false;
 
 	if(mouseState.rgbButtons[0] & 0x80)
 		MouseControlMap[0] = true;
