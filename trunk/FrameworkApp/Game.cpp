@@ -191,7 +191,9 @@ bool Game::LoadContent()
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D16, m_Camera->GetFarPlane());
 	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D16, m_Camera->GetFarPlane());
-	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D16, m_Camera->GetFarPlane());
+	//mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D16, m_Camera->GetFarPlane());
+	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_X8R8G8B8  , D3DFMT_D16, m_Camera->GetFarPlane());
+
 	// Create shadow map.
 	//D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
 	//mShadowMap = new DrawableTex2D(pDevice, 512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
@@ -301,6 +303,8 @@ void Game::HandleInput()
 	{
 		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);	
 	}
+
+	
 
 	if(GetAsyncKeyState('P'))
 		mUseColour = !mUseColour;
@@ -586,12 +590,12 @@ void Game::Draw()
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	/*mShadowTarget->BeginScene();
+	mShadowTarget->BeginScene();
 
 	// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 
-	m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
+	/*m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
 	UINT numberOfShadowPasses = 1;
 	m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
 	m_SpotInterface->GetEffect()->BeginPass(0);
@@ -621,9 +625,9 @@ void Game::Draw()
 		m_SkinnedMesh->Draw();
 
 	m_AnimatedInterface->GetEffect()->EndPass();
-	m_AnimatedInterface->GetEffect()->End();
+	m_AnimatedInterface->GetEffect()->End();*/
 
-	mShadowTarget->EndScene();*/
+	mShadowTarget->EndScene();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
