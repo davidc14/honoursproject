@@ -573,6 +573,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Shaders\DrawQuad.fx"
+				>
+			</File>
+			<File
 				RelativePath=".\Shaders\LightShadow.fx"
 				>
 			</File>
@@ -592,22 +596,6 @@
 				RelativePath=".\Shaders\WorldViewSpace.fx"
 				>
 			</File>
-			<Filter
-				Name="SSAO"
-				>
-				<File
-					RelativePath=".\Shaders\SSAO\DepthAndShade.fx"
-					>
-				</File>
-				<File
-					RelativePath=".\Shaders\SSAO\SSAOEffect.fx"
-					>
-				</File>
-				<File
-					RelativePath=".\Shaders\SSAO\SSAOFinalPass.fx"
-					>
-				</File>
-			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

@@ -71,6 +71,10 @@ D3DXMATRIXA16 m_LightViewProj;
 //D3DXHANDLE mhFarClip;
 //DrawableRenderTarget* mDepthTarget;
 
+ID3DXEffect* mQuadFX;
+D3DXHANDLE mQuadTech;
+D3DXHANDLE mQuadTexture;
+
 ID3DXEffect* mViewFX;
 D3DXHANDLE mhPosTech;
 D3DXHANDLE mhPosTechAni;
@@ -217,6 +221,16 @@ bool Game::LoadContent()
 	mCube->setBuffers(pDevice);
 
 	ID3DXBuffer *m_Error = 0;
+	D3DXCreateEffectFromFile(pDevice, "Shaders/DrawQuad.fx", 0, 0, D3DXSHADER_DEBUG,0, &mQuadFX, &m_Error);
+	if(m_Error)
+	{
+		//Display the error in a message bos
+		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
+	}
+	mQuadTech = mQuadFX->GetTechniqueByName("QuadTech");
+	mQuadTexture = mQuadFX->GetParameterByName(0, "gTex");
+
+	m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/WorldViewSpace.fx", 0, 0, D3DXSHADER_DEBUG,0, &mViewFX, &m_Error);
 	if(m_Error)
 	{
@@ -595,7 +609,7 @@ void Game::Draw()
 	// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 
-	/*m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
+	m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
 	UINT numberOfShadowPasses = 1;
 	m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
 	m_SpotInterface->GetEffect()->BeginPass(0);
@@ -625,14 +639,14 @@ void Game::Draw()
 		m_SkinnedMesh->Draw();
 
 	m_AnimatedInterface->GetEffect()->EndPass();
-	m_AnimatedInterface->GetEffect()->End();*/
+	m_AnimatedInterface->GetEffect()->End();
 
 	mShadowTarget->EndScene();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	pDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP );
-	pDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP );
+	/*pDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP );
+	pDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP );*/
 
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
 
@@ -642,12 +656,24 @@ void Game::Draw()
     {
 		// Clear the backbuffer to a blue color
 		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0 );		
+			
+		UINT passNo = 0;
+		mQuadFX->Begin(&passNo, 0);
+		mQuadFX->BeginPass(0);
 
-			m_RenderTarget->Draw();
+		mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture());
+		mQuadFX->CommitChanges();
+
+		m_RenderTarget->DrawUntextured();
+
+			//m_RenderTarget->Draw();
 
 			//mViewNormal->Draw();
 			//mViewPos->Draw();
-			mSSAOTarget->Draw();
+			//mSSAOTarget->Draw();
+
+		mQuadFX->EndPass();
+		mQuadFX->End();
 
 		m_Font->Draw();	
 
@@ -752,6 +778,8 @@ void Game::Unload()
 
 	if(mSSAOFX != NULL) mSSAOFX->Release();
 	if(mSSAOTarget != NULL) mSSAOTarget->Release();
+
+	mQuadFX->Release();
 
 	//mBlurFX->Release();
 	//mBlurTarget->Release();
