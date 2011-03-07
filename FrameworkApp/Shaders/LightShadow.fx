@@ -172,7 +172,7 @@ float4 LightShadowPS(float3 posW    : TEXCOORD0,
 	// Light/Texture pixel.  Note that shadow coefficient only affects diffuse/spec.
 	float3 litColor = spot*ambient*texColor.rgb + spot*shadowCoeff*(diffuse*texColor.rgb + spec);
 	
-	return texColor;
+	//return texColor;
 	
 	return float4(litColor, gMtrl.diffuse.a*texColor.a);
 }
