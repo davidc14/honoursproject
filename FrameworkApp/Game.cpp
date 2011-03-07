@@ -661,16 +661,13 @@ void Game::Draw()
 		mQuadFX->Begin(&passNo, 0);
 		mQuadFX->BeginPass(0);
 
+		/*mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture());
+		mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture());
+		mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture());*/
 		mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture());
 		mQuadFX->CommitChanges();
 
 		m_RenderTarget->DrawUntextured();
-
-			//m_RenderTarget->Draw();
-
-			//mViewNormal->Draw();
-			//mViewPos->Draw();
-			//mSSAOTarget->Draw();
 
 		mQuadFX->EndPass();
 		mQuadFX->End();
