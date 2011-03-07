@@ -565,7 +565,7 @@ void Game::Draw()
 	mSSAOFX->SetBool(mhUseAO, mUseAO);
 	mSSAOFX->SetBool(mhUseLighting, false);
 	mSSAOFX->SetFloat(mhSampleRadius, 19.80624f);
-	//mSSAOFX->SetFloat(mhSampleRadius, 0.0f);
+	//mSSAOFX->SetFloat(mhSampleRadius, 1.0f);
 	mSSAOFX->SetFloat(mhJitter, 1.0f);
 	mSSAOFX->SetFloat(mhIntensity, 2.0f);
 	mSSAOFX->SetFloat(mhScale, 23.0f);
@@ -631,7 +631,9 @@ void Game::Draw()
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	
+	pDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP );
+	pDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP );
+
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
 
 	//ssaoFX->SetTechnique(mhSSAOTech);

@@ -24,42 +24,52 @@ sampler g_buffer = sampler_state
 {
 	Texture = <normalBuffer>;
 	
-	/*magfilter = POINT; 
-	minfilter = POINT; 
-	mipfilter = POINT;*/
+	AddressU = CLAMP;
+	AddressV = CLAMP;
+	
+	magfilter = NONE; 
+	minfilter = NONE; 
+	mipfilter = NONE;
 };
 
 sampler g_buffer_pos = sampler_state
 {
 	Texture = <positionBuffer>;
+	AddressU = CLAMP;
+	AddressV = CLAMP;
 	
-	/*magfilter = POINT; 
-	minfilter = POINT; 
-	mipfilter = POINT;*/
+	magfilter = NONE; 
+	minfilter = NONE; 
+	mipfilter = NONE;
 };
 
 sampler g_random = sampler_state
 {
 	Texture = <randomBuffer>;
+	AddressU = CLAMP;
+	AddressV = CLAMP;
 	
-	/*magfilter = POINT; 
-	minfilter = POINT; 
-	mipfilter = POINT;*/
+	magfilter = NONE; 
+	minfilter = NONE; 
+	mipfilter = NONE;
 };
 
 sampler g_scene = sampler_state
 {
 	Texture = <sceneBuffer>;
+	AddressU = CLAMP;
+	AddressV = CLAMP;
 	
-	/*magfilter = POINT; 
-	minfilter = POINT; 
-	mipfilter = POINT;*/
+	magfilter = NONE; 
+	minfilter = NONE; 
+	mipfilter = NONE;
 };
 
 
 struct VS_INPUT
 {
   float4 position        : POSITION0;
+  float2 uv				 : TEXCOORD0;
 };
 
 struct PS_INPUT
@@ -137,7 +147,7 @@ PS_OUTPUT AOPShader(PS_INPUT i)
   float dx0 = incx;
   float dy0 = incy;
   float ang = 0.0;
-  float iterations = 32.0;
+  float iterations = 24.0;
   for (int j = 0; j < iterations; ++j)
   {
     float dzx =  (dx0 + r.x * g_jitter)/d;
