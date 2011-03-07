@@ -266,8 +266,18 @@ bool Game::LoadContent()
 
 D3DXVECTOR3 KeyboardDwarfVelocity(0.0f, 0.0f, 0.0f);
 const float camSpeed = 0.1f;
+bool pKeyState = false;
+bool oKeyState = false;
+bool newPKeyState = false;
+bool newOKeyState = false;
 void Game::HandleInput()
 {
+	pKeyState = newPKeyState;
+	oKeyState = newOKeyState;	
+
+	newPKeyState = m_DInput->GetKeyState(DIK_P);
+	newOKeyState = m_DInput->GetKeyState(DIK_O);
+
 	//Update direct input
 	m_DInput->Update();
 
@@ -281,35 +291,25 @@ void Game::HandleInput()
 
 	//Check the key presses
 	//W
-	if(m_DInput->GetKeyState(1))
-	{
+	if(m_DInput->GetKeyState(DIK_W))
 		m_Camera->Move(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
-	}
 	
 	//S
-	if(m_DInput->GetKeyState(2))
-	{
+	if(m_DInput->GetKeyState(DIK_S))
 		m_Camera->Move(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);
-	}
 
 	//A
-	if(m_DInput->GetKeyState(3))
-	{
+	if(m_DInput->GetKeyState(DIK_A))
 		m_Camera->Strafe(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
-	}
 
 	//D
-	if(m_DInput->GetKeyState(4))
-	{
+	if(m_DInput->GetKeyState(DIK_D))
 		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);	
-	}
 
-	
-
-	if(GetAsyncKeyState('P'))
+	if(newPKeyState && !pKeyState)
 		mUseColour = !mUseColour;
-	if(GetAsyncKeyState('O'))
-		mUseAO = !mUseAO;
+	if(newOKeyState && !oKeyState)
+		mUseAO = !mUseAO;	
 }
 
 void Game::Update()
