@@ -13,7 +13,7 @@ typedef struct SSAOContainer
 	//Three booleans for the AO shader
 	bool mUseAO, mUseColour, mUseLighting;
 	//Floats for the various components
-	float mJitter, mIntensity, mScale, mFarClip, mNearClip;
+	float mSampleRadius, mJitter, mIntensity, mScale, mFarClip, mNearClip;
 	//The vectors
 	D3DXVECTOR2 mScreenSize, mInverseScreenSize;
 
@@ -33,6 +33,13 @@ public: //Public functions
 	void UpdateHandles(SSAOContainer* input);
 	//Release the shader and handles
 	void Release();
+	
+	//Get the effect
+	ID3DXEffect* GetEffect() { return mSSAOFX; }
+
+	void SetTechnique();
+	void Begin();
+	void End();
 
 private://Private functions
 

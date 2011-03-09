@@ -552,42 +552,49 @@ void Game::Draw()
 	mSSAOTarget->BeginScene();
 
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
-	UINT ssaoPasses = 1;
+	/*UINT ssaoPasses = 1;
 
 	mSSAOFX->SetTechnique(mhSSAOTech);	
 
 	mSSAOFX->Begin(&ssaoPasses, 0);
-	mSSAOFX->BeginPass(0);
+	mSSAOFX->BeginPass(0);*/
 
-	mSSAOFX->SetTexture(mhNormalBuffer, mViewNormal->getRenderTexture());
-	mSSAOFX->SetTexture(mhPositionBuffer, mViewPos->getRenderTexture());
-	mSSAOFX->SetTexture(mhRandomBuffer, mRandomTexture);
-	D3DXMATRIX matProjInv; 
-	D3DXMatrixInverse(&matProjInv, 0, m_RenderTarget->getProjectionPointer());
-	mSSAOFX->SetMatrix(mhProjectionInverse, &matProjInv);
-	mSSAOFX->SetBool(mhUseAO, mUseAO);
-	mSSAOFX->SetBool(mhUseLighting, false);
-	mSSAOFX->SetFloat(mhSampleRadius, 19.80624f);
-	//mSSAOFX->SetFloat(mhSampleRadius, 1.0f);
-	mSSAOFX->SetFloat(mhJitter, 1.0f);
-	mSSAOFX->SetFloat(mhIntensity, 2.0f);
-	mSSAOFX->SetFloat(mhScale, 23.0f);
-	mSSAOFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
-	mSSAOFX->SetFloat(mhNearClip, 1.0f);
-	mSSAOFX->SetBool(mhUseColour, mUseColour);
-	D3DXVECTOR2 vScreenSize, vInvScreenSize;
-	vScreenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
-	vInvScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);
-	mSSAOFX->SetValue(mhScreenSize, &vScreenSize, sizeof(D3DXVECTOR2));
-	mSSAOFX->SetValue(mhInvScreenSize, &vInvScreenSize, sizeof(D3DXVECTOR2));
-	mSSAOFX->SetTexture(mhSceneTex, m_RenderTarget->getRenderTexture());
+	mSSAOInterface->SetTechnique();
+	mSSAOInterface->Begin();
 
-	mSSAOFX->CommitChanges();
+	//mSSAOFX->SetTexture(mhNormalBuffer, mViewNormal->getRenderTexture());
+	//mSSAOFX->SetTexture(mhPositionBuffer, mViewPos->getRenderTexture());
+	//mSSAOFX->SetTexture(mhRandomBuffer, mRandomTexture);
+	//D3DXMATRIX matProjInv; 
+	//D3DXMatrixInverse(&matProjInv, 0, m_RenderTarget->getProjectionPointer());
+	//mSSAOFX->SetMatrix(mhProjectionInverse, &matProjInv);
+	//mSSAOFX->SetBool(mhUseAO, mUseAO);
+	//mSSAOFX->SetBool(mhUseLighting, false);
+	//mSSAOFX->SetFloat(mhSampleRadius, 19.80624f);
+	////mSSAOFX->SetFloat(mhSampleRadius, 1.0f);
+	//mSSAOFX->SetFloat(mhJitter, 1.0f);
+	//mSSAOFX->SetFloat(mhIntensity, 2.0f);
+	//mSSAOFX->SetFloat(mhScale, 23.0f);
+	//mSSAOFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
+	//mSSAOFX->SetFloat(mhNearClip, 1.0f);
+	//mSSAOFX->SetBool(mhUseColour, mUseColour);
+	//D3DXVECTOR2 vScreenSize, vInvScreenSize;
+	//vScreenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
+	//vInvScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);
+	//mSSAOFX->SetValue(mhScreenSize, &vScreenSize, sizeof(D3DXVECTOR2));
+	//mSSAOFX->SetValue(mhInvScreenSize, &vInvScreenSize, sizeof(D3DXVECTOR2));
+	//mSSAOFX->SetTexture(mhSceneTex, m_RenderTarget->getRenderTexture());
+
+	//mSSAOFX->CommitChanges();
+
+	SetSSAOHandles();
 
 	mSSAOTarget->DrawUntextured();
 
-	mSSAOFX->EndPass();
-	mSSAOFX->End();
+	/*mSSAOFX->EndPass();
+	mSSAOFX->End();*/
+
+	mSSAOInterface->End();
 
 	mSSAOTarget->EndScene();
 
@@ -673,7 +680,26 @@ void Game::Draw()
 
 void Game::SetSSAOHandles()
 {
-	
+	mSSAOContainer.mColourBuffer = m_RenderTarget->getRenderTexture();
+	mSSAOContainer.mFarClip = m_Camera->GetFarPlane();
+	mSSAOContainer.mIntensity = 2.0f;
+	mSSAOContainer.mInverseScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);
+	mSSAOContainer.mJitter = 1.0f;
+	mSSAOContainer.mNearClip = 1.0f;
+	mSSAOContainer.mNormalBuffer = mViewNormal->getRenderTexture();
+	mSSAOContainer.mPositionBuffer = mViewPos->getRenderTexture();
+	D3DXMATRIX matProjInv; 
+	D3DXMatrixInverse(&matProjInv, 0, m_RenderTarget->getProjectionPointer());
+	mSSAOContainer.mProjectionInverse = matProjInv;
+	mSSAOContainer.mRandomBuffer = mRandomTexture;
+	mSSAOContainer.mScale = 23.0f;
+	mSSAOContainer.mScreenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
+	mSSAOContainer.mUseAO = mUseAO;
+	mSSAOContainer.mUseColour = mUseColour;
+	mSSAOContainer.mUseLighting = false;
+	mSSAOContainer.mSampleRadius = 19.80624f;
+
+	mSSAOInterface->UpdateHandles(&mSSAOContainer);
 }
 
 float Game::ComputeGaussian(float n)
