@@ -10,6 +10,7 @@
 #include "Dwarf.h"
 #include "DirectInput.h"
 #include "FPCamera.h"
+#include "App Framework\Shader Interface\SSAO Interface\SSAOInterface.h"
 #include "App Framework\Shader Interface\PhongLightingInterface.h"
 #include "App Framework\Shader Interface\Animated\AnimatedInterface.h"
 #include "App Framework\Shader Interface\Non Animated\SpotLightingInterface.h"
@@ -19,8 +20,6 @@
 #include "App\Render Targets\DrawableTex2D.h"
 #include "App\Objects\Render Objects\Citadel.h"
 #include "d3dTexturedCube.h"
-
-//LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
 
 D3DXMATRIX matWorld, matView, matProj, matWorldInverseTranspose;
 D3DXVECTOR4 vViewVector;
@@ -98,8 +97,10 @@ D3DXHANDLE mhUseColour;
 DrawableRenderTarget* mSSAOTarget;
 bool mUseAO = true;
 bool mUseColour = true;
-
 IDirect3DTexture9* mRandomTexture;
+
+SSAOInterface* mSSAOInterface;
+SSAOContainer mSSAOContainer;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -235,6 +236,8 @@ bool Game::LoadContent()
 	mhWorldView = mViewFX->GetParameterByName(0, "WorldView");
 	mhFinalXForms = mViewFX->GetParameterByName(0, "FinalXForms");
 
+	mSSAOInterface = new SSAOInterface(pDevice);
+	
 	m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/SSAO.fx", 0, 0, D3DXSHADER_DEBUG,0, &mSSAOFX, &m_Error);
 	if(m_Error)
@@ -668,6 +671,11 @@ void Game::Draw()
     pDevice->Present( NULL, NULL, NULL, NULL );
 }
 
+void Game::SetSSAOHandles()
+{
+	
+}
+
 float Game::ComputeGaussian(float n)
 {
     float theta = 4.0f;
@@ -811,16 +819,16 @@ void Game::SetShaderVariables()
 
 void Game::SetPhongShaderVariables(D3DXMATRIX World)
 {
-	//Update the view and projection matrices in the container
-	m_PhongContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
-	m_PhongContainer.m_EyePosW = *m_Camera->getPosition();
-	m_PhongContainer.m_Light = mLight;
-	//m_PhongContainer.m_LightWVP = World * m_LightViewProj;
-	//m_PhongContainer.m_ShadowMap = m_ShadowTarget->getRenderTexture();	
-	//m_PhongContainer.m_ShadowMap = m_WhiteTexture;	
-	
-	//Pass it in the lighting interface
-	m_PhongInterface->UpdateHandles(&m_PhongContainer);
+	////Update the view and projection matrices in the container
+	//m_PhongContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
+	//m_PhongContainer.m_EyePosW = *m_Camera->getPosition();
+	//m_PhongContainer.m_Light = mLight;
+	////m_PhongContainer.m_LightWVP = World * m_LightViewProj;
+	////m_PhongContainer.m_ShadowMap = m_ShadowTarget->getRenderTexture();	
+	////m_PhongContainer.m_ShadowMap = m_WhiteTexture;	
+	//
+	////Pass it in the lighting interface
+	//m_PhongInterface->UpdateHandles(&m_PhongContainer);
 }
 
 void Game::SetAnimatedInterfaceVariables(D3DXMATRIX World)

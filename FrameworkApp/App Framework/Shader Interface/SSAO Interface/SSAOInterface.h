@@ -6,7 +6,17 @@
 
 typedef struct SSAOContainer
 {
-	
+	//The textures for the AO shader
+	LPDIRECT3DTEXTURE9 mNormalBuffer, mPositionBuffer, mRandomBuffer, mColourBuffer;
+	//The matrices for the AO shader
+	D3DXMATRIX mProjectionInverse;
+	//Three booleans for the AO shader
+	bool mUseAO, mUseColour, mUseLighting;
+	//Floats for the various components
+	float mJitter, mIntensity, mScale, mFarClip, mNearClip;
+	//The vectors
+	D3DXVECTOR2 mScreenSize, mInverseScreenSize;
+
 }SSAOContainer;
 
 class SSAOInterface
@@ -31,6 +41,9 @@ public://Public members
 
 	
 private://Private members
+	
+	//The device
+	IDirect3DDevice9* pDevice;
 	
 	//The effect
 	ID3DXEffect* mSSAOFX;
@@ -67,13 +80,6 @@ private://Private members
 	//The scene texture for merging
 	D3DXHANDLE mhSceneTex;
 	
-	//Three booleans for the handles above
-	bool mUseAO;
-	bool mUseColour;
-	bool mUseLighting;
-
-	//The device
-	IDirect3DDevice9* pDevice;
 };
 
 #endif
