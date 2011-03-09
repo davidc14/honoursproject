@@ -17,6 +17,12 @@ typedef struct SSAOContainer
 	//The vectors
 	D3DXVECTOR2 mScreenSize, mInverseScreenSize;
 
+	SSAOContainer()
+	{
+		mUseAO = mUseColour = true;
+		mUseLighting = false;
+	}
+
 }SSAOContainer;
 
 class SSAOInterface
