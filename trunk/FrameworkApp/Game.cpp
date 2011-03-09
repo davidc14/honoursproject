@@ -76,29 +76,8 @@ DrawableRenderTarget* mViewNormal;
 
 D3DTexturedCube* mCube;
 
-ID3DXEffect* mSSAOFX;
-D3DXHANDLE mhSSAOTech;
-D3DXHANDLE mhNormalBuffer;
-D3DXHANDLE mhPositionBuffer;
-D3DXHANDLE mhRandomBuffer;
-D3DXHANDLE mhProjectionInverse;
-D3DXHANDLE mhUseAO;
-D3DXHANDLE mhUseLighting;
-D3DXHANDLE mhSampleRadius;
-D3DXHANDLE mhJitter;
-D3DXHANDLE mhIntensity;
-D3DXHANDLE mhScale;
-D3DXHANDLE mhFarClip;
-D3DXHANDLE mhNearClip;
-D3DXHANDLE mhScreenSize;
-D3DXHANDLE mhInvScreenSize;
-D3DXHANDLE mhSceneTex;
-D3DXHANDLE mhUseColour;
 DrawableRenderTarget* mSSAOTarget;
-bool mUseAO = true;
-bool mUseColour = true;
 IDirect3DTexture9* mRandomTexture;
-
 SSAOInterface* mSSAOInterface;
 SSAOContainer mSSAOContainer;
 
@@ -237,32 +216,6 @@ bool Game::LoadContent()
 	mhFinalXForms = mViewFX->GetParameterByName(0, "FinalXForms");
 
 	mSSAOInterface = new SSAOInterface(pDevice);
-	
-	m_Error = 0;
-	D3DXCreateEffectFromFile(pDevice, "Shaders/SSAO.fx", 0, 0, D3DXSHADER_DEBUG,0, &mSSAOFX, &m_Error);
-	if(m_Error)
-	{
-		//Display the error in a message bos
-		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
-	}
-
-	mhSSAOTech = mSSAOFX->GetTechniqueByName("SSAO");
-	mhNormalBuffer = mSSAOFX->GetParameterByName(0, "normalBuffer");
-	mhPositionBuffer = mSSAOFX->GetParameterByName(0, "positionBuffer");
-	mhRandomBuffer = mSSAOFX->GetParameterByName(0, "randomBuffer");
-	mhProjectionInverse = mSSAOFX->GetParameterByName(0, "g_screen_to_camera");
-	mhUseAO = mSSAOFX->GetParameterByName(0, "g_use_ambient_occlusion");
-	mhUseLighting = mSSAOFX->GetParameterByName(0, "g_use_lighting");
-	mhSampleRadius = mSSAOFX->GetParameterByName(0, "g_sample_rad");
-	mhJitter = mSSAOFX->GetParameterByName(0, "g_jitter");
-	mhIntensity = mSSAOFX->GetParameterByName(0, "g_intensity");
-	mhScale = mSSAOFX->GetParameterByName(0, "g_scale");
-	mhFarClip = mSSAOFX->GetParameterByName(0, "g_far_clip");
-	mhNearClip = mSSAOFX->GetParameterByName(0, "g_near_clip");
-	mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
-	mhInvScreenSize = mSSAOFX->GetParameterByName(0, "g_inv_screen_size");
-	mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneBuffer");
-	mhUseColour = mSSAOFX->GetParameterByName(0, "useColour");
 
 	return true;
 }
@@ -310,9 +263,9 @@ void Game::HandleInput()
 		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);	
 
 	if(newPKeyState && !pKeyState)
-		mUseColour = !mUseColour;
+		mSSAOContainer.mUseColour = !mSSAOContainer.mUseColour;
 	if(newOKeyState && !oKeyState)
-		mUseAO = !mUseAO;	
+		mSSAOContainer.mUseAO = !mSSAOContainer.mUseAO;	
 }
 
 void Game::Update()
@@ -549,50 +502,17 @@ void Game::Draw()
 		
 	mViewPos->EndScene();
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	mSSAOTarget->BeginScene();
 
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
-	/*UINT ssaoPasses = 1;
-
-	mSSAOFX->SetTechnique(mhSSAOTech);	
-
-	mSSAOFX->Begin(&ssaoPasses, 0);
-	mSSAOFX->BeginPass(0);*/
-
 	mSSAOInterface->SetTechnique();
 	mSSAOInterface->Begin();
 
-	//mSSAOFX->SetTexture(mhNormalBuffer, mViewNormal->getRenderTexture());
-	//mSSAOFX->SetTexture(mhPositionBuffer, mViewPos->getRenderTexture());
-	//mSSAOFX->SetTexture(mhRandomBuffer, mRandomTexture);
-	//D3DXMATRIX matProjInv; 
-	//D3DXMatrixInverse(&matProjInv, 0, m_RenderTarget->getProjectionPointer());
-	//mSSAOFX->SetMatrix(mhProjectionInverse, &matProjInv);
-	//mSSAOFX->SetBool(mhUseAO, mUseAO);
-	//mSSAOFX->SetBool(mhUseLighting, false);
-	//mSSAOFX->SetFloat(mhSampleRadius, 19.80624f);
-	////mSSAOFX->SetFloat(mhSampleRadius, 1.0f);
-	//mSSAOFX->SetFloat(mhJitter, 1.0f);
-	//mSSAOFX->SetFloat(mhIntensity, 2.0f);
-	//mSSAOFX->SetFloat(mhScale, 23.0f);
-	//mSSAOFX->SetFloat(mhFarClip, m_Camera->GetFarPlane());
-	//mSSAOFX->SetFloat(mhNearClip, 1.0f);
-	//mSSAOFX->SetBool(mhUseColour, mUseColour);
-	//D3DXVECTOR2 vScreenSize, vInvScreenSize;
-	//vScreenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
-	//vInvScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);
-	//mSSAOFX->SetValue(mhScreenSize, &vScreenSize, sizeof(D3DXVECTOR2));
-	//mSSAOFX->SetValue(mhInvScreenSize, &vInvScreenSize, sizeof(D3DXVECTOR2));
-	//mSSAOFX->SetTexture(mhSceneTex, m_RenderTarget->getRenderTexture());
+		SetSSAOHandles();
 
-	//mSSAOFX->CommitChanges();
-
-	SetSSAOHandles();
-
-	mSSAOTarget->DrawUntextured();
-
-	/*mSSAOFX->EndPass();
-	mSSAOFX->End();*/
+		mSSAOTarget->DrawUntextured();
 
 	mSSAOInterface->End();
 
@@ -657,13 +577,13 @@ void Game::Draw()
 		mQuadFX->Begin(&passNo, 0);
 		mQuadFX->BeginPass(0);
 
-		/*mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture());
-		mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture());
-		mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture());*/
+		//mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture());
+		//mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture());
+		//mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture());
 		mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture());
 		mQuadFX->CommitChanges();
 
-		m_RenderTarget->DrawUntextured();
+			m_RenderTarget->DrawUntextured();
 
 		mQuadFX->EndPass();
 		mQuadFX->End();
@@ -694,8 +614,8 @@ void Game::SetSSAOHandles()
 	mSSAOContainer.mRandomBuffer = mRandomTexture;
 	mSSAOContainer.mScale = 23.0f;
 	mSSAOContainer.mScreenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
-	mSSAOContainer.mUseAO = mUseAO;
-	mSSAOContainer.mUseColour = mUseColour;
+	//mSSAOContainer.mUseAO = mUseAO;
+	//mSSAOContainer.mUseColour = mUseColour;
 	mSSAOContainer.mUseLighting = false;
 	mSSAOContainer.mSampleRadius = 19.80624f;
 
@@ -793,7 +713,7 @@ void Game::Unload()
 
 	mViewNormal->Release();
 
-	if(mSSAOFX != NULL) mSSAOFX->Release();
+	mSSAOInterface->Release();
 	if(mSSAOTarget != NULL) mSSAOTarget->Release();
 
 	mQuadFX->Release();

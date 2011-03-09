@@ -85,3 +85,8 @@ void SSAOInterface::UpdateHandles(SSAOContainer *input)
 
 	mSSAOFX->CommitChanges();
 }
+
+void SSAOInterface::Release()
+{
+	if(mSSAOFX != NULL) mSSAOFX->Release();
+}
