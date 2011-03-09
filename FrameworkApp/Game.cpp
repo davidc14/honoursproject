@@ -53,23 +53,12 @@ Mtrl     mWhiteMtrl;
 
 DrawableRenderTarget* m_RenderTarget;
 DrawableRenderTarget* mShadowTarget;
-//DrawableTex2D* mShadowMap;
 
 IDirect3DTexture9* m_WhiteTexture;
 IDirect3DTexture9* m_SampleTexture;
  
 SpotLight mSpotLight;
 D3DXMATRIXA16 m_LightViewProj;
-
-//ID3DXEffect* mDepthFX;
-//D3DXHANDLE mhDepthTechAni;
-//D3DXHANDLE mhDepthTech;
-//D3DXHANDLE mhFinalXFormsD;
-//D3DXHANDLE mhWVPD;
-//D3DXHANDLE mhWorldViewIT;
-//D3DXHANDLE mhWorldViewD;
-//D3DXHANDLE mhFarClip;
-//DrawableRenderTarget* mDepthTarget;
 
 ID3DXEffect* mQuadFX;
 D3DXHANDLE mQuadTech;
@@ -244,9 +233,6 @@ bool Game::LoadContent()
 	mhNormalTechAni = mViewFX->GetTechniqueByName("DrawNormalAni");;
 	mhWVP = mViewFX->GetParameterByName(0, "WorldViewProjection");
 	mhWorldView = mViewFX->GetParameterByName(0, "WorldView");
-	//mhITViewProj = mViewFX->GetParameterByName(0, "ITViewProj");
-	//mhView = mViewFX->GetParameterByName(0, "View");
-	//mhProjection = mViewFX->GetParameterByName(0, "Projection");
 	mhFinalXForms = mViewFX->GetParameterByName(0, "FinalXForms");
 
 	m_Error = 0;
