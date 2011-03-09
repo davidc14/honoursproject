@@ -50,6 +50,7 @@ public:
 	void SetShaderVariables();
 	void SetPhongShaderVariables(D3DXMATRIX World);
 	void SetAnimatedInterfaceVariables(D3DXMATRIX World);
+	void SetSSAOHandles();
 
 	void setDeltaTime(float DeltaTime) { m_DeltaTime = DeltaTime; }
 	float getDeltaTime() { return m_DeltaTime; }

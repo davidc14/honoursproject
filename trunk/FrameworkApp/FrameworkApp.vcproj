@@ -248,6 +248,14 @@
 				<Filter
 					Name="SSAO Interface"
 					>
+					<File
+						RelativePath=".\App Framework\Shader Interface\SSAO Interface\SSAOInterface.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\App Framework\Shader Interface\SSAO Interface\SSAOInterface.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -601,14 +609,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\SSAOInterface.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\SSAOInterface.h"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
