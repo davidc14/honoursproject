@@ -45,3 +45,43 @@ void SSAOInterface::SetupHandles()
 	mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneBuffer");
 	mhUseColour = mSSAOFX->GetParameterByName(0, "useColour");
 }
+
+void SSAOInterface::SetTechnique()
+{
+	mSSAOFX->SetTechnique(mhSSAOTech);	
+}
+
+void SSAOInterface::Begin()
+{
+	UINT ssaoPasses = 1;
+	mSSAOFX->Begin(&ssaoPasses, 0);
+	mSSAOFX->BeginPass(0);
+}
+
+void SSAOInterface::End()
+{
+	mSSAOFX->EndPass();
+	mSSAOFX->End();
+}
+
+void SSAOInterface::UpdateHandles(SSAOContainer *input)
+{
+	mSSAOFX->SetTexture(mhNormalBuffer, input->mNormalBuffer);
+	mSSAOFX->SetTexture(mhPositionBuffer, input->mPositionBuffer);
+	mSSAOFX->SetTexture(mhRandomBuffer, input->mRandomBuffer);
+	mSSAOFX->SetMatrix(mhProjectionInverse, &(input->mProjectionInverse));
+	mSSAOFX->SetBool(mhUseAO, input->mUseAO);
+	mSSAOFX->SetBool(mhUseLighting, input->mUseLighting);
+	mSSAOFX->SetFloat(mhSampleRadius, input->mSampleRadius);
+	mSSAOFX->SetFloat(mhJitter, input->mJitter);
+	mSSAOFX->SetFloat(mhIntensity, input->mIntensity);
+	mSSAOFX->SetFloat(mhScale, input->mScale);
+	mSSAOFX->SetFloat(mhFarClip, input->mFarClip);
+	mSSAOFX->SetFloat(mhNearClip, input->mNearClip);
+	mSSAOFX->SetBool(mhUseColour, input->mUseColour);
+	mSSAOFX->SetValue(mhScreenSize, &(input->mScreenSize), sizeof(D3DXVECTOR2));
+	mSSAOFX->SetValue(mhInvScreenSize, &(input->mInverseScreenSize), sizeof(D3DXVECTOR2));
+	mSSAOFX->SetTexture(mhSceneTex, input->mColourBuffer);
+
+	mSSAOFX->CommitChanges();
+}
