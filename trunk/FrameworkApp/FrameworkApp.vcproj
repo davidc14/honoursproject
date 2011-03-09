@@ -245,6 +245,10 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="SSAO Interface"
+					>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Maths"
@@ -597,6 +601,14 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\SSAOInterface.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\SSAOInterface.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
