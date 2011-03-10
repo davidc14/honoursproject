@@ -24,8 +24,8 @@ sampler g_buffer = sampler_state
 {
 	Texture = <normalBuffer>;
 	
-	AddressU = CLAMP;
-	AddressV = CLAMP;
+	AddressU = WRAP;
+	AddressV = WRAP;
 	
 	magfilter = NONE; 
 	minfilter = NONE; 
@@ -35,8 +35,8 @@ sampler g_buffer = sampler_state
 sampler g_buffer_pos = sampler_state
 {
 	Texture = <positionBuffer>;
-	AddressU = CLAMP;
-	AddressV = CLAMP;
+	AddressU = WRAP;
+	AddressV = WRAP;
 	
 	magfilter = NONE; 
 	minfilter = NONE; 
@@ -46,8 +46,9 @@ sampler g_buffer_pos = sampler_state
 sampler g_random = sampler_state
 {
 	Texture = <randomBuffer>;
-	AddressU = CLAMP;
-	AddressV = CLAMP;
+	AddressU  = WRAP;
+    AddressV  = WRAP;
+    AddressW  = WRAP;
 	
 	magfilter = NONE; 
 	minfilter = NONE; 
@@ -111,8 +112,8 @@ float doAmbientOcclusion(in float2 tcoord,in float2 uv, in float3 p, in float3 c
   const float  d = length(diff)*0.1;
 
   return
-    (1.0-saturate(dot(n, -v)-0.05)) *
-    saturate(dot(cnorm, v)-0.05) *
+    (1.0-saturate(dot(n, -v)-0.325)) *
+    saturate(dot(cnorm, v)-0.325) *
     (1.0f - 1.0f / sqrt(0.2f / (d * d * g_scale) + 1.0f));
 }
 
@@ -147,7 +148,7 @@ PS_OUTPUT AOPShader(PS_INPUT i)
   float dx0 = incx;
   float dy0 = incy;
   float ang = 0.0;
-  float iterations = 24.0;
+  float iterations = 8.0;
   for (int j = 0; j < iterations; ++j)
   {
     float dzx =  (dx0 + r.x * g_jitter)/d;
