@@ -219,7 +219,7 @@ float4 VBlend2PS(float3 normalW : TEXCOORD0, float3 toEyeW  : TEXCOORD1, float2 
                               lerps.y );
 	
 	// Light/Texture pixel.  Note that shadow coefficient only affects diffuse/spec.
-	float3 litColor = spot*ambient*texColor.rgb + spot*shadowCoeff*(diffuse*texColor.rgb + spec);
+	float3 litColor = spot*ambient*texColor.rgb + spot*shadowCoeff*(diffuse*texColor.rgb);// + spec);
 	//float3 litColor = ambient*texColor.rgb + shadowCoeff*(diffuse*texColor.rgb + spec);
 		
 	// Sum all the terms together and copy over the diffuse alpha.
