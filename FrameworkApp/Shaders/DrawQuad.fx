@@ -12,8 +12,9 @@ sampler TexS = sampler_state
 	MinFilter = LINEAR;
 	MagFilter = LINEAR;
 	MipFilter = LINEAR;
-	AddressU  = CLAMP;
-    AddressV  = CLAMP;
+	AddressU  = WRAP;
+    AddressV  = WRAP;
+    AddressW  = WRAP;
 };
  
 struct OutputVS
