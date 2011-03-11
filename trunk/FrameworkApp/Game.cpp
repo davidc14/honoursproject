@@ -37,6 +37,7 @@ SpotLighting m_SpotContainer;
 
 Citadel* m_Citadel;
 
+
 DirectInput* m_DInput;
 
 FPCamera* m_Camera;
@@ -80,6 +81,8 @@ DrawableRenderTarget* mSSAOTarget;
 IDirect3DTexture9* mRandomTexture;
 SSAOInterface* mSSAOInterface;
 SSAOContainer mSSAOContainer;
+
+XModel* mOcclusionBox;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -216,6 +219,10 @@ bool Game::LoadContent()
 	mhFinalXForms = mViewFX->GetParameterByName(0, "FinalXForms");
 
 	mSSAOInterface = new SSAOInterface(pDevice);
+
+	mOcclusionBox = new XModel(pDevice);
+	if(!mOcclusionBox->SetModel("Models/OcclusionBox", "OcclusionBox.x"))
+		::MessageBox(0, "Occlusion box model failed", "Error", 0);
 
 	return true;
 }
@@ -602,7 +609,7 @@ void Game::SetSSAOHandles()
 {
 	mSSAOContainer.mColourBuffer = m_RenderTarget->getRenderTexture();
 	mSSAOContainer.mFarClip = m_Camera->GetFarPlane();
-	mSSAOContainer.mIntensity = 2.0f;
+	mSSAOContainer.mIntensity = 3.0f;
 	mSSAOContainer.mInverseScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);
 	mSSAOContainer.mJitter = 1.0f;
 	mSSAOContainer.mNearClip = 1.0f;
@@ -617,7 +624,7 @@ void Game::SetSSAOHandles()
 	//mSSAOContainer.mUseAO = mUseAO;
 	//mSSAOContainer.mUseColour = mUseColour;
 	mSSAOContainer.mUseLighting = false;
-	mSSAOContainer.mSampleRadius = 19.80624f;
+	mSSAOContainer.mSampleRadius = 25.80624f;
 
 	mSSAOInterface->UpdateHandles(&mSSAOContainer);
 }
