@@ -372,7 +372,8 @@ void Game::Draw()
 		D3DXMatrixIdentity(&matWorld);
 		D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
 		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());
-		mCube->Render(pDevice, m_SpotInterface->GetEffect());
+		mOcclusionBox->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+		//mCube->Render(pDevice, m_SpotInterface->GetEffect());
 
 	m_SpotInterface->GetEffect()->EndPass();
 	m_SpotInterface->GetEffect()->End();
@@ -430,7 +431,8 @@ void Game::Draw()
 			worldView = matWorld * invView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
-			mCube->Render(pDevice, mViewFX);
+			mOcclusionBox->Draw(mViewFX, 0);
+			//mCube->Render(pDevice, mViewFX);
 
 		mViewFX->EndPass();
 		mViewFX->End();
@@ -485,7 +487,8 @@ void Game::Draw()
 			worldView = matWorld * invView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
-			mCube->Render(pDevice, mViewFX);
+			mOcclusionBox->Draw(mViewFX, 0);
+			//mCube->Render(pDevice, mViewFX);
 
 		mViewFX->EndPass();
 		mViewFX->End();
