@@ -221,7 +221,7 @@ bool Game::LoadContent()
 	mSSAOInterface = new SSAOInterface(pDevice);
 
 	mOcclusionBox = new XModel(pDevice);
-	if(!mOcclusionBox->SetModel("Models/OcclusionBox", "OcclusionBox.x"))
+	if(!mOcclusionBox->SetModel("Models/OcclusionBox", "headsad.x"))
 		::MessageBox(0, "Occlusion box model failed", "Error", 0);
 
 	return true;
@@ -369,14 +369,14 @@ void Game::Draw()
 		SetSpotLightVariables(m_Dwarf->GetWorld(), m_Dwarf->GetMaterial());
 		m_Dwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
-		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+		//pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
 		D3DXMatrixIdentity(&matWorld);
 		//D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
-		D3DXMatrixScaling(&matWorld, 100.0f, 100.0f, 100.0f);
+		D3DXMatrixScaling(&matWorld, 2.0f, 2.0f, 2.0f);
 		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());
 		mOcclusionBox->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 		//mCube->Render(pDevice, m_SpotInterface->GetEffect());
-		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		//pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 
 	m_SpotInterface->GetEffect()->EndPass();
 	m_SpotInterface->GetEffect()->End();
@@ -590,10 +590,10 @@ void Game::Draw()
 		mQuadFX->Begin(&passNo, 0);
 		mQuadFX->BeginPass(0);
 
-		//mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture());
+		mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture());
 		//mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture());
 		//mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture());
-		mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture());
+		//mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture());
 		mQuadFX->CommitChanges();
 
 			m_RenderTarget->DrawUntextured();
