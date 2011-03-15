@@ -370,8 +370,10 @@ void Game::Draw()
 		m_Dwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
 		D3DXMatrixIdentity(&matWorld);
-		//D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
-		D3DXMatrixScaling(&matWorld, 2.0f, 2.0f, 2.0f);
+		D3DXMATRIX matHeadTranslation, matHeadScale;
+		D3DXMatrixTranslation(&matHeadTranslation, 0.0f, 3.0f, -5.5f);
+		D3DXMatrixScaling(&matHeadScale, 2.0f, 2.0f, 2.0f);
+		matWorld = matHeadScale * matHeadTranslation;
 		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());
 		mOcclusionBox->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 		//mCube->Render(pDevice, m_SpotInterface->GetEffect());
