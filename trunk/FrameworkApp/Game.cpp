@@ -369,14 +369,12 @@ void Game::Draw()
 		SetSpotLightVariables(m_Dwarf->GetWorld(), m_Dwarf->GetMaterial());
 		m_Dwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
-		//pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
 		D3DXMatrixIdentity(&matWorld);
 		//D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
 		D3DXMatrixScaling(&matWorld, 2.0f, 2.0f, 2.0f);
 		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());
 		mOcclusionBox->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 		//mCube->Render(pDevice, m_SpotInterface->GetEffect());
-		//pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 
 	m_SpotInterface->GetEffect()->EndPass();
 	m_SpotInterface->GetEffect()->End();
@@ -428,13 +426,13 @@ void Game::Draw()
 
 			m_Dwarf->Draw(mViewFX, 0);
 
-			////D3DXMatrixIdentity(&matWorld);
-			////D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
-			//mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
-			//worldView = matWorld * invView;
-			//mViewFX->SetMatrix(mhWorldView, &(worldView));
-			//mViewFX->CommitChanges();
-			//mOcclusionBox->Draw(mViewFX, 0);
+			//D3DXMatrixIdentity(&matWorld);
+			//D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
+			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
+			worldView = matWorld * invView;
+			mViewFX->SetMatrix(mhWorldView, &(worldView));
+			mViewFX->CommitChanges();
+			mOcclusionBox->Draw(mViewFX, 0);
 			//mCube->Render(pDevice, mViewFX);
 
 		mViewFX->EndPass();
@@ -484,13 +482,13 @@ void Game::Draw()
 
 			m_Dwarf->Draw(mViewFX, 0);
 
-			////D3DXMatrixIdentity(&matWorld);
-			////D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
-			//mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
-			//worldView = matWorld * invView;
-			//mViewFX->SetMatrix(mhWorldView, &(worldView));
-			//mViewFX->CommitChanges();
-			//mOcclusionBox->Draw(mViewFX, 0);
+			//D3DXMatrixIdentity(&matWorld);
+			//D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
+			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
+			worldView = matWorld * invView;
+			mViewFX->SetMatrix(mhWorldView, &(worldView));
+			mViewFX->CommitChanges();
+			mOcclusionBox->Draw(mViewFX, 0);
 			//mCube->Render(pDevice, mViewFX);
 
 		mViewFX->EndPass();
@@ -590,10 +588,10 @@ void Game::Draw()
 		mQuadFX->Begin(&passNo, 0);
 		mQuadFX->BeginPass(0);
 
-		mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture());
+		//mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture());
 		//mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture());
 		//mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture());
-		//mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture());
+		mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture());
 		mQuadFX->CommitChanges();
 
 			m_RenderTarget->DrawUntextured();
