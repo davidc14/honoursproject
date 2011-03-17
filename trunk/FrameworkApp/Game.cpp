@@ -75,14 +75,14 @@ D3DXHANDLE mhFinalXForms;
 DrawableRenderTarget* mViewPos;
 DrawableRenderTarget* mViewNormal;
 
-D3DTexturedCube* mCube;
+//D3DTexturedCube* mCube;
 
 DrawableRenderTarget* mSSAOTarget;
 IDirect3DTexture9* mRandomTexture;
 SSAOInterface* mSSAOInterface;
 SSAOContainer mSSAOContainer;
 
-XModel* mOcclusionBox;
+XModel* mHeadSad;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -189,8 +189,8 @@ bool Game::LoadContent()
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.spotPower = 24.0f;
 
-	mCube = new D3DTexturedCube();
-	mCube->setBuffers(pDevice);
+	//mCube = new D3DTexturedCube();
+	//mCube->setBuffers(pDevice);
 
 	ID3DXBuffer *m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/DrawQuad.fx", 0, 0, D3DXSHADER_DEBUG,0, &mQuadFX, &m_Error);
@@ -220,8 +220,8 @@ bool Game::LoadContent()
 
 	mSSAOInterface = new SSAOInterface(pDevice);
 
-	mOcclusionBox = new XModel(pDevice);
-	if(!mOcclusionBox->SetModel("Models/OcclusionBox", "headsad.x"))
+	mHeadSad = new XModel(pDevice);
+	if(!mHeadSad->SetModel("Models/OcclusionBox", "headsad.x"))
 		::MessageBox(0, "Occlusion box model failed", "Error", 0);
 
 	return true;
@@ -375,7 +375,7 @@ void Game::Draw()
 		D3DXMatrixScaling(&matHeadScale, 2.0f, 2.0f, 2.0f);
 		matWorld = matHeadScale * matHeadTranslation;
 		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());
-		mOcclusionBox->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+		mHeadSad->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 		//mCube->Render(pDevice, m_SpotInterface->GetEffect());
 
 	m_SpotInterface->GetEffect()->EndPass();
@@ -434,7 +434,7 @@ void Game::Draw()
 			worldView = matWorld * invView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
-			mOcclusionBox->Draw(mViewFX, 0);
+			mHeadSad->Draw(mViewFX, 0);
 			//mCube->Render(pDevice, mViewFX);
 
 		mViewFX->EndPass();
@@ -490,7 +490,7 @@ void Game::Draw()
 			worldView = matWorld * invView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
-			mOcclusionBox->Draw(mViewFX, 0);
+			mHeadSad->Draw(mViewFX, 0);
 			//mCube->Render(pDevice, mViewFX);
 
 		mViewFX->EndPass();
@@ -631,6 +631,7 @@ void Game::SetSSAOHandles()
 	//mSSAOContainer.mUseColour = mUseColour;
 	mSSAOContainer.mUseLighting = false;
 	mSSAOContainer.mSampleRadius = 25.80624f;
+	mSSAOContainer.mSampleRadius = 100.0f;
 
 	mSSAOInterface->UpdateHandles(&mSSAOContainer);
 }

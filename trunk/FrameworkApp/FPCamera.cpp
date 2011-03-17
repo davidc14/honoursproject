@@ -3,7 +3,7 @@
 
 FPCamera::FPCamera()
 {
-	farPlane = 1000.0f;
+	mFarPlane = 1000.0f;
 	m_Pitch = m_Roll = m_Yaw = 0.0f;
 
 	m_WindowWidth = 800;
@@ -24,7 +24,7 @@ FPCamera::FPCamera()
 
 FPCamera::FPCamera(D3DXVECTOR3 position, D3DXVECTOR3 lookAt, D3DXVECTOR3 up, int WindowWidth, int WindowHeight)
 {
-	farPlane = 1000.0f;
+	mFarPlane = 1000.0f;
 	m_Pitch = m_Roll = m_Yaw = 0.0f;
 
 	m_WindowWidth = WindowWidth;
