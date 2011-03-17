@@ -65,6 +65,8 @@ ID3DXEffect* mQuadFX;
 D3DXHANDLE mQuadTech;
 D3DXHANDLE mQuadTexture;
 
+ViewSpaceInterface* mViewInterface;
+ViewSpaceContainer mViewContainer;
 ID3DXEffect* mViewFX;
 D3DXHANDLE mhPosTech;
 D3DXHANDLE mhPosTechAni;
@@ -209,6 +211,8 @@ bool Game::LoadContent()
 	}
 	mQuadTech = mQuadFX->GetTechniqueByName("QuadTech");
 	mQuadTexture = mQuadFX->GetParameterByName(0, "gTex");
+
+	mViewInterface = new ViewSpaceInterface(pDevice);
 
 	m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/WorldViewSpace.fx", 0, 0, D3DXSHADER_DEBUG,0, &mViewFX, &m_Error);
@@ -410,53 +414,30 @@ void Game::Draw()
 	mViewNormal->BeginScene();
 
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+
+	mViewInterface->SetTechnique(mViewInterface->Normals);
+
+	mViewInterface->Begin();
+
+	SetViewSpaceVariables(m_Citadel->GetWorld(), 0, 0);
+	m_Citadel->Draw(mViewInterface->GetEffect(), 0);
+
+	SetViewSpaceVariables(m_Dwarf->GetWorld(), 0, 0);
+	m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
+
+	SetViewSpaceVariables(matWorld, 0, 0);
+	mHeadSad->Draw(mViewInterface->GetEffect(), 0);
+
+	mViewInterface->End();
+
+	mViewInterface->SetTechnique(mViewInterface->NormalsAnimated);
+
+	mViewInterface->Begin();
 	
-	mViewFX->SetTechnique(mhNormalTech);
+	SetViewSpaceVariables(*m_SkinnedMesh->GetWorld(), m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+	m_SkinnedMesh->Draw();
 
-		UINT viewPasses = 1;
-		mViewFX->Begin(&viewPasses, 0);
-		mViewFX->BeginPass(0);
-
-			mViewFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			D3DXMATRIX worldView;
-			
-			worldView = m_Citadel->GetWorld() * matView;
-			mViewFX->SetMatrix(mhWorldView, &(worldView));
-			mViewFX->CommitChanges();
-
-			m_Citadel->Draw(mViewFX, 0);
-
-			mViewFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = m_Dwarf->GetWorld() * matView;
-			mViewFX->SetMatrix(mhWorldView, &(worldView));
-			mViewFX->CommitChanges();
-
-			m_Dwarf->Draw(mViewFX, 0);
-
-			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = matWorld * matView;
-			mViewFX->SetMatrix(mhWorldView, &(worldView));
-			mViewFX->CommitChanges();
-			mHeadSad->Draw(mViewFX, 0);
-
-		mViewFX->EndPass();
-		mViewFX->End();
-
-		mViewFX->SetTechnique(mhNormalTechAni);
-
-		mViewFX->Begin(&viewPasses, 0);
-		mViewFX->BeginPass(0);
-
-			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = *m_SkinnedMesh->GetWorld() * matView;
-			mViewFX->SetMatrix(mhWorldView, &(worldView));			
-			mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-			mViewFX->CommitChanges();
-
-			m_SkinnedMesh->Draw();
-
-		mViewFX->EndPass();
-		mViewFX->End();
+	mViewInterface->End();
 		
 	mViewNormal->EndScene();
 
@@ -464,49 +445,29 @@ void Game::Draw()
 
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 	
-	mViewFX->SetTechnique(mhPosTech);
+	mViewInterface->SetTechnique(mViewInterface->Position);
 
-		mViewFX->Begin(&viewPasses, 0);
-		mViewFX->BeginPass(0);
+	mViewInterface->Begin();
 
-			mViewFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = m_Citadel->GetWorld() * matView;
-			mViewFX->SetMatrix(mhWorldView, &(worldView));
-			mViewFX->CommitChanges();
+	SetViewSpaceVariables(m_Citadel->GetWorld(), 0, 0);
+	m_Citadel->Draw(mViewInterface->GetEffect(), 0);
 
-			m_Citadel->Draw(mViewFX, 0);
+	SetViewSpaceVariables(m_Dwarf->GetWorld(), 0, 0);
+	m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
 
-			mViewFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = m_Dwarf->GetWorld() * matView;
-			mViewFX->SetMatrix(mhWorldView, &(worldView));
-			mViewFX->CommitChanges();
+	SetViewSpaceVariables(matWorld, 0, 0);
+	mHeadSad->Draw(mViewInterface->GetEffect(), 0);
 
-			m_Dwarf->Draw(mViewFX, 0);
+	mViewInterface->End();
 
-			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = matWorld * matView;
-			mViewFX->SetMatrix(mhWorldView, &(worldView));
-			mViewFX->CommitChanges();
-			mHeadSad->Draw(mViewFX, 0);
+	mViewInterface->SetTechnique(mViewInterface->PositionAnimated);
 
-		mViewFX->EndPass();
-		mViewFX->End();
+	mViewInterface->Begin();
+	
+	SetViewSpaceVariables(*m_SkinnedMesh->GetWorld(), m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+	m_SkinnedMesh->Draw();
 
-		mViewFX->SetTechnique(mhPosTechAni);
-
-		mViewFX->Begin(&viewPasses, 0);
-		mViewFX->BeginPass(0);
-
-			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = *m_SkinnedMesh->GetWorld() * matView;
-			mViewFX->SetMatrix(mhWorldView, &(worldView));			
-			mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-			mViewFX->CommitChanges();
-
-			m_SkinnedMesh->Draw();
-
-		mViewFX->EndPass();
-		mViewFX->End();
+	mViewInterface->End();
 		
 	mViewPos->EndScene();
 
@@ -742,6 +703,22 @@ void Game::SetSpotLightVariables(D3DXMATRIX World, Mtrl* material)
 	m_SpotContainer.m_Material = *material;
 
 	m_SpotInterface->UpdateHandles(&m_SpotContainer);
+}
+
+void Game::SetViewSpaceVariables(D3DXMATRIX matWorld, const D3DXMATRIX* finalXForms, UINT numBones)
+{
+	mViewContainer.mWVP = matWorld * matView * *m_RenderTarget->getProjectionPointer();
+	mViewContainer.mWorldView = matWorld * matView;
+	mViewContainer.mNumOfBones = numBones;
+	if(finalXForms != 0)
+	{
+		mViewContainer.mFinalXForms = finalXForms;
+		mViewInterface->UpdateAnimatedHandles(&mViewContainer);
+	}
+	else
+	{
+		mViewInterface->UpdateHandles(&mViewContainer);
+	}
 }
 
 void Game::SetPacketVariables()
