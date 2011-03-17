@@ -6,6 +6,10 @@
 
 typedef struct ViewSpaceContainer
 {
+	D3DXMATRIX mWVP;
+	D3DXMATRIX mWorldView;
+	D3DXMATRIX* mFinalXForms;
+	UINT mNumOfBones;
 }ViewSpaceContainer;
 
 class ViewSpaceInterface
@@ -20,6 +24,7 @@ public:
 	bool SetupHandles();
 	//Update the handles
 	void UpdateHandles(ViewSpaceContainer* input);
+	void UpdateAnimatedHandles(ViewSpaceContainer* input);
 	//Release the shader and handles
 	void Release();
 	
@@ -29,6 +34,8 @@ public:
 	void SetTechnique();
 	void Begin();
 	void End();
+
+	enum Techniques { Normals, NormalsAnimated, Position, PositionAnimated } ;
 
 private:
 
