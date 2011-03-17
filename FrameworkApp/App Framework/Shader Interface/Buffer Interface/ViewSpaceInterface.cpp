@@ -86,3 +86,8 @@ void ViewSpaceInterface::End()
 	mViewFX->EndPass();
 	mViewFX->End();
 }
+
+void ViewSpaceInterface::Release()
+{
+	mViewFX->Release();
+}
