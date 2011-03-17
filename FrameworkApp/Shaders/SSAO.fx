@@ -172,8 +172,8 @@ PS_OUTPUT AOPShader(PS_INPUT i)
   if (g_use_ambient_occlusion)
     o.color.rgb -= saturate(ao*g_intensity);
   
-  if(useColour)  
-	o.color.rgb *= tex2D(g_scene, i.uv);
+  /*if(useColour)  
+	o.color.rgb *= tex2D(g_scene, i.uv);*/
  
   return o;
 }
