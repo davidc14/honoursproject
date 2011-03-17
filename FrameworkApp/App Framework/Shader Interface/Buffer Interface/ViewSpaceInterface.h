@@ -8,7 +8,7 @@ typedef struct ViewSpaceContainer
 {
 	D3DXMATRIX mWVP;
 	D3DXMATRIX mWorldView;
-	D3DXMATRIX* mFinalXForms;
+	const D3DXMATRIX* mFinalXForms;
 	UINT mNumOfBones;
 }ViewSpaceContainer;
 

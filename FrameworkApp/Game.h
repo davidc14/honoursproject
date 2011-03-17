@@ -51,6 +51,7 @@ public:
 	void SetPhongShaderVariables(D3DXMATRIX World);
 	void SetAnimatedInterfaceVariables(D3DXMATRIX World);
 	void SetSSAOHandles();
+	void SetViewSpaceVariables(D3DXMATRIX matWorld, const D3DXMATRIX* finalXForms, UINT numBones);
 
 	void setDeltaTime(float DeltaTime) { m_DeltaTime = DeltaTime; }
 	float getDeltaTime() { return m_DeltaTime; }

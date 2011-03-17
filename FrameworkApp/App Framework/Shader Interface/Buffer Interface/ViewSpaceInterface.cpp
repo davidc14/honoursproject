@@ -3,6 +3,9 @@
 ViewSpaceInterface::ViewSpaceInterface(IDirect3DDevice9* device)
 {
 	pDevice = device;
+
+	LoadShader();
+	SetupHandles();
 }
 
 ViewSpaceInterface::~ViewSpaceInterface()
