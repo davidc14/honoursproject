@@ -22,6 +22,8 @@ public:
 	bool GetKeyState(int KeyMapIndex) { return DigitalControlMap[KeyMapIndex]; }
 	bool GetMouseState(int MouseMapIndex) { return MouseControlMap[MouseMapIndex]; }
 
+	bool* GetKeyboardState();
+
 private:
 
 	virtual bool Initialise();
@@ -41,6 +43,7 @@ private:
 	char			KeyBuffer[256];			//Buffer that holds the key input state
 
 	//make sure to initalise these in the constructor of the inheriting class.
+	bool* pDigitalControlMap;
 	bool	DigitalControlMap [DIGITALCONTROLMAPS];
 	float	AnalogueControlMap[ANALOGUECONTROLMAPS];
 	bool	MouseControlMap[4];
