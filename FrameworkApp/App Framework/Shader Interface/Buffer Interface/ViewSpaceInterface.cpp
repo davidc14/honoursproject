@@ -49,14 +49,37 @@ void ViewSpaceInterface::UpdateAnimatedHandles(ViewSpaceContainer *input)
 	mViewFX->CommitChanges();
 }
 
-void ViewSpaceInterface::SetTechnique()
+void ViewSpaceInterface::SetTechnique(Techniques techniqueInput)
 {
+	switch(techniqueInput)
+	{
+	case Normals: 
+		mViewFX->SetTechnique(mhNormalTech);
+		break;
+	case NormalsAnimated: 
+		mViewFX->SetTechnique(mhNormalTechAni);
+		break;
+	case Position:
+		mViewFX->SetTechnique(mhPosTech);
+		break;
+	case PositionAnimated: 
+		mViewFX->SetTechnique(mhPosTechAni);
+		break;
+	default: 
+		MessageBox(0, "Unrecognised view space technique", "ViewSpace error", 0);
+		break;
+	}
 }
 
 void ViewSpaceInterface::Begin()
 {
+	UINT passes = 0;
+	mViewFX->Begin(&passes, 0);
+	mViewFX->BeginPass(0);
 }
 
 void ViewSpaceInterface::End()
 {
+	mViewFX->EndPass();
+	mViewFX->End();
 }

@@ -18,6 +18,8 @@ public:
 	ViewSpaceInterface(IDirect3DDevice9* device);
 	~ViewSpaceInterface();
 
+	enum Techniques { Normals, NormalsAnimated, Position, PositionAnimated } ;
+
 	//Load the shader into memory
 	bool LoadShader();
 	//Set up the handles for use 
@@ -31,11 +33,9 @@ public:
 	//Get the effect
 	ID3DXEffect* GetEffect() { return mViewFX; }
 
-	void SetTechnique();
+	void SetTechnique(Techniques techniqueInput);
 	void Begin();
-	void End();
-
-	enum Techniques { Normals, NormalsAnimated, Position, PositionAnimated } ;
+	void End();	
 
 private:
 
