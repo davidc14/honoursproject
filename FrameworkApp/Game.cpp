@@ -267,6 +267,10 @@ void Game::HandleInput()
 		mSSAOContainer.mUseColour = !mSSAOContainer.mUseColour;
 	if(pNewDigitalControlMap[DIK_O] && !pDigitalControlMap[DIK_O])
 		mSSAOContainer.mUseAO = !mSSAOContainer.mUseAO;	
+
+	//if(m_DInput->GetKeyState(DIK_SPACE))
+	if(pNewDigitalControlMap[DIK_SPACE] && !pDigitalControlMap[DIK_SPACE])
+		m_Camera->SetActiveFlag(!m_Camera->GetActiveFlag());
 }
 
 void Game::Update()

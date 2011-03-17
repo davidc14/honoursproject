@@ -64,7 +64,7 @@ public:
 	void WIndowHeight (int value) { m_WindowHeight = value; }
 
 	bool GetActiveFlag() { return mActive; }
-	void SetActiveFlag();
+	void SetActiveFlag(bool activeFlag) { mActive = activeFlag; }
 
 private:
 	//The associated vectors of the FPCamera
