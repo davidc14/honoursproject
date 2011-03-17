@@ -17,8 +17,13 @@ bool ViewSpaceInterface::LoadShader()
 	{
 		//Display the error in a message bos
 		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
+		return false;
 	}
+	return true;
+}
 
+bool ViewSpaceInterface::SetupHandles()
+{
 	mhPosTech = mViewFX->GetTechniqueByName("DrawPosition");
 	mhPosTechAni = mViewFX->GetTechniqueByName("DrawPositionAni");;
 	mhNormalTech = mViewFX->GetTechniqueByName("DrawNormal");;
@@ -27,4 +32,21 @@ bool ViewSpaceInterface::LoadShader()
 	mhWorldView = mViewFX->GetParameterByName(0, "WorldView");
 	mhFinalXForms = mViewFX->GetParameterByName(0, "FinalXForms");
 	return true;
+}
+
+void ViewSpaceInterface::UpdateHandles(ViewSpaceContainer *input)
+{
+
+}
+
+void ViewSpaceInterface::SetTechnique()
+{
+}
+
+void ViewSpaceInterface::Begin()
+{
+}
+
+void ViewSpaceInterface::End()
+{
 }

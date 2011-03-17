@@ -351,7 +351,6 @@ void Game::Update()
 #endif
 }
 
-D3DXMATRIX invView;
 void Game::Draw()
 {	
 	pDevice->GetTransform(D3DTS_PROJECTION, m_RenderTarget->getOldProjectionPointer());
@@ -407,7 +406,6 @@ void Game::Draw()
 	//set back buffer
 	pDevice->SetRenderTarget(0, m_RenderTarget->getBackBuffer());
 
-	invView = matView;
 	mViewNormal->BeginScene();
 
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
@@ -421,21 +419,21 @@ void Game::Draw()
 			mViewFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
 			D3DXMATRIX worldView;
 			
-			worldView = m_Citadel->GetWorld() * invView;
+			worldView = m_Citadel->GetWorld() * matView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 
 			m_Citadel->Draw(mViewFX, 0);
 
 			mViewFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = m_Dwarf->GetWorld() * invView;
+			worldView = m_Dwarf->GetWorld() * matView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 
 			m_Dwarf->Draw(mViewFX, 0);
 
 			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = matWorld * invView;
+			worldView = matWorld * matView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 			mHeadSad->Draw(mViewFX, 0);
@@ -449,7 +447,7 @@ void Game::Draw()
 		mViewFX->BeginPass(0);
 
 			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = *m_SkinnedMesh->GetWorld() * invView;
+			worldView = *m_SkinnedMesh->GetWorld() * matView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));			
 			mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
 			mViewFX->CommitChanges();
@@ -471,21 +469,21 @@ void Game::Draw()
 		mViewFX->BeginPass(0);
 
 			mViewFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = m_Citadel->GetWorld() * invView;
+			worldView = m_Citadel->GetWorld() * matView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 
 			m_Citadel->Draw(mViewFX, 0);
 
 			mViewFX->SetMatrix(mhWVP, &(m_Dwarf->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = m_Dwarf->GetWorld() * invView;
+			worldView = m_Dwarf->GetWorld() * matView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 
 			m_Dwarf->Draw(mViewFX, 0);
 
 			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = matWorld * invView;
+			worldView = matWorld * matView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 			mHeadSad->Draw(mViewFX, 0);
@@ -499,7 +497,7 @@ void Game::Draw()
 		mViewFX->BeginPass(0);
 
 			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			worldView = *m_SkinnedMesh->GetWorld() * invView;
+			worldView = *m_SkinnedMesh->GetWorld() * matView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));			
 			mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
 			mViewFX->CommitChanges();
