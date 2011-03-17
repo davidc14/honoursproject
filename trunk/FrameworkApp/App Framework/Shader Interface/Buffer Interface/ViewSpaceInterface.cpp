@@ -36,7 +36,17 @@ bool ViewSpaceInterface::SetupHandles()
 
 void ViewSpaceInterface::UpdateHandles(ViewSpaceContainer *input)
 {
+	mViewFX->SetMatrix(mhWVP, &(input->mWVP));
+	mViewFX->SetMatrix(mhWorldView, &(input->mWorldView));
+	mViewFX->CommitChanges();
+}
 
+void ViewSpaceInterface::UpdateAnimatedHandles(ViewSpaceContainer *input)
+{
+	mViewFX->SetMatrix(mhWVP, &(input->mWVP));
+	mViewFX->SetMatrix(mhWorldView, &(input->mWorldView));
+	mViewFX->SetMatrixArray(mhFinalXForms, input->mFinalXForms, input->mNumOfBones);
+	mViewFX->CommitChanges();
 }
 
 void ViewSpaceInterface::SetTechnique()
