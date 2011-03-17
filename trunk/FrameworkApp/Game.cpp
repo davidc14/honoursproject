@@ -603,6 +603,7 @@ void Game::Unload()
 
 	mViewInterface->Release();
 
+	mViewPos->Release();
 	mViewNormal->Release();
 
 	mSSAOInterface->Release();
