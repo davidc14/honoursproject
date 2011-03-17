@@ -228,63 +228,45 @@ bool Game::LoadContent()
 }
 
 const float camSpeed = 0.1f;
-bool pKeyState = false;
-bool oKeyState = false;
-bool newPKeyState = false;
-bool newOKeyState = false;
-bool newSpaceKeyState = false;
-bool SpaceKeyState = false;
-bool* pDigitalControlMap;
-bool* pNewDigitalControlMap;
+bool* pDigitalControlMap = new bool[DIGITALCONTROLMAPS];
+bool* pNewDigitalControlMap = new bool[DIGITALCONTROLMAPS];
 void Game::HandleInput()
 {
-
-	pDigitalControlMap = pNewDigitalControlMap;
+	//if(*pDigitalControlMap != *pNewDigitalControlMap)
+	for(int i = 0; i < DIGITALCONTROLMAPS; i++)
+		pDigitalControlMap[i] = pNewDigitalControlMap[i];
+	
 	pNewDigitalControlMap = m_DInput->GetKeyboardState();
 
-	pKeyState = newPKeyState;
-	oKeyState = newOKeyState;	
+	//Update direct input
+	m_DInput->Update();
 
-	newPKeyState = m_DInput->GetKeyState(DIK_P);
-	newOKeyState = m_DInput->GetKeyState(DIK_O);	
+	if(m_DInput->GetMouseState(0))		
+		m_Camera->mouseMove();		
+	else
+		m_Camera->First(true);
 
-	if(pDigitalControlMap)
-	{
-		//Update direct input
-		m_DInput->Update();
+	//Check the key presses
+	//W
+	if(pNewDigitalControlMap[DIK_W])
+		m_Camera->Move(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
+	
+	//S
+	if(pNewDigitalControlMap[DIK_S])
+		m_Camera->Move(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);
 
-		if(m_DInput->GetMouseState(0))		
-			m_Camera->mouseMove();		
-		else
-			m_Camera->First(true);
+	//A
+	if(pNewDigitalControlMap[DIK_A])
+		m_Camera->Strafe(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
 
-		//Check the key presses
-		//W
-		if(pNewDigitalControlMap[DIK_W])
-		//if(m_DInput->GetKeyState(DIK_W))
-			m_Camera->Move(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
-		
-		//S
-		if(pNewDigitalControlMap[DIK_S])
-		//if(m_DInput->GetKeyState(DIK_S))
-			m_Camera->Move(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);
-
-		//A
-		if(pNewDigitalControlMap[DIK_A])
-		//if(m_DInput->GetKeyState(DIK_A))
-			m_Camera->Strafe(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
-
-		//D
-		if(pNewDigitalControlMap[DIK_D])
-		//if(m_DInput->GetKeyState(DIK_D))
-			m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);	
-
-		//if(pNewDigitalControlMap[DIK_P] && !pDigitalControlMap[DIK_P])
-		if(newPKeyState && !pKeyState)
-			mSSAOContainer.mUseColour = !mSSAOContainer.mUseColour;
-		if(newOKeyState && !oKeyState)
-			mSSAOContainer.mUseAO = !mSSAOContainer.mUseAO;	
-	}
+	//D
+	if(pNewDigitalControlMap[DIK_D])
+		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);	
+	
+	if(pNewDigitalControlMap[DIK_P] && !pDigitalControlMap[DIK_P])
+		mSSAOContainer.mUseColour = !mSSAOContainer.mUseColour;
+	if(pNewDigitalControlMap[DIK_O] && !pDigitalControlMap[DIK_O])
+		mSSAOContainer.mUseAO = !mSSAOContainer.mUseAO;	
 }
 
 void Game::Update()
@@ -305,17 +287,8 @@ void Game::Update()
 	// Animate spot light by rotating it on y-axis with respect to time.
 	D3DXMATRIX lightView;
 	D3DXVECTOR3 lightPosW(00.0f, 50.0f, -115.0f);
-	//D3DXVECTOR3 lightPosW(125.0f, 50.0f, 0.0f);
 	D3DXVECTOR3 lightTargetW(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 lightUpW(0.0f, 1.0f, 0.0f);
-
-	/*static float t = 0.0f;
-	t += m_DeltaTime;
-	if( t >= 2.0f*D3DX_PI )
-		t = 0.0f;
-	D3DXMATRIX Ry;
-	D3DXMatrixRotationY(&Ry, t);
-	D3DXVec3TransformCoord(&lightPosW, &lightPosW, &Ry);*/
 
 	D3DXMatrixLookAtLH(&lightView, &lightPosW, &lightTargetW, &lightUpW);
 	
@@ -388,7 +361,6 @@ void Game::Draw()
 		matWorld = matHeadScale * matHeadTranslation;
 		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());
 		mHeadSad->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
-		//mCube->Render(pDevice, m_SpotInterface->GetEffect());
 
 	m_SpotInterface->GetEffect()->EndPass();
 	m_SpotInterface->GetEffect()->End();
@@ -413,7 +385,6 @@ void Game::Draw()
 	pDevice->SetRenderTarget(0, m_RenderTarget->getBackBuffer());
 
 	invView = matView;
-	//D3DXMatrixInverse(&invView,0, &matView);
 	mViewNormal->BeginScene();
 
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
@@ -440,14 +411,11 @@ void Game::Draw()
 
 			m_Dwarf->Draw(mViewFX, 0);
 
-			//D3DXMatrixIdentity(&matWorld);
-			//D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
 			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
 			worldView = matWorld * invView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 			mHeadSad->Draw(mViewFX, 0);
-			//mCube->Render(pDevice, mViewFX);
 
 		mViewFX->EndPass();
 		mViewFX->End();
@@ -458,7 +426,6 @@ void Game::Draw()
 		mViewFX->BeginPass(0);
 
 			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			//D3DXMATRIX worldView;
 			worldView = *m_SkinnedMesh->GetWorld() * invView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));			
 			mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
@@ -477,12 +444,10 @@ void Game::Draw()
 	
 	mViewFX->SetTechnique(mhPosTech);
 
-		//UINT viewPasses = 1;
 		mViewFX->Begin(&viewPasses, 0);
 		mViewFX->BeginPass(0);
 
 			mViewFX->SetMatrix(mhWVP, &(m_Citadel->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			//D3DXMATRIX worldView;
 			worldView = m_Citadel->GetWorld() * invView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
@@ -496,14 +461,11 @@ void Game::Draw()
 
 			m_Dwarf->Draw(mViewFX, 0);
 
-			//D3DXMatrixIdentity(&matWorld);
-			//D3DXMatrixTranslation(&matWorld, 0.0f, 3.0f, -5.5f);
 			mViewFX->SetMatrix(mhWVP, &(matWorld * matView * *m_RenderTarget->getProjectionPointer()));
 			worldView = matWorld * invView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));
 			mViewFX->CommitChanges();
 			mHeadSad->Draw(mViewFX, 0);
-			//mCube->Render(pDevice, mViewFX);
 
 		mViewFX->EndPass();
 		mViewFX->End();
@@ -514,7 +476,6 @@ void Game::Draw()
 		mViewFX->BeginPass(0);
 
 			mViewFX->SetMatrix(mhWVP, &(*m_SkinnedMesh->GetWorld() * matView * *m_RenderTarget->getProjectionPointer()));
-			//D3DXMATRIX worldView;
 			worldView = *m_SkinnedMesh->GetWorld() * invView;
 			mViewFX->SetMatrix(mhWorldView, &(worldView));			
 			mViewFX->SetMatrixArray(mhFinalXForms, m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
@@ -586,13 +547,8 @@ void Game::Draw()
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	/*pDevice->SetSamplerState( 0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP );
-	pDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP );*/
-
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
 
-	//ssaoFX->SetTechnique(mhSSAOTech);
-	//cellFX->SetTechnique(cellTech);
 	if( SUCCEEDED( pDevice->BeginScene() ) )
     {
 		// Clear the backbuffer to a blue color
@@ -642,7 +598,6 @@ void Game::SetSSAOHandles()
 	//mSSAOContainer.mUseAO = mUseAO;
 	//mSSAOContainer.mUseColour = mUseColour;
 	mSSAOContainer.mUseLighting = false;
-	//mSSAOContainer.mSampleRadius = 25.80624f;
 	mSSAOContainer.mSampleRadius = 75.0f;
 
 	mSSAOInterface->UpdateHandles(&mSSAOContainer);
@@ -723,16 +678,11 @@ void Game::Unload()
 
 	m_SkinnedMesh->Release();
 
-	//mShadowMap->onLostDevice();
-
 	m_SpotInterface->Release();
 
 	mShadowTarget->Release();
 
 	m_RenderTarget->Release();
-
-	//mDepthFX->Release();
-	//mDepthTarget->Release();
 
 	mViewFX->Release();
 	mViewPos->Release();
@@ -743,9 +693,6 @@ void Game::Unload()
 	if(mSSAOTarget != NULL) mSSAOTarget->Release();
 
 	mQuadFX->Release();
-
-	//mBlurFX->Release();
-	//mBlurTarget->Release();
 }
 
 void Game::CalculateMatrices()
@@ -760,21 +707,7 @@ void Game::CalculateMatrices()
 	D3DXMATRIX mViewTransform; 
 	D3DXMatrixRotationY(&mViewTransform, 0);
 	D3DXVec3Transform(&vViewVector, &(vLookatPt - vEyePt), &mViewTransform );
-	//D3DXMatrixLookAtLH( &matView, &vEyePt, &vLookatPt, &vUpVec );
 	D3DXMatrixLookAtLH( &matView, m_Camera->getPosition(), m_Camera->getLookAt(), m_Camera->getUp() );
-
-	//D3DXMatrixPerspectiveFovLH(m_RenderTarget->getProjectionPointer(), D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, m_Camera->GetFarPlane());
-
-    //pDevice->SetTransform( D3DTS_VIEW, &matView );
-
-    // For the projection matrix, we set up a perspective transform (which
-    // transforms geometry from 3D view space to 2D viewport space, with
-    // a perspective divide making objects smaller in the distance). To build
-    // a perpsective transform, we need the field of view (1/4 pi is common),
-    // the aspect ratio, and the near and far clipping planes (which define at
-    // what distances geometry should be no longer be rendered).	
-
-    //pDevice->SetTransform( D3DTS_PROJECTION, &matProj );
 }
 
 void Game::SetShaderVariables()
@@ -820,7 +753,6 @@ void Game::SetSpotLightVariables(D3DXMATRIX World, Mtrl* material)
 {
 	m_SpotContainer.m_EyePosW = *m_Camera->getPosition();
 	m_SpotContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
-	//m_SpotContainer.m_ShadowMap = mShadowMap->d3dTex();
 	m_SpotContainer.m_ShadowMap = mShadowTarget->getRenderTexture();
 	m_SpotContainer.m_World = World;
 	m_SpotContainer.m_LightWVP = World * m_LightViewProj;
