@@ -14,6 +14,7 @@
 #include "App Framework\Shader Interface\PhongLightingInterface.h"
 #include "App Framework\Shader Interface\Animated\AnimatedInterface.h"
 #include "App Framework\Shader Interface\Non Animated\SpotLightingInterface.h"
+#include "App Framework\Shader Interface\Buffer Interface\ViewSpaceInterface.h"
 #include "App Framework\Animation\Vertex.h"
 #include "App Framework\Animation\SkinnedMesh.h"
 #include "App\Render Targets\DrawableRenderTarget.h"
