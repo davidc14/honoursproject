@@ -82,6 +82,12 @@ IDirect3DTexture9* mRandomTexture;
 SSAOInterface* mSSAOInterface;
 SSAOContainer mSSAOContainer;
 
+ID3DXEffect* mFinalFX;
+D3DXHANDLE mhFinalTech;
+D3DXHANDLE mhColourTexture;
+D3DXHANDLE mhSSAOTexture;
+DrawableRenderTarget* mFinalTarget;
+
 XModel* mHeadSad;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
@@ -168,6 +174,7 @@ bool Game::LoadContent()
 	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth/2, (UINT)m_WindowHeight/2, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mFinalTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	//mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_X8R8G8B8  , D3DFMT_D16, m_Camera->GetFarPlane());
 
 	// Create shadow map.
@@ -223,6 +230,18 @@ bool Game::LoadContent()
 	mHeadSad = new XModel(pDevice);
 	if(!mHeadSad->SetModel("Models/OcclusionBox", "headsad.x"))
 		::MessageBox(0, "Occlusion box model failed", "Error", 0);
+
+	m_Error = 0;
+	D3DXCreateEffectFromFile(pDevice, "Shaders/SSAOFinal.fx", 0, 0, D3DXSHADER_DEBUG,0, &mFinalFX, &m_Error);
+	if(m_Error)
+	{
+		//Display the error in a message bos
+		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
+	}
+
+	mhFinalTech = mFinalFX->GetTechniqueByName("Merge");
+	mhColourTexture = mFinalFX->GetParameterByName(0, "colourTexture");
+	mhSSAOTexture = mFinalFX->GetParameterByName(0, "ssaoTexture");
 
 	return true;
 }
@@ -549,6 +568,26 @@ void Game::Draw()
 
 	mShadowTarget->EndScene();
 
+	mFinalTarget->BeginScene();
+
+		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
+
+		UINT finalPasses = 0;
+		mFinalFX->Begin(&finalPasses, 0);
+		mFinalFX->BeginPass(0);
+		
+		mFinalFX->SetTexture(mhColourTexture, m_RenderTarget->getRenderTexture());
+		mFinalFX->SetTexture(mhSSAOTexture, mSSAOTarget->getRenderTexture());
+
+		mFinalFX->CommitChanges();
+
+		mFinalTarget->DrawUntextured();
+
+		mFinalFX->EndPass();
+		mFinalFX->End();
+
+	mFinalTarget->EndScene();
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
@@ -565,7 +604,8 @@ void Game::Draw()
 		//mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture());
 		//mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture());
 		//mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture());
-		mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture());
+		//mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture());
+		mQuadFX->SetTexture(mQuadTexture, mFinalTarget->getRenderTexture());
 		mQuadFX->CommitChanges();
 
 			m_RenderTarget->DrawUntextured();
