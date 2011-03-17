@@ -67,14 +67,6 @@ D3DXHANDLE mQuadTexture;
 
 ViewSpaceInterface* mViewInterface;
 ViewSpaceContainer mViewContainer;
-ID3DXEffect* mViewFX;
-D3DXHANDLE mhPosTech;
-D3DXHANDLE mhPosTechAni;
-D3DXHANDLE mhNormalTech;
-D3DXHANDLE mhNormalTechAni;
-D3DXHANDLE mhWVP;
-D3DXHANDLE mhWorldView;
-D3DXHANDLE mhFinalXForms;
 DrawableRenderTarget* mViewPos;
 DrawableRenderTarget* mViewNormal;
 
@@ -213,22 +205,6 @@ bool Game::LoadContent()
 	mQuadTexture = mQuadFX->GetParameterByName(0, "gTex");
 
 	mViewInterface = new ViewSpaceInterface(pDevice);
-
-	m_Error = 0;
-	D3DXCreateEffectFromFile(pDevice, "Shaders/WorldViewSpace.fx", 0, 0, D3DXSHADER_DEBUG,0, &mViewFX, &m_Error);
-	if(m_Error)
-	{
-		//Display the error in a message bos
-		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
-	}
-
-	mhPosTech = mViewFX->GetTechniqueByName("DrawPosition");
-	mhPosTechAni = mViewFX->GetTechniqueByName("DrawPositionAni");;
-	mhNormalTech = mViewFX->GetTechniqueByName("DrawNormal");;
-	mhNormalTechAni = mViewFX->GetTechniqueByName("DrawNormalAni");;
-	mhWVP = mViewFX->GetParameterByName(0, "WorldViewProjection");
-	mhWorldView = mViewFX->GetParameterByName(0, "WorldView");
-	mhFinalXForms = mViewFX->GetParameterByName(0, "FinalXForms");
 
 	mSSAOInterface = new SSAOInterface(pDevice);
 
@@ -625,8 +601,7 @@ void Game::Unload()
 
 	m_RenderTarget->Release();
 
-	mViewFX->Release();
-	mViewPos->Release();
+	mViewInterface->Release();
 
 	mViewNormal->Release();
 
@@ -635,6 +610,9 @@ void Game::Unload()
 
 	mQuadFX->Release();
 	mHeadSad->Release();
+
+	mFinalFX->Release();
+	mFinalTarget->Release();
 }
 
 void Game::CalculateMatrices()
