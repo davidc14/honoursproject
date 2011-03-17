@@ -32,9 +32,9 @@ public: //Public functions
 	~SSAOInterface();
 
 	//Load the shader into memory
-	void LoadShader();
+	bool LoadShader();
 	//Set up the handles for use 
-	void SetupHandles();
+	bool SetupHandles();
 	//Update the handles
 	void UpdateHandles(SSAOContainer* input);
 	//Release the shader and handles
