@@ -112,8 +112,8 @@ float doAmbientOcclusion(in float2 tcoord,in float2 uv, in float3 p, in float3 c
   const float  d = length(diff)*0.1;
 
   return
-    (1.0-saturate(dot(n, -v)-0.325)) *
-    saturate(dot(cnorm, v)-0.325) *
+    (1.0-saturate(dot(n, -v)-0.30)) *
+    saturate(dot(cnorm, v)-0.30) *
     (1.0f - 1.0f / sqrt(0.2f / (d * d * g_scale) + 1.0f));
 }
 
@@ -123,6 +123,7 @@ PS_INPUT AOVShader(VS_INPUT i)
   
   o.position        = float4(sign(i.position.xy), 0.0f, 1.0f);
   o.uv              = o.position.xy * float2(0.5f, -0.5f) + 0.5f;
+  //o.uv = i.uv;
   
   return o;
 }

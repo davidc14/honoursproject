@@ -249,11 +249,39 @@
 					Name="SSAO Interface"
 					>
 					<File
+						RelativePath=".\App Framework\Shader Interface\SSAO Interface\FinalInterface.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\App Framework\Shader Interface\SSAO Interface\FinalInterface.h"
+						>
+					</File>
+					<File
 						RelativePath=".\App Framework\Shader Interface\SSAO Interface\SSAOInterface.cpp"
 						>
 					</File>
 					<File
 						RelativePath=".\App Framework\Shader Interface\SSAO Interface\SSAOInterface.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Buffer Interface"
+					>
+					<File
+						RelativePath=".\App Framework\Shader Interface\Buffer Interface\ViewNormalInterface.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\App Framework\Shader Interface\Buffer Interface\ViewNormalInterface.h"
+						>
+					</File>
+					<File
+						RelativePath=".\App Framework\Shader Interface\Buffer Interface\ViewPosInterface.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\App Framework\Shader Interface\Buffer Interface\ViewPosInterface.h"
 						>
 					</File>
 				</Filter>

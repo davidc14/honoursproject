@@ -44,6 +44,8 @@ PSIN MergeVShader(VSIN input)
 	output.Position        = float4(sign(input.Position.xy), 0.0f, 1.0f);
 	output.uv              = output.Position.xy * float2(0.5f, -0.5f) + 0.5f;
 	
+	output.uv = input.uv;
+	
 	return output;
 }
 
