@@ -227,7 +227,6 @@ bool Game::LoadContent()
 	return true;
 }
 
-D3DXVECTOR3 KeyboardDwarfVelocity(0.0f, 0.0f, 0.0f);
 const float camSpeed = 0.1f;
 bool pKeyState = false;
 bool oKeyState = false;
@@ -235,53 +234,57 @@ bool newPKeyState = false;
 bool newOKeyState = false;
 bool newSpaceKeyState = false;
 bool SpaceKeyState = false;
+bool* pDigitalControlMap;
+bool* pNewDigitalControlMap;
 void Game::HandleInput()
 {
+
+	pDigitalControlMap = pNewDigitalControlMap;
+	pNewDigitalControlMap = m_DInput->GetKeyboardState();
+
 	pKeyState = newPKeyState;
 	oKeyState = newOKeyState;	
 
 	newPKeyState = m_DInput->GetKeyState(DIK_P);
-	newOKeyState = m_DInput->GetKeyState(DIK_O);
+	newOKeyState = m_DInput->GetKeyState(DIK_O);	
 
-	bool* pDigitalControlMap = m_DInput->GetKeyboardState();
-	
+	if(pDigitalControlMap)
+	{
+		//Update direct input
+		m_DInput->Update();
 
-	//Update direct input
-	m_DInput->Update();
+		if(m_DInput->GetMouseState(0))		
+			m_Camera->mouseMove();		
+		else
+			m_Camera->First(true);
 
-	if(m_DInput->GetMouseState(0))		
-		m_Camera->mouseMove();		
-	else
-		m_Camera->First(true);
+		//Check the key presses
+		//W
+		if(pNewDigitalControlMap[DIK_W])
+		//if(m_DInput->GetKeyState(DIK_W))
+			m_Camera->Move(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
+		
+		//S
+		if(pNewDigitalControlMap[DIK_S])
+		//if(m_DInput->GetKeyState(DIK_S))
+			m_Camera->Move(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);
 
-	//Zero the velocity every frame
-	KeyboardDwarfVelocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		//A
+		if(pNewDigitalControlMap[DIK_A])
+		//if(m_DInput->GetKeyState(DIK_A))
+			m_Camera->Strafe(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
 
-	//Check the key presses
-	//W
-	if(pDigitalControlMap[DIK_W])
-	//if(m_DInput->GetKeyState(DIK_W))
-		m_Camera->Move(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
-	
-	//S
-	if(pDigitalControlMap[DIK_S])
-	//if(m_DInput->GetKeyState(DIK_S))
-		m_Camera->Move(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);
+		//D
+		if(pNewDigitalControlMap[DIK_D])
+		//if(m_DInput->GetKeyState(DIK_D))
+			m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);	
 
-	//A
-	if(pDigitalControlMap[DIK_A])
-	//if(m_DInput->GetKeyState(DIK_A))
-		m_Camera->Strafe(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
-
-	//D
-	if(pDigitalControlMap[DIK_D])
-	//if(m_DInput->GetKeyState(DIK_D))
-		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);	
-
-	if(newPKeyState && !pKeyState)
-		mSSAOContainer.mUseColour = !mSSAOContainer.mUseColour;
-	if(newOKeyState && !oKeyState)
-		mSSAOContainer.mUseAO = !mSSAOContainer.mUseAO;	
+		//if(pNewDigitalControlMap[DIK_P] && !pDigitalControlMap[DIK_P])
+		if(newPKeyState && !pKeyState)
+			mSSAOContainer.mUseColour = !mSSAOContainer.mUseColour;
+		if(newOKeyState && !oKeyState)
+			mSSAOContainer.mUseAO = !mSSAOContainer.mUseAO;	
+	}
 }
 
 void Game::Update()
