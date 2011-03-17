@@ -647,69 +647,6 @@ void Game::SetSSAOHandles()
 	mSSAOInterface->UpdateHandles(&mSSAOContainer);
 }
 
-float Game::ComputeGaussian(float n)
-{
-    float theta = 4.0f;
-
-	return (float)((1.0 / sqrt(2 * D3DX_PI * theta)) *
-                   exp(-(n * n) / (2 * theta * theta)));
-}
-
-void Game::SetupBlurComponents(float dx, float dy)
-{
-	 // Look up how many samples our gaussian blur effect supports.
-    const int sampleCount = 15;
-
-    // Create temporary arrays for computing our filter settings.
-    float sampleWeights[sampleCount];
-    D3DXVECTOR2 sampleOffsets[sampleCount];
-
-	// The first sample always has a zero offset.
-    sampleWeights[0] = ComputeGaussian(0);
-    sampleOffsets[0] = D3DXVECTOR2(0,0);
-
-    // Maintain a sum of all the weighting values.
-    float totalWeights = sampleWeights[0];
-
-	// Add pairs of additional sample taps, positioned
-    // along a line in both directions from the center.
-    for (int i = 0; i < sampleCount / 2; i++)
-    {
-        // Store weights for the positive and negative taps.
-        float weight = ComputeGaussian((float)i + 1);
-
-        sampleWeights[i * 2 + 1] = weight;
-        sampleWeights[i * 2 + 2] = weight;
-
-        totalWeights += weight * 2;
-
-        // To get the maximum amount of blurring from a limited number of
-        // pixel shader samples, we take advantage of the bilinear filtering
-        // hardware inside the texture fetch unit. If we position our texture
-        // coordinates exactly halfway between two texels, the filtering unit
-        // will average them for us, giving two samples for the price of one.
-        // This allows us to step in units of two texels per sample, rather
-        // than just one at a time. The 1.5 offset kicks things off by
-        // positioning us nicely in between two texels.
-        float sampleOffset = i * 2 + 1.5f;
-
-        D3DXVECTOR2 delta = D3DXVECTOR2(dx, dy) * sampleOffset;
-
-        // Store texture coordinate offsets for the positive and negative taps.
-        sampleOffsets[i * 2 + 1] = delta;
-        sampleOffsets[i * 2 + 2] = -delta;
-    }
-
-    // Normalize the list of sample weightings, so they will always sum to one.
-    for (int i = 0; i < sampleCount; i++)
-    {
-        sampleWeights[i] /= totalWeights;
-    }
-
-	//mBlurFX->SetFloatArray(mhSampleWeights, sampleWeights, sampleCount);
-	//mBlurFX->SetValue(mhSampleOffsets, sampleOffsets, sizeof(sampleOffsets));
-}
-
 void Game::Unload()
 {
 	m_Font->Release();

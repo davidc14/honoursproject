@@ -12,7 +12,7 @@ SSAOInterface::~SSAOInterface()
 {
 }
 
-void SSAOInterface::LoadShader()
+bool SSAOInterface::LoadShader()
 {
 	//Set up and error buffer
 	ID3DXBuffer* m_Error = 0;
@@ -22,10 +22,13 @@ void SSAOInterface::LoadShader()
 	{
 		//Display the error in a message box
 		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
+		return false;
 	}
+
+	return true;
 }
 
-void SSAOInterface::SetupHandles()
+bool SSAOInterface::SetupHandles()
 {
 	mhSSAOTech = mSSAOFX->GetTechniqueByName("SSAO");
 	mhNormalBuffer = mSSAOFX->GetParameterByName(0, "normalBuffer");
@@ -44,6 +47,8 @@ void SSAOInterface::SetupHandles()
 	mhInvScreenSize = mSSAOFX->GetParameterByName(0, "g_inv_screen_size");
 	mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneBuffer");
 	mhUseColour = mSSAOFX->GetParameterByName(0, "useColour");
+
+	return true;
 }
 
 void SSAOInterface::SetTechnique()

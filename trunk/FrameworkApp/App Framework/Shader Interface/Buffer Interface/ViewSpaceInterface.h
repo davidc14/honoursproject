@@ -11,20 +11,20 @@ typedef struct ViewSpaceContainer
 class ViewSpaceInterface
 {
 public:
-	ViewSpaceInterface();
+	ViewSpaceInterface(IDirect3DDevice9* device);
 	~ViewSpaceInterface();
 
 	//Load the shader into memory
-	void LoadShader();
+	bool LoadShader();
 	//Set up the handles for use 
-	void SetupHandles();
+	bool SetupHandles();
 	//Update the handles
 	void UpdateHandles(ViewSpaceContainer* input);
 	//Release the shader and handles
 	void Release();
 	
 	//Get the effect
-	ID3DXEffect* GetEffect() { return mFinalFX; }
+	ID3DXEffect* GetEffect() { return mViewFX; }
 
 	void SetTechnique();
 	void Begin();
@@ -32,7 +32,17 @@ public:
 
 private:
 
-	ID3DXEffect* mFinalFX;
+	//The device
+	IDirect3DDevice9* pDevice;
+
+	ID3DXEffect* mViewFX;
+	D3DXHANDLE mhPosTech;
+	D3DXHANDLE mhPosTechAni;
+	D3DXHANDLE mhNormalTech;
+	D3DXHANDLE mhNormalTechAni;
+	D3DXHANDLE mhWVP;
+	D3DXHANDLE mhWorldView;
+	D3DXHANDLE mhFinalXForms;
 };
 
 #endif
