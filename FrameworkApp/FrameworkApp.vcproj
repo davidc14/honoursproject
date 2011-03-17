@@ -269,19 +269,11 @@
 					Name="Buffer Interface"
 					>
 					<File
-						RelativePath=".\App Framework\Shader Interface\Buffer Interface\ViewNormalInterface.cpp"
+						RelativePath=".\App Framework\Shader Interface\Buffer Interface\ViewSpaceInterface.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\App Framework\Shader Interface\Buffer Interface\ViewNormalInterface.h"
-						>
-					</File>
-					<File
-						RelativePath=".\App Framework\Shader Interface\Buffer Interface\ViewPosInterface.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\App Framework\Shader Interface\Buffer Interface\ViewPosInterface.h"
+						RelativePath=".\App Framework\Shader Interface\Buffer Interface\ViewSpaceInterface.h"
 						>
 					</File>
 				</Filter>
