@@ -23,7 +23,7 @@ public:
 	void Update(const float dtSeconds);
 	void Update(const float dtSeconds, int windowWidth, int windowHeight);
 
-	float GetFarPlane() { return farPlane; }
+	float GetFarPlane() { return mFarPlane; }
 
 	////Returns the value of the vectors
 	//Vector3 getPosition();
@@ -63,6 +63,9 @@ public:
 	void WindowWidth (int value) { m_WindowWidth = value; }
 	void WIndowHeight (int value) { m_WindowHeight = value; }
 
+	bool GetActiveFlag() { return mActive; }
+	void SetActiveFlag();
+
 private:
 	//The associated vectors of the FPCamera
 	
@@ -92,7 +95,10 @@ private:
 
 	int m_WindowWidth, m_WindowHeight;
 
-	float farPlane;
+	float mFarPlane, mNearPlane;
+
+	//The active flag that dictates whether the camera is in use
+	bool mActive;
 };
 
 #endif
