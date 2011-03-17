@@ -20,6 +20,8 @@ FPCamera::FPCamera()
 	m_Right = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	first = true;
 	zoomFirst = true;
+
+	mActive = true;
 }
 
 FPCamera::FPCamera(D3DXVECTOR3 position, D3DXVECTOR3 lookAt, D3DXVECTOR3 up, int WindowWidth, int WindowHeight)
@@ -43,6 +45,8 @@ FPCamera::FPCamera(D3DXVECTOR3 position, D3DXVECTOR3 lookAt, D3DXVECTOR3 up, int
 	D3DXVec3Cross(&m_Right, &m_Forward, &m_Up);
 	first = true;
 	zoomFirst = true;
+
+	mActive = true;
 }
 
 FPCamera::~FPCamera()
@@ -230,39 +234,42 @@ void FPCamera::mouseMove(Mouse *MousePos, POINT mousePos, int window_width, int 
 
 void FPCamera::mouseMove()
 {
-	//Turning off the cursor
-	//ShowCursor(false);
-	//Get the cursor position 
-	//These will be whatever SetCursorPos() has made them
-	GetCursorPos(m_mousePos);
-	//Setting the cursor positions to the middle of the window
-	SetCursorPos(this->m_WindowWidth/2,this->m_WindowHeight/2);
-
-	if(!first)
+	if(mActive)
 	{
-		//Set the Mouse to the centre of the screen according to 
-		//Set/GetCursorPos functions found in WinMain
-		m_Mouse->x = m_mousePos->x;
-		m_Mouse->y = m_mousePos->y;
+		//Turning off the cursor
+		//ShowCursor(false);
+		//Get the cursor position 
+		//These will be whatever SetCursorPos() has made them
+		GetCursorPos(m_mousePos);
+		//Setting the cursor positions to the middle of the window
+		SetCursorPos(this->m_WindowWidth/2,this->m_WindowHeight/2);
 
-		//Set the old to the the middle of the screen
-		m_Mouse->old_x = m_WindowWidth/2;
-		m_Mouse->old_y = m_WindowHeight/2;
-
-		//Measure the distance between the two
-		m_Mouse->drag_x = (m_Mouse->old_x - m_Mouse->x);
-		m_Mouse->drag_y = (m_Mouse->old_y - m_Mouse->y);
-
-		//Use the result to calculate the angle
-		if(angleTest(m_Mouse))	
+		if(!first)
 		{
-			//Else allow movement
-			m_Pitch -= (m_Mouse->drag_y*0.05f);	
+			//Set the Mouse to the centre of the screen according to 
+			//Set/GetCursorPos functions found in WinMain
+			m_Mouse->x = m_mousePos->x;
+			m_Mouse->y = m_mousePos->y;
+
+			//Set the old to the the middle of the screen
+			m_Mouse->old_x = m_WindowWidth/2;
+			m_Mouse->old_y = m_WindowHeight/2;
+
+			//Measure the distance between the two
+			m_Mouse->drag_x = (m_Mouse->old_x - m_Mouse->x);
+			m_Mouse->drag_y = (m_Mouse->old_y - m_Mouse->y);
+
+			//Use the result to calculate the angle
+			if(angleTest(m_Mouse))	
+			{
+				//Else allow movement
+				m_Pitch -= (m_Mouse->drag_y*0.05f);	
+			}
+			m_Yaw += (m_Mouse->drag_x*0.05f);
 		}
-		m_Yaw += (m_Mouse->drag_x*0.05f);
+		else
+			first = false;
 	}
-	else
-		first = false;
 }
 
 void FPCamera::mouseZoom(int windowWidth, int windowHeight)
