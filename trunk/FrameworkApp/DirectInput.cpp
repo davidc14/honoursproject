@@ -80,6 +80,11 @@ void DirectInput::Update()
 		MouseControlMap[1] = false;
 }
 
+bool* DirectInput::GetKeyboardState()
+{
+	pDigitalControlMap = DigitalControlMap;
+	return pDigitalControlMap;
+}
 
 DirectInput::DirectInput()
 {

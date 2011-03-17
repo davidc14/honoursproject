@@ -233,6 +233,8 @@ bool pKeyState = false;
 bool oKeyState = false;
 bool newPKeyState = false;
 bool newOKeyState = false;
+bool newSpaceKeyState = false;
+bool SpaceKeyState = false;
 void Game::HandleInput()
 {
 	pKeyState = newPKeyState;
@@ -240,6 +242,9 @@ void Game::HandleInput()
 
 	newPKeyState = m_DInput->GetKeyState(DIK_P);
 	newOKeyState = m_DInput->GetKeyState(DIK_O);
+
+	bool* pDigitalControlMap = m_DInput->GetKeyboardState();
+	
 
 	//Update direct input
 	m_DInput->Update();
@@ -254,19 +259,23 @@ void Game::HandleInput()
 
 	//Check the key presses
 	//W
-	if(m_DInput->GetKeyState(DIK_W))
+	if(pDigitalControlMap[DIK_W])
+	//if(m_DInput->GetKeyState(DIK_W))
 		m_Camera->Move(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
 	
 	//S
-	if(m_DInput->GetKeyState(DIK_S))
+	if(pDigitalControlMap[DIK_S])
+	//if(m_DInput->GetKeyState(DIK_S))
 		m_Camera->Move(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);
 
 	//A
-	if(m_DInput->GetKeyState(DIK_A))
+	if(pDigitalControlMap[DIK_A])
+	//if(m_DInput->GetKeyState(DIK_A))
 		m_Camera->Strafe(camSpeed*m_DeltaTime, camSpeed*m_DeltaTime, camSpeed*m_DeltaTime);
 
 	//D
-	if(m_DInput->GetKeyState(DIK_D))
+	if(pDigitalControlMap[DIK_D])
+	//if(m_DInput->GetKeyState(DIK_D))
 		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);	
 
 	if(newPKeyState && !pKeyState)
@@ -630,8 +639,8 @@ void Game::SetSSAOHandles()
 	//mSSAOContainer.mUseAO = mUseAO;
 	//mSSAOContainer.mUseColour = mUseColour;
 	mSSAOContainer.mUseLighting = false;
-	mSSAOContainer.mSampleRadius = 25.80624f;
-	mSSAOContainer.mSampleRadius = 100.0f;
+	//mSSAOContainer.mSampleRadius = 25.80624f;
+	mSSAOContainer.mSampleRadius = 75.0f;
 
 	mSSAOInterface->UpdateHandles(&mSSAOContainer);
 }
