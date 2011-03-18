@@ -10,6 +10,7 @@
 #include "Dwarf.h"
 #include "DirectInput.h"
 #include "FPCamera.h"
+#include "App Framework\Utilities\d3dUtil.h"
 #include "App Framework\Shader Interface\SSAO Interface\SSAOInterface.h"
 #include "App Framework\Shader Interface\PhongLightingInterface.h"
 #include "App Framework\Shader Interface\Animated\AnimatedInterface.h"
@@ -37,7 +38,6 @@ SpotLightingInterface* m_SpotInterface;
 SpotLighting m_SpotContainer;
 
 Citadel* m_Citadel;
-
 
 DirectInput* m_DInput;
 
@@ -69,8 +69,6 @@ ViewSpaceInterface* mViewInterface;
 ViewSpaceContainer mViewContainer;
 DrawableRenderTarget* mViewPos;
 DrawableRenderTarget* mViewNormal;
-
-//D3DTexturedCube* mCube;
 
 DrawableRenderTarget* mSSAOTarget;
 IDirect3DTexture9* mRandomTexture;
@@ -131,15 +129,15 @@ bool Game::Initialise()
 
 bool Game::LoadContent()
 {
-	m_Font = new D3DFont(pDevice);
-
-	m_PhongInterface = new PhongLightingInterface(pDevice);
-
 	m_DInput = new DirectInput();
 
-	ConnectionStatus = false;
+	m_Font = new D3DFont(pDevice);
 	
-	m_Citadel = new Citadel(pDevice);
+	//m_PhongInterface = new PhongLightingInterface(pDevice);
+	m_AnimatedInterface = new AnimatedInterface(pDevice);
+	m_SpotInterface = new SpotLightingInterface(pDevice);
+
+	ConnectionStatus = false;
 
 	D3DXVECTOR3 vEyePt( 0.0f, 5.0f,-20.0f );
     D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
@@ -152,6 +150,7 @@ bool Game::LoadContent()
 	m_SkinnedMesh = new SkinnedMesh(pDevice, "Models/Tiny", "tiny.x", "Tiny_skin.bmp");
 
 	m_Dwarf = new Dwarf(pDevice);
+	m_Citadel = new Citadel(pDevice);
 
 	mLight.dirW    = D3DXVECTOR3(0.0f, -1.0f, 1.0f);
 	D3DXVec3Normalize(&mLight.dirW, &mLight.dirW);
@@ -170,16 +169,9 @@ bool Game::LoadContent()
 	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth/2, (UINT)m_WindowHeight/2, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mFinalTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
-	//mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_X8R8G8B8  , D3DFMT_D16, m_Camera->GetFarPlane());
 
-	// Create shadow map.
-	//D3DVIEWPORT9 vp = {0, 0, 512, 512, 0.0f, 1.0f};
-	//mShadowMap = new DrawableTex2D(pDevice, 512, 512, 1, D3DFMT_R32F, true, D3DFMT_D24X8, vp, false);
-	//D3DVIEWPORT9 depthNormalVP = {0, 0, (UINT)m_WindowWidth, (UINT)m_WindowHeight, 0.0f, 1.0f};
-	//m_DepthNormalTex2D = new DrawableTex2D(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, 1, D3DFMT_R32F, true, D3DFMT_D24X8, depthNormalVP, false);
 
-	m_AnimatedInterface = new AnimatedInterface(pDevice);
-	m_SpotInterface = new SpotLightingInterface(pDevice);
+	
 
 	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_WhiteTexture);
 	D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &mRandomTexture);
@@ -190,9 +182,6 @@ bool Game::LoadContent()
 	mSpotLight.diffuse   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.spotPower = 24.0f;
-
-	//mCube = new D3DTexturedCube();
-	//mCube->setBuffers(pDevice);
 
 	ID3DXBuffer *m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/DrawQuad.fx", 0, 0, D3DXSHADER_DEBUG,0, &mQuadFX, &m_Error);
@@ -285,7 +274,7 @@ void Game::Update()
 
 	m_Font->Update(m_DeltaTime, m_WindowWidth, m_WindowHeight);	
 
-	// Animate the skinned mesh.
+	//  Animate the skinned mesh.
 	m_SkinnedMesh->Update(m_DeltaTime);
 
 	// Animate spot light by rotating it on y-axis with respect to time.
@@ -363,7 +352,7 @@ void Game::Draw()
 		D3DXMatrixScaling(&matHeadScale, 2.0f, 2.0f, 2.0f);
 		matWorld = matHeadScale * matHeadTranslation;
 		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());
-		mHeadSad->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+		//mHeadSad->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
 	m_SpotInterface->GetEffect()->EndPass();
 	m_SpotInterface->GetEffect()->End();
@@ -402,7 +391,7 @@ void Game::Draw()
 	m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
 
 	SetViewSpaceVariables(matWorld, 0, 0);
-	mHeadSad->Draw(mViewInterface->GetEffect(), 0);
+	//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
 
 	mViewInterface->End();
 
@@ -432,7 +421,7 @@ void Game::Draw()
 	m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
 
 	SetViewSpaceVariables(matWorld, 0, 0);
-	mHeadSad->Draw(mViewInterface->GetEffect(), 0);
+	//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
 
 	mViewInterface->End();
 
@@ -587,7 +576,7 @@ void Game::Unload()
 {
 	m_Font->Release();
 
-	m_PhongInterface->Release();
+	//m_PhongInterface->Release();
 	m_AnimatedInterface->Release();
 	m_Dwarf->Release();
 

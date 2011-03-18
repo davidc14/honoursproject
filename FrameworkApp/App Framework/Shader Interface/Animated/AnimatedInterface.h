@@ -58,7 +58,7 @@ private:
 		mhLightWVP;
 
 	ID3DXEffect* mFX;
-	ID3DXEffect* shadowFX;
+	//ID3DXEffect* shadowFX;
 	DirLight mLight;
 	Mtrl     mWhiteMtrl;
 
