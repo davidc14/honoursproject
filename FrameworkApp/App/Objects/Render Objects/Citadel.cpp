@@ -186,7 +186,7 @@ bool Citadel::LoadModel()
 	//("Models/Citadel", "Citadel.x")
 	//("Models/SpaceShip", "SpaceShip.x")
 	//Attempt to load the model
-	if(!m_Model->SetModel("Models/Atrium", "BasicColumnScene.X"))
+	if(!m_Model->SetModel("Models/Atrium", "MyRoom.X"))
 		//Freak out if it fails
 		return false;
 
