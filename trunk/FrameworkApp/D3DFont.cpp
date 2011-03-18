@@ -30,9 +30,9 @@ void D3DFont::Update(float deltaTime, float width, float height)
 	rect.left = 0;
 	sprintf_s(m_DeltaTimeString, sizeof(m_DeltaTimeString), "%f", deltaTime);
 	
-	sprintf_s (infoString,sizeof(infoString)," ms per frame ");
+	//sprintf_s (infoString,sizeof(infoString)," ms per frame ");
 
-	strcat_s(m_DeltaTimeString, sizeof(m_DeltaTimeString) + sizeof(infoString), infoString);
+	//strcat_s(m_DeltaTimeString, sizeof(m_DeltaTimeString) + sizeof(infoString), infoString);
 }
 
 void D3DFont::Draw()
