@@ -49,8 +49,8 @@ bool XModel::SetModel(char* filePath, char* fileName)
 	m_DefaultTexture = 0;
 
 	//Create the default texture incase there is no texture in the model
-	//D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_DefaultTexture);
-	D3DXCreateTextureFromFile(pDevice, "HeadBigEarsBakedAO-surfaceShader1SG-headsad_Mesh01.tga", &m_DefaultTexture);
+	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_DefaultTexture);
+	//D3DXCreateTextureFromFile(pDevice, "HeadBigEarsBakedAO-surfaceShader1SG-headsad_Mesh01.tga", &m_DefaultTexture);
 
 	//Load the .x file from file into system memory
 	// local variable ()
