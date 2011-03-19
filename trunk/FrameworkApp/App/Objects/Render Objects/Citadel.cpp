@@ -36,7 +36,7 @@ Citadel::Citadel(IDirect3DDevice9* Device)
 	//Assign memory for the model objects
 	m_Model = new XModel(Device);
 
-	Device->Release();
+	//Device->Release();
 
 	//If the model failed don't attempt to load it
 	if(m_Model != NULL)
