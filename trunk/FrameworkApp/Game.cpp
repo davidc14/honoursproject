@@ -580,12 +580,12 @@ void Game::SetSSAOHandles()
 	D3DXMatrixInverse(&matProjInv, 0, m_RenderTarget->getProjectionPointer());
 	mSSAOContainer.mProjectionInverse = matProjInv;
 	mSSAOContainer.mRandomBuffer = mRandomTexture;
-	mSSAOContainer.mScale = 23.0f;
+	mSSAOContainer.mScale = 0.5f;
 	mSSAOContainer.mScreenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
 	//mSSAOContainer.mUseAO = mUseAO;
 	//mSSAOContainer.mUseColour = mUseColour;
 	mSSAOContainer.mUseLighting = false;
-	mSSAOContainer.mSampleRadius = 75.0f;
+	mSSAOContainer.mSampleRadius = 50.0f;
 
 	mSSAOInterface->UpdateHandles(&mSSAOContainer);
 }
