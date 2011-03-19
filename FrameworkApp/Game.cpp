@@ -170,9 +170,6 @@ bool Game::LoadContent()
 	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth/2, (UINT)m_WindowHeight/2, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mFinalTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 
-
-	
-
 	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_WhiteTexture);
 	D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &mRandomTexture);
 
@@ -212,6 +209,8 @@ bool Game::LoadContent()
 	mhFinalTech = mFinalFX->GetTechniqueByName("Merge");
 	mhColourTexture = mFinalFX->GetParameterByName(0, "colourTexture");
 	mhSSAOTexture = mFinalFX->GetParameterByName(0, "ssaoTexture");
+
+	mCurrentRenderTarget = FinalPass;
 
 	return true;
 }
@@ -260,6 +259,20 @@ void Game::HandleInput()
 	//if(m_DInput->GetKeyState(DIK_SPACE))
 	if(pNewDigitalControlMap[DIK_SPACE] && !pDigitalControlMap[DIK_SPACE])
 		m_Camera->SetActiveFlag(!m_Camera->GetActiveFlag());
+
+	if(pNewDigitalControlMap[DIK_RIGHT] && !pDigitalControlMap[DIK_RIGHT])
+	{
+		mCurrentRenderTarget = (RenderTargets)(mCurrentRenderTarget + (RenderTargets)1);
+		if(mCurrentRenderTarget > FinalPass)
+			mCurrentRenderTarget = Colour;
+	}
+
+	if(pNewDigitalControlMap[DIK_LEFT] && !pDigitalControlMap[DIK_LEFT])
+	{
+		mCurrentRenderTarget = (RenderTargets)(mCurrentRenderTarget - (RenderTargets)1);
+		if(mCurrentRenderTarget < Colour)
+			mCurrentRenderTarget = FinalPass;
+	}
 }
 
 void Game::Update()
@@ -380,59 +393,59 @@ void Game::Draw()
 
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 
-	mViewInterface->SetTechnique(mViewInterface->Normals);
+		mViewInterface->SetTechnique(mViewInterface->Normals);
 
-	mViewInterface->Begin();
+		mViewInterface->Begin();
 
-	SetViewSpaceVariables(m_Citadel->GetWorld(), 0, 0);
-	m_Citadel->Draw(mViewInterface->GetEffect(), 0);
+			SetViewSpaceVariables(m_Citadel->GetWorld(), 0, 0);
+			m_Citadel->Draw(mViewInterface->GetEffect(), 0);
 
-	SetViewSpaceVariables(m_Dwarf->GetWorld(), 0, 0);
-	m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
+			SetViewSpaceVariables(m_Dwarf->GetWorld(), 0, 0);
+			m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
 
-	SetViewSpaceVariables(matWorld, 0, 0);
-	//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
+			SetViewSpaceVariables(matWorld, 0, 0);
+			//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
 
-	mViewInterface->End();
+		mViewInterface->End();
 
-	mViewInterface->SetTechnique(mViewInterface->NormalsAnimated);
+		mViewInterface->SetTechnique(mViewInterface->NormalsAnimated);
 
-	mViewInterface->Begin();
-	
-	SetViewSpaceVariables(*m_SkinnedMesh->GetWorld(), m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-	m_SkinnedMesh->Draw();
+		mViewInterface->Begin();
+		
+			SetViewSpaceVariables(*m_SkinnedMesh->GetWorld(), m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+			m_SkinnedMesh->Draw();
 
-	mViewInterface->End();
+		mViewInterface->End();
 		
 	mViewNormal->EndScene();
 
 	mViewPos->BeginScene();
 
-	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+		
+		mViewInterface->SetTechnique(mViewInterface->Position);
+
+		mViewInterface->Begin();
+
+			SetViewSpaceVariables(m_Citadel->GetWorld(), 0, 0);
+			m_Citadel->Draw(mViewInterface->GetEffect(), 0);
+
+			SetViewSpaceVariables(m_Dwarf->GetWorld(), 0, 0);
+			m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
+
+			SetViewSpaceVariables(matWorld, 0, 0);
+			//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
+
+		mViewInterface->End();
+
+		mViewInterface->SetTechnique(mViewInterface->PositionAnimated);
+
+		mViewInterface->Begin();
 	
-	mViewInterface->SetTechnique(mViewInterface->Position);
+			SetViewSpaceVariables(*m_SkinnedMesh->GetWorld(), m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+			m_SkinnedMesh->Draw();
 
-	mViewInterface->Begin();
-
-	SetViewSpaceVariables(m_Citadel->GetWorld(), 0, 0);
-	m_Citadel->Draw(mViewInterface->GetEffect(), 0);
-
-	SetViewSpaceVariables(m_Dwarf->GetWorld(), 0, 0);
-	m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
-
-	SetViewSpaceVariables(matWorld, 0, 0);
-	//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
-
-	mViewInterface->End();
-
-	mViewInterface->SetTechnique(mViewInterface->PositionAnimated);
-
-	mViewInterface->Begin();
-	
-	SetViewSpaceVariables(*m_SkinnedMesh->GetWorld(), m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-	m_SkinnedMesh->Draw();
-
-	mViewInterface->End();
+		mViewInterface->End();
 		
 	mViewPos->EndScene();
 
@@ -526,11 +539,16 @@ void Game::Draw()
 		mQuadFX->Begin(&passNo, 0);
 		mQuadFX->BeginPass(0);
 
-		//mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture());
-		//mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture());
-		//mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture());
-		//mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture());
-		mQuadFX->SetTexture(mQuadTexture, mFinalTarget->getRenderTexture());
+		switch(mCurrentRenderTarget)
+		{
+		case Colour : mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture()); break;
+		case Normals : mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture()); break;
+		case Positions: mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture()); break;
+		case SSAO : mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture()); break;
+		case FinalPass : mQuadFX->SetTexture(mQuadTexture, mFinalTarget->getRenderTexture()); break;
+		default: MessageBox(0, "Unrecognised Render Target", "Render target error", 0); break;
+		}
+		
 		mQuadFX->CommitChanges();
 
 			m_RenderTarget->DrawUntextured();
@@ -618,32 +636,6 @@ void Game::CalculateMatrices()
 	D3DXMatrixRotationY(&mViewTransform, 0);
 	D3DXVec3Transform(&vViewVector, &(vLookatPt - vEyePt), &mViewTransform );
 	D3DXMatrixLookAtLH( &matView, m_Camera->getPosition(), m_Camera->getLookAt(), m_Camera->getUp() );
-}
-
-void Game::SetShaderVariables()
-{
-	////Update the view and projection matrices in the container
-	//m_LightingContainer.matProj = matProj;
-	//m_LightingContainer.matView = matView;	
-	//
-	////Update the view vector
-	//m_LightingContainer.vViewVector = vViewVector;
-	////Pass it in the lighting interface
-	//m_LightingInterface->UpdateHandles(&m_LightingContainer);
-}
-
-void Game::SetPhongShaderVariables(D3DXMATRIX World)
-{
-	////Update the view and projection matrices in the container
-	//m_PhongContainer.m_WVP = World * matView * *m_RenderTarget->getProjectionPointer();
-	//m_PhongContainer.m_EyePosW = *m_Camera->getPosition();
-	//m_PhongContainer.m_Light = mLight;
-	////m_PhongContainer.m_LightWVP = World * m_LightViewProj;
-	////m_PhongContainer.m_ShadowMap = m_ShadowTarget->getRenderTexture();	
-	////m_PhongContainer.m_ShadowMap = m_WhiteTexture;	
-	//
-	////Pass it in the lighting interface
-	//m_PhongInterface->UpdateHandles(&m_PhongContainer);
 }
 
 void Game::SetAnimatedInterfaceVariables(D3DXMATRIX World)

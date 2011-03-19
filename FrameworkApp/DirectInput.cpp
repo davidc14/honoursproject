@@ -74,6 +74,16 @@ void DirectInput::Update()
 	else
 		DigitalControlMap[DIK_SPACE]=false;
 
+	if(KeyBuffer[DIK_RIGHT] & 0x80)
+		DigitalControlMap[DIK_RIGHT]=true;
+	else
+		DigitalControlMap[DIK_RIGHT]=false;
+
+	if(KeyBuffer[DIK_LEFT] & 0x80)
+		DigitalControlMap[DIK_LEFT]=true;
+	else
+		DigitalControlMap[DIK_LEFT]=false;
+
 	if(mouseState.rgbButtons[0] & 0x80)
 		MouseControlMap[0] = true;
 	else
