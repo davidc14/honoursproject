@@ -229,10 +229,10 @@ void Game::HandleInput()
 	//Update direct input
 	m_DInput->Update();
 
-	if(m_DInput->GetMouseState(0))		
+	//if(m_DInput->GetMouseState(0))		
 		m_Camera->mouseMove();		
-	else
-		m_Camera->First(true);
+	//else
+	//	m_Camera->First(true);
 
 	//Check the key presses
 	//W
@@ -361,7 +361,7 @@ void Game::Draw()
 
 		D3DXMatrixIdentity(&matWorld);
 		D3DXMATRIX matHeadTranslation, matHeadScale;
-		D3DXMatrixTranslation(&matHeadTranslation, 0.0f, 3.0f, -5.5f);
+		D3DXMatrixTranslation(&matHeadTranslation, 25.0f, 3.0f, -25.0f);
 		D3DXMatrixScaling(&matHeadScale, 2.0f, 2.0f, 2.0f);
 		matWorld = matHeadScale * matHeadTranslation;
 		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());
