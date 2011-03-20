@@ -167,7 +167,7 @@ bool Game::LoadContent()
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
-	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)(m_WindowWidth/1.5f), (UINT)(m_WindowHeight/1.5f), D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)(m_WindowWidth/1.0f), (UINT)(m_WindowHeight/1.0f), D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mFinalTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 
 	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_WhiteTexture);

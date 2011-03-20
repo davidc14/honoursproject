@@ -8,9 +8,12 @@ sampler colourSampler = sampler_state
     AddressV  = WRAP;
     AddressW  = WRAP;
 	
-	magfilter = NONE; 
-	minfilter = NONE; 
+	//magfilter = NONE; 
+	//minfilter = NONE; 
 	mipfilter = NONE;
+	MinFilter = ANISOTROPIC;
+    MagFilter = ANISOTROPIC;
+    MaxAnisotropy = 16;
 };
 
 sampler ssaoSampler = sampler_state
@@ -20,8 +23,9 @@ sampler ssaoSampler = sampler_state
     AddressV  = WRAP;
     AddressW  = WRAP;
 	
-	magfilter = NONE; 
-	minfilter = NONE; 
+	MinFilter = ANISOTROPIC;
+    MagFilter = ANISOTROPIC;
+    MaxAnisotropy = 16;
 	mipfilter = NONE;
 };
 
@@ -63,7 +67,7 @@ technique Merge
 	pass P0
     {
         // Specify the vertex and pixel shader associated with this pass.
-        vertexShader = compile vs_3_0 MergeVShader();
-        pixelShader  = compile ps_3_0 MergePShader();
+        vertexShader = compile vs_2_0 MergeVShader();
+        pixelShader  = compile ps_2_0 MergePShader();
     }
 }
