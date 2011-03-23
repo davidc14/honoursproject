@@ -93,7 +93,7 @@ bool Game::LoadContent()
 	mFinalTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 
 	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_WhiteTexture);
-	D3DXCreateTextureFromFile(pDevice, "Textures/sampleTex.png", &mRandomTexture);
+	D3DXCreateTextureFromFile(pDevice, "Textures/random.png", &mRandomTexture);
 
 	// Set some light properties; other properties are set in update function,
 	// where they are animated.
