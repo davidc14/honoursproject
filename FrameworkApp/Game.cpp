@@ -4,84 +4,6 @@
 #include <d3dx9.h>
 #include <time.h>
 #include "Game.h"
-#include "XModel.h"
-#include "D3DFont.h"
-#include "BasicLightingInterface.h"
-#include "Dwarf.h"
-#include "DirectInput.h"
-#include "FPCamera.h"
-#include "App Framework\Utilities\d3dUtil.h"
-#include "App Framework\Shader Interface\SSAO Interface\SSAOInterface.h"
-#include "App Framework\Shader Interface\PhongLightingInterface.h"
-#include "App Framework\Shader Interface\Animated\AnimatedInterface.h"
-#include "App Framework\Shader Interface\Non Animated\SpotLightingInterface.h"
-#include "App Framework\Shader Interface\Buffer Interface\ViewSpaceInterface.h"
-#include "App Framework\Animation\Vertex.h"
-#include "App Framework\Animation\SkinnedMesh.h"
-#include "App\Render Targets\DrawableRenderTarget.h"
-#include "App\Render Targets\DrawableTex2D.h"
-#include "App\Objects\Render Objects\Citadel.h"
-#include "d3dTexturedCube.h"
-
-D3DXMATRIX matWorld, matView, matProj, matWorldInverseTranspose;
-D3DXVECTOR4 vViewVector;
-
-D3DFont* m_Font;
-
-PhongLightingInterface* m_PhongInterface;
-PhongLighting m_PhongContainer;
-
-AnimatedInterface* m_AnimatedInterface;
-AnimatedContainer m_AnimatedContainer;
-
-SpotLightingInterface* m_SpotInterface;
-SpotLighting m_SpotContainer;
-
-Citadel* m_Citadel;
-
-DirectInput* m_DInput;
-
-FPCamera* m_Camera;
-
-IDirect3DVertexBuffer9* mRadarVB;
-
-SkinnedMesh* m_SkinnedMesh;
-
-Dwarf* m_Dwarf;
-
-DirLight mLight;
-Mtrl     mWhiteMtrl;
-
-DrawableRenderTarget* m_RenderTarget;
-DrawableRenderTarget* mShadowTarget;
-
-IDirect3DTexture9* m_WhiteTexture;
-IDirect3DTexture9* m_SampleTexture;
- 
-SpotLight mSpotLight;
-D3DXMATRIXA16 m_LightViewProj;
-
-ID3DXEffect* mQuadFX;
-D3DXHANDLE mQuadTech;
-D3DXHANDLE mQuadTexture;
-
-ViewSpaceInterface* mViewInterface;
-ViewSpaceContainer mViewContainer;
-DrawableRenderTarget* mViewPos;
-DrawableRenderTarget* mViewNormal;
-
-DrawableRenderTarget* mSSAOTarget;
-IDirect3DTexture9* mRandomTexture;
-SSAOInterface* mSSAOInterface;
-SSAOContainer mSSAOContainer;
-
-ID3DXEffect* mFinalFX;
-D3DXHANDLE mhFinalTech;
-D3DXHANDLE mhColourTexture;
-D3DXHANDLE mhSSAOTexture;
-DrawableRenderTarget* mFinalTarget;
-
-XModel* mHeadSad;
 
 Game::Game(LPDIRECT3DDEVICE9 g_pd3dDevice)
 {
@@ -178,7 +100,7 @@ bool Game::LoadContent()
 	mSpotLight.ambient   = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.diffuse   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
-	mSpotLight.spotPower = 1.0f;
+	mSpotLight.spotPower = 12.0f;
 
 	ID3DXBuffer *m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/DrawQuad.fx", 0, 0, D3DXSHADER_DEBUG,0, &mQuadFX, &m_Error);

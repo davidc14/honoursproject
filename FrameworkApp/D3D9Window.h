@@ -2,7 +2,7 @@
 #define _D39DWINDOW_H
 
 #include "Window.h"
-#include "Game.h"
+//#include "Game.h"
 #include <d3d9.h>
 #include <d3dx9.h>
 
@@ -16,7 +16,7 @@ public: //Public methods
 	HRESULT InitWindow( HINSTANCE hInstance, int nCmdShow );
 	HRESULT InitDevice();
 	void CleanupDevice();
-	void Render(Game*);
+	//void Render(Game*);
 
 	HRESULT ResetDevice();
 
