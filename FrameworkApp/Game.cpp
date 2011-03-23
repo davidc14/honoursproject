@@ -89,7 +89,7 @@ bool Game::LoadContent()
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
-	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)(m_WindowWidth/2.0f), (UINT)(m_WindowHeight/2.0f), D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)(m_WindowWidth/1.5f), (UINT)(m_WindowHeight/1.5f), D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mFinalTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 
 	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_WhiteTexture);
@@ -490,9 +490,9 @@ void Game::Draw()
 
 void Game::SetSSAOHandles()
 {
-	mSSAOContainer.mColourBuffer = m_RenderTarget->getRenderTexture();
+	//mSSAOContainer.mColourBuffer = m_RenderTarget->getRenderTexture();
 	mSSAOContainer.mFarClip = m_Camera->GetFarPlane();
-	mSSAOContainer.mIntensity = 3.0f;
+	mSSAOContainer.mIntensity = 4.0f;
 	mSSAOContainer.mInverseScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);
 	mSSAOContainer.mJitter = 1.0f;
 	mSSAOContainer.mNearClip = 1.0f;
@@ -502,12 +502,12 @@ void Game::SetSSAOHandles()
 	D3DXMatrixInverse(&matProjInv, 0, m_RenderTarget->getProjectionPointer());
 	mSSAOContainer.mProjectionInverse = matProjInv;
 	mSSAOContainer.mRandomBuffer = mRandomTexture;
-	mSSAOContainer.mScale = 0.5f;
+	mSSAOContainer.mScale = 1.0f;
 	mSSAOContainer.mScreenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
 	//mSSAOContainer.mUseAO = mUseAO;
 	//mSSAOContainer.mUseColour = mUseColour;
 	mSSAOContainer.mUseLighting = false;
-	mSSAOContainer.mSampleRadius = 50.0f;
+	mSSAOContainer.mSampleRadius = 75.0f;
 
 	mSSAOInterface->UpdateHandles(&mSSAOContainer);
 }

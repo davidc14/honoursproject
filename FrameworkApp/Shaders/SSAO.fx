@@ -1,7 +1,6 @@
 texture normalBuffer;
 texture positionBuffer;
 texture randomBuffer;
-texture sceneBuffer;
 
 float4x4 g_screen_to_camera;
 
@@ -26,6 +25,7 @@ sampler g_buffer = sampler_state
 	
 	AddressU = WRAP;
 	AddressV = WRAP;
+	AddressW = WRAP;
 	
 	magfilter = NONE; 
 	minfilter = NONE; 
@@ -37,6 +37,7 @@ sampler g_buffer_pos = sampler_state
 	Texture = <positionBuffer>;
 	AddressU = WRAP;
 	AddressV = WRAP;
+	AddressW = WRAP;
 	
 	magfilter = NONE; 
 	minfilter = NONE; 
@@ -55,20 +56,7 @@ sampler g_random = sampler_state
 	mipfilter = NONE;
 };
 
-sampler g_scene = sampler_state
-{
-	Texture = <sceneBuffer>;
-	AddressU = CLAMP;
-	AddressV = CLAMP;
-	
-	magfilter = NONE; 
-	minfilter = NONE; 
-	mipfilter = NONE;
-	MinFilter = ANISOTROPIC;
-    MagFilter = ANISOTROPIC;
-    MaxAnisotropy = 16;
-	mipfilter = NONE;
-};
+
 
 
 struct VS_INPUT
@@ -176,9 +164,6 @@ PS_OUTPUT AOPShader(PS_INPUT i)
  
   if (g_use_ambient_occlusion)
     o.color.rgb -= saturate(ao*g_intensity);
-  
-  /*if(useColour)  
-	o.color.rgb *= tex2D(g_scene, i.uv);*/
  
   return o;
 }
