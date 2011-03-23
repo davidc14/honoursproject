@@ -178,7 +178,7 @@ bool Game::LoadContent()
 	mSpotLight.ambient   = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.diffuse   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
-	mSpotLight.spotPower = 24.0f;
+	mSpotLight.spotPower = 1.0f;
 
 	ID3DXBuffer *m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/DrawQuad.fx", 0, 0, D3DXSHADER_DEBUG,0, &mQuadFX, &m_Error);
@@ -365,7 +365,7 @@ void Game::Draw()
 		D3DXMatrixScaling(&matHeadScale, 2.0f, 2.0f, 2.0f);
 		matWorld = matHeadScale * matHeadTranslation;
 		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());
-		mHeadSad->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+		//mHeadSad->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
 	m_SpotInterface->GetEffect()->EndPass();
 	m_SpotInterface->GetEffect()->End();
@@ -404,7 +404,7 @@ void Game::Draw()
 			m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
 
 			SetViewSpaceVariables(matWorld, 0, 0);
-			mHeadSad->Draw(mViewInterface->GetEffect(), 0);
+			//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
 
 		mViewInterface->End();
 
@@ -434,7 +434,7 @@ void Game::Draw()
 			m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
 
 			SetViewSpaceVariables(matWorld, 0, 0);
-			mHeadSad->Draw(mViewInterface->GetEffect(), 0);
+			//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
 
 		mViewInterface->End();
 
