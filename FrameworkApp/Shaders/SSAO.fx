@@ -64,6 +64,10 @@ sampler g_scene = sampler_state
 	magfilter = NONE; 
 	minfilter = NONE; 
 	mipfilter = NONE;
+	MinFilter = ANISOTROPIC;
+    MagFilter = ANISOTROPIC;
+    MaxAnisotropy = 16;
+	mipfilter = NONE;
 };
 
 

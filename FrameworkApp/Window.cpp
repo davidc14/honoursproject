@@ -101,14 +101,15 @@ HRESULT Window::InitWindow( HINSTANCE hInstance, int nCmdShow )
     AdjustWindowRect( &rc, WS_OVERLAPPEDWINDOW, FALSE );
 
 	g_hWnd = CreateWindowEx(	WS_EX_APPWINDOW | WS_EX_WINDOWEDGE,
+								//NULL,
 							"WindowClass", 
 							"Direct3D 9 Window", 
+							//WS_EX_TOPMOST | WS_POPUP,
 							WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 
-							//WS_EX_TOPMOST,
 							0, 
 							0,
-							rc.right  - rc.left,
-							rc.bottom - rc.top, 
+							WindowWidth,
+							WindowHeight, 
 							NULL,
 							NULL,
 							hInstance,
