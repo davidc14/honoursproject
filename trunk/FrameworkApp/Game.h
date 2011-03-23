@@ -5,6 +5,25 @@
 #include <queue>
 #include "NetworkDefines.h"
 
+#include "XModel.h"
+#include "D3DFont.h"
+#include "BasicLightingInterface.h"
+#include "Dwarf.h"
+#include "DirectInput.h"
+#include "FPCamera.h"
+#include "App Framework\Utilities\d3dUtil.h"
+#include "App Framework\Shader Interface\SSAO Interface\SSAOInterface.h"
+#include "App Framework\Shader Interface\PhongLightingInterface.h"
+#include "App Framework\Shader Interface\Animated\AnimatedInterface.h"
+#include "App Framework\Shader Interface\Non Animated\SpotLightingInterface.h"
+#include "App Framework\Shader Interface\Buffer Interface\ViewSpaceInterface.h"
+#include "App Framework\Animation\Vertex.h"
+#include "App Framework\Animation\SkinnedMesh.h"
+#include "App\Render Targets\DrawableRenderTarget.h"
+#include "App\Render Targets\DrawableTex2D.h"
+#include "App\Objects\Render Objects\Citadel.h"
+#include "d3dTexturedCube.h"
+
 using namespace std;
 
 class Game
@@ -91,6 +110,68 @@ private:
 	RenderTargets mCurrentRenderTarget;
 
 	//void SetShaderVariables();
+
+private:
+
+	D3DXMATRIX matWorld, matView, matProj, matWorldInverseTranspose;
+	D3DXVECTOR4 vViewVector;
+
+	D3DFont* m_Font;
+
+	PhongLightingInterface* m_PhongInterface;
+	PhongLighting m_PhongContainer;
+
+	AnimatedInterface* m_AnimatedInterface;
+	AnimatedContainer m_AnimatedContainer;
+
+	SpotLightingInterface* m_SpotInterface;
+	SpotLighting m_SpotContainer;
+
+	Citadel* m_Citadel;
+
+	DirectInput* m_DInput;
+
+	FPCamera* m_Camera;
+
+	IDirect3DVertexBuffer9* mRadarVB;
+
+	SkinnedMesh* m_SkinnedMesh;
+
+	Dwarf* m_Dwarf;
+
+	DirLight mLight;
+	Mtrl     mWhiteMtrl;
+
+	DrawableRenderTarget* m_RenderTarget;
+	DrawableRenderTarget* mShadowTarget;
+
+	IDirect3DTexture9* m_WhiteTexture;
+	IDirect3DTexture9* m_SampleTexture;
+	 
+	SpotLight mSpotLight;
+	D3DXMATRIXA16 m_LightViewProj;
+
+	ID3DXEffect* mQuadFX;
+	D3DXHANDLE mQuadTech;
+	D3DXHANDLE mQuadTexture;
+
+	ViewSpaceInterface* mViewInterface;
+	ViewSpaceContainer mViewContainer;
+	DrawableRenderTarget* mViewPos;
+	DrawableRenderTarget* mViewNormal;
+
+	DrawableRenderTarget* mSSAOTarget;
+	IDirect3DTexture9* mRandomTexture;
+	SSAOInterface* mSSAOInterface;
+	SSAOContainer mSSAOContainer;
+
+	ID3DXEffect* mFinalFX;
+	D3DXHANDLE mhFinalTech;
+	D3DXHANDLE mhColourTexture;
+	D3DXHANDLE mhSSAOTexture;
+	DrawableRenderTarget* mFinalTarget;
+
+	XModel* mHeadSad;
 };
 
 #endif

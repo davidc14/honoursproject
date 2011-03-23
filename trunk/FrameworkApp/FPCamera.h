@@ -1,7 +1,7 @@
 #ifndef _FPCamera_H
 #define _FPCamera_H
 
-#include "D3D9Window.h"
+//#include "D3D9Window.h"
 #include "CustomMath.h"
 
 //Pi

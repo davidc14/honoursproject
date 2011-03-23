@@ -96,7 +96,8 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 				pGame->RecordWindowSize((float)pWindow->getWindowWidth(),(float)pWindow->getWindowHeight());
 				pGame->HandleInput();
 				pGame->Update();
-				pWindow->Render(pGame);
+				pGame->Draw();
+				//pWindow->Render(pGame);
 			}
         }		
     }		

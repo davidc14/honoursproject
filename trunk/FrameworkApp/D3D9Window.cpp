@@ -72,23 +72,23 @@ void D3D9Window::CleanupDevice()
 	
 }
 
-void D3D9Window::Render(Game* pGame)
-{
-	 //if( NULL == g_pd3dDevice )
-  //      return;
-
-  //  // Clear the backbuffer to a blue color
-  //  g_pd3dDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
-
-  //  // Begin the scene
-  //  if( SUCCEEDED( g_pd3dDevice->BeginScene() ) )
-  //  {
-  //      // Rendering of scene objects can happen here
-		pGame->Draw();
-  //      // End the scene
-  //      g_pd3dDevice->EndScene();
-  //  }
-
-  //  // Present the backbuffer contents to the display
-  //  g_pd3dDevice->Present( NULL, NULL, NULL, NULL );
-}
+//void D3D9Window::Render(Game* pGame)
+//{
+//	 //if( NULL == g_pd3dDevice )
+//  //      return;
+//
+//  //  // Clear the backbuffer to a blue color
+//  //  g_pd3dDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
+//
+//  //  // Begin the scene
+//  //  if( SUCCEEDED( g_pd3dDevice->BeginScene() ) )
+//  //  {
+//  //      // Rendering of scene objects can happen here
+//		pGame->Draw();
+//  //      // End the scene
+//  //      g_pd3dDevice->EndScene();
+//  //  }
+//
+//  //  // Present the backbuffer contents to the display
+//  //  g_pd3dDevice->Present( NULL, NULL, NULL, NULL );
+//}
