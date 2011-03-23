@@ -45,7 +45,7 @@ bool SSAOInterface::SetupHandles()
 	mhNearClip = mSSAOFX->GetParameterByName(0, "g_near_clip");
 	mhScreenSize = mSSAOFX->GetParameterByName(0, "g_screen_size");
 	mhInvScreenSize = mSSAOFX->GetParameterByName(0, "g_inv_screen_size");
-	mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneBuffer");
+	//mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneBuffer");
 	mhUseColour = mSSAOFX->GetParameterByName(0, "useColour");
 
 	return true;
@@ -86,7 +86,7 @@ void SSAOInterface::UpdateHandles(SSAOContainer *input)
 	mSSAOFX->SetBool(mhUseColour, input->mUseColour);
 	mSSAOFX->SetValue(mhScreenSize, &(input->mScreenSize), sizeof(D3DXVECTOR2));
 	mSSAOFX->SetValue(mhInvScreenSize, &(input->mInverseScreenSize), sizeof(D3DXVECTOR2));
-	mSSAOFX->SetTexture(mhSceneTex, input->mColourBuffer);
+	//mSSAOFX->SetTexture(mhSceneTex, input->mColourBuffer);
 
 	mSSAOFX->CommitChanges();
 }
