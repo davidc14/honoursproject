@@ -494,7 +494,7 @@ void Game::SetSSAOHandles()
 	mSSAOContainer.mFarClip = m_Camera->GetFarPlane();
 	mSSAOContainer.mIntensity = 4.0f;
 	mSSAOContainer.mInverseScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);
-	mSSAOContainer.mJitter = 0.5f;
+	mSSAOContainer.mJitter = 1.0f;
 	mSSAOContainer.mNearClip = 1.0f;
 	mSSAOContainer.mNormalBuffer = mViewNormal->getRenderTexture();
 	mSSAOContainer.mPositionBuffer = mViewPos->getRenderTexture();
