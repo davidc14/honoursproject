@@ -27,8 +27,8 @@ sampler g_buffer = sampler_state
 	AddressV = WRAP;
 	AddressW = WRAP;
 	
-	magfilter = NONE; 
-	minfilter = NONE; 
+	magfilter = LINEAR; 
+	minfilter = LINEAR; 
 	mipfilter = NONE;
 };
 
@@ -39,8 +39,8 @@ sampler g_buffer_pos = sampler_state
 	AddressV = WRAP;
 	AddressW = WRAP;
 	
-	magfilter = NONE; 
-	minfilter = NONE; 
+	magfilter = LINEAR; 
+	minfilter = LINEAR; 
 	mipfilter = NONE;
 };
 
@@ -51,8 +51,8 @@ sampler g_random = sampler_state
     AddressV  = WRAP;
     AddressW  = WRAP;
 	
-	magfilter = NONE; 
-	minfilter = NONE; 
+	magfilter = LINEAR; 
+	minfilter = LINEAR; 
 	mipfilter = NONE;
 };
 
