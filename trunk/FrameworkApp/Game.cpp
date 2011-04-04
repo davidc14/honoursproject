@@ -463,12 +463,12 @@ void Game::Draw()
 
 		switch(mCurrentRenderTarget)
 		{
-		case Colour : mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture()); break;
-		case Normals : mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture()); break;
-		case Positions: mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture()); break;
-		case SSAO : mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture()); break;
-		case FinalPass : mQuadFX->SetTexture(mQuadTexture, mFinalTarget->getRenderTexture()); break;
-		default: MessageBox(0, "Unrecognised Render Target", "Render target error", 0); break;
+			case Colour : mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture()); break;
+			case Normals : mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture()); break;
+			case Positions: mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture()); break;
+			case SSAO : mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture()); break;
+			case FinalPass : mQuadFX->SetTexture(mQuadTexture, mFinalTarget->getRenderTexture()); break;
+			default: MessageBox(0, "Unrecognised Render Target", "Render target error", 0); break;
 		}
 		
 		mQuadFX->CommitChanges();
