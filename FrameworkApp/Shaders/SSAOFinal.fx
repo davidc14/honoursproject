@@ -56,6 +56,8 @@ PSIN MergeVShader(VSIN input)
 float4 MergePShader(PSIN input) : COLOR0
 {
 	float4 finalColour;
+	/*input.uv.x += 1/800;
+	input.uv.y += 1/600;*/
 	
 	finalColour = tex2D(colourSampler, input.uv) * tex2D(ssaoSampler, input.uv);
 	

@@ -89,7 +89,8 @@ bool Game::LoadContent()
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
-	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)(m_WindowWidth/1.0f), (UINT)(m_WindowHeight/1.0f), D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)(m_WindowWidth/2.0f), (UINT)(m_WindowHeight/2.0f), D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mBlurTarget = new DrawableRenderTarget(pDevice, (UINT)(m_WindowWidth/1.0f), (UINT)(m_WindowHeight/1.0f), D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mFinalTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 
 	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_WhiteTexture);
@@ -133,6 +134,19 @@ bool Game::LoadContent()
 	mhSSAOTexture = mFinalFX->GetParameterByName(0, "ssaoTexture");
 
 	mCurrentRenderTarget = FinalPass;
+	
+	m_Error = 0;
+	D3DXCreateEffectFromFile(pDevice, "Shaders/BlurEffect.fx", 0, 0, D3DXSHADER_DEBUG,0, &mBlurFX, &m_Error);
+	if(m_Error)
+	{
+		//Display the error in a message bos
+		MessageBox(0, (char*)m_Error->GetBufferPointer(),0,0);
+	}
+
+	mhBlurTech = mBlurFX->GetTechniqueByName("SSAOBlur");
+	mhBlurDirection = mBlurFX->GetParameterByName(0, "blurDirection");
+	mhDepthTexture = mBlurFX->GetParameterByName(0, "depthTexture");
+	mhBlurAOTexture = mBlurFX->GetParameterByName(0, "SSAOTexture");
 
 	return true;
 }
@@ -448,6 +462,38 @@ void Game::Draw()
 
 	mFinalTarget->EndScene();
 
+	mBlurTarget->BeginScene();
+
+		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+		UINT blurPasses = 0;
+		mBlurFX->Begin(&blurPasses, 0);
+		mBlurFX->BeginPass(0);
+			mBlurFX->SetTexture(mhDepthTexture, mViewNormal->getRenderTexture());
+			mBlurFX->SetTexture(mhBlurAOTexture, mSSAOTarget->getRenderTexture());
+			mBlurFX->SetValue(mhBlurDirection, new D3DXVECTOR2(1.0f/m_WindowWidth, 1.0f/m_WindowHeight), sizeof(D3DXVECTOR2));
+			mBlurFX->CommitChanges();
+
+			mBlurTarget->DrawUntextured();
+
+		mBlurFX->EndPass();
+		mBlurFX->End();
+
+		//pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+		
+		/*mBlurFX->Begin(&blurPasses, 0);
+		mBlurFX->BeginPass(0);
+			mBlurFX->SetTexture(mhDepthTexture, mViewNormal->getRenderTexture());
+			mBlurFX->SetTexture(mhBlurAOTexture, mSSAOTarget->getRenderTexture());
+			mBlurFX->SetValue(mhBlurDirection, new D3DXVECTOR2(0.0f, 1.0f/m_WindowHeight), sizeof(D3DXVECTOR2));
+			mBlurFX->CommitChanges();
+			
+			mBlurTarget->DrawUntextured();
+
+		mBlurFX->EndPass();
+		mBlurFX->End();*/
+
+	mBlurTarget->EndScene();
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0);
@@ -467,6 +513,7 @@ void Game::Draw()
 			case Normals : mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture()); break;
 			case Positions: mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture()); break;
 			case SSAO : mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture()); break;
+			case BlurPass : mQuadFX->SetTexture(mQuadTexture, mBlurTarget->getRenderTexture()); break;
 			case FinalPass : mQuadFX->SetTexture(mQuadTexture, mFinalTarget->getRenderTexture()); break;
 			default: MessageBox(0, "Unrecognised Render Target", "Render target error", 0); break;
 		}
@@ -547,6 +594,9 @@ void Game::Unload()
 
 	mFinalFX->Release();
 	mFinalTarget->Release();
+
+	mBlurTarget->Release();
+	mBlurFX->Release();
 }
 
 void Game::CalculateMatrices()
