@@ -226,6 +226,16 @@ float4 VBlend2PS(float3 normalW : TEXCOORD0, float3 toEyeW  : TEXCOORD1, float2 
     return float4(litColor, gMtrl.diffuse.a*texColor.a);    
 }
 
+float4 VBlend2PSFlatShading(float3 normalW : TEXCOORD0, float3 toEyeW  : TEXCOORD1, float2 tex0 : TEXCOORD2, float4 projTex : TEXCOORD3) : COLOR
+{	
+	// Get the texture color.
+	float4 texColor = tex2D(TexS, tex0);
+		
+	// Sum all the terms together and copy over the diffuse alpha.
+    return float4(texColor.rgb, gMtrl.diffuse.a*texColor.a);    
+}
+
+
 technique VBlend2Tech
 {
     pass P0
@@ -233,5 +243,15 @@ technique VBlend2Tech
         // Specify the vertex and pixel shader associated with this pass.
         vertexShader = compile vs_2_0 VBlend2VS();
         pixelShader  = compile ps_2_0 VBlend2PS();
+    }
+}
+
+technique VBlend2FlatShading
+{
+    pass P0
+    {
+        // Specify the vertex and pixel shader associated with this pass.
+        vertexShader = compile vs_2_0 VBlend2VS();
+        pixelShader  = compile ps_2_0 VBlend2PSFlatShading();
     }
 }
