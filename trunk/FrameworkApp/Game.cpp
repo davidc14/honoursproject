@@ -107,7 +107,7 @@ bool Game::LoadContent()
 	mSpotLight.ambient   = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.diffuse   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
-	mSpotLight.spotPower = 12.0f;
+	mSpotLight.spotPower = 6.0f;
 
 	ID3DXBuffer *m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/DrawQuad.fx", 0, 0, D3DXSHADER_DEBUG,0, &mQuadFX, &m_Error);
@@ -365,7 +365,7 @@ void Game::Draw()
 	m_AnimatedInterface->GetEffect()->Begin(&numPasses, 0);
 	m_AnimatedInterface->GetEffect()->BeginPass(0);		
 
-		m_SkinnedMesh->UpdateShaderVariables(&m_AnimatedContainer);
+		mAOMTiny->UpdateShaderVariables(&m_AnimatedContainer);
 		SetAnimatedInterfaceVariables(*m_SkinnedMesh->GetWorld());
 
 		mAOMTiny->Draw();
