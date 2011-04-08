@@ -56,7 +56,7 @@ float4 PixelShaderFunction(PSINPUT input) : COLOR0
     float color = tex2D( baseSampler, input.TexCoord).r;
    
     float num = 1;
-    int blurSamples = 8; 
+    int blurSamples = 12; 
 	
 	for( int i = -blurSamples/2; i <= blurSamples/2; i+=1)
 	{
@@ -65,7 +65,7 @@ float4 PixelShaderFunction(PSINPUT input) : COLOR0
 		float sample = tex2D(baseSampler, newTexCoord).r;
 		float3 samplenormal = tex2D(DepthMap, newTexCoord).rgb;
 			
-		if (dot(samplenormal, normal) > 0.99 )	
+		//if (dot(samplenormal, normal) > 0.99 )	
 		{
 			num += (blurSamples/2 - abs(i));
 			color += sample * (blurSamples/2 - abs(i));
