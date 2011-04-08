@@ -451,7 +451,8 @@ void Game::Draw()
 		mFinalFX->BeginPass(0);
 		
 		mFinalFX->SetTexture(mhColourTexture, m_RenderTarget->getRenderTexture());
-		mFinalFX->SetTexture(mhSSAOTexture, mSSAOTarget->getRenderTexture());
+		//mFinalFX->SetTexture(mhSSAOTexture, mSSAOTarget->getRenderTexture());
+		mFinalFX->SetTexture(mhSSAOTexture, mBlurTarget->getRenderTexture());
 
 		mFinalFX->CommitChanges();
 
