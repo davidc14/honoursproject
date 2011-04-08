@@ -177,6 +177,75 @@ float4 LightShadowPS(float3 posW    : TEXCOORD0,
 	return float4(litColor, gMtrl.diffuse.a*texColor.a);
 }
 
+float4 LightShadowPSFlatShading(float3 posW    : TEXCOORD0,
+                     float3 normalW : TEXCOORD1,
+                     float3 toEyeW  : TEXCOORD2,
+                     float2 tex0    : TEXCOORD3,
+                     float4 projTex : TEXCOORD4) : COLOR
+{
+	/*// Interpolated normals can become unnormal--so normalize.
+	normalW = normalize(normalW);
+	toEyeW  = normalize(toEyeW);
+	
+	// Light vector is from pixel to spotlight position.
+	float3 lightVecW = normalize(gLight.posW - posW);
+	
+	// Compute the reflection vector.
+	float3 r = reflect(-lightVecW, normalW);
+	
+	// Determine how much (if any) specular light makes it into the eye.
+	float t  = pow(max(dot(r, toEyeW), 0.0f), gMtrl.specPower);
+	
+	// Determine the diffuse light intensity that strikes the vertex.
+	float s = max(dot(lightVecW, normalW), 0.0f);
+	
+	// Compute the ambient, diffuse and specular terms separately. 
+	float3 spec = t*(gMtrl.spec*gLight.spec).rgb;
+	float3 diffuse = s*(gMtrl.diffuse*gLight.diffuse.rgb);
+	float3 ambient = gMtrl.ambient*gLight.ambient;
+	
+	// Compute spotlight coefficient.
+	float spot = pow(max( dot(-lightVecW, gLight.dirW), 0.0f), gLight.spotPower);
+	
+	// Sample decal map.
+	float4 texColor = tex2D(TexS, tex0); 
+	
+	// Project the texture coords and scale/offset to [0, 1].
+	projTex.xy /= projTex.w;            
+	projTex.x =  0.5f*projTex.x + 0.5f; 
+	projTex.y = -0.5f*projTex.y + 0.5f;
+	
+	// Compute pixel depth for shadowing.
+	float depth = projTex.z / projTex.w;
+ 
+	// Transform to texel space
+    float2 texelpos = SMAP_SIZE * projTex.xy;
+        
+    // Determine the lerp amounts.           
+    float2 lerps = frac( texelpos );
+    
+    // 2x2 percentage closest filter.
+    float dx = 1.0f / SMAP_SIZE;
+	float s0 = (tex2D(ShadowMapS, projTex.xy).r + SHADOW_EPSILON < depth) ? 0.0f : 1.0f;
+	float s1 = (tex2D(ShadowMapS, projTex.xy + float2(dx, 0.0f)).r + SHADOW_EPSILON < depth) ? 0.0f : 1.0f;
+	float s2 = (tex2D(ShadowMapS, projTex.xy + float2(0.0f, dx)).r + SHADOW_EPSILON < depth) ? 0.0f : 1.0f;
+	float s3 = (tex2D(ShadowMapS, projTex.xy + float2(dx, dx)).r   + SHADOW_EPSILON < depth) ? 0.0f : 1.0f;
+	
+	float shadowCoeff = lerp( lerp( s0, s1, lerps.x ),
+                              lerp( s2, s3, lerps.x ),
+                              lerps.y );
+	
+	// Light/Texture pixel.  Note that shadow coefficient only affects diffuse/spec.
+	float3 litColor = spot*ambient*texColor.rgb + spot*shadowCoeff*(diffuse*texColor.rgb + spec);
+	
+	//return texColor;*/
+	
+	// Sample decal map.
+	float4 texColor = tex2D(TexS, tex0); 
+	
+	return float4(texColor.rgb, gMtrl.diffuse.a*texColor.a);
+}
+
 technique LightShadowTech
 {
     pass P0
@@ -184,5 +253,15 @@ technique LightShadowTech
         // Specify the vertex and pixel shader associated with this pass.
         vertexShader = compile vs_2_0 LightShadowVS();
         pixelShader  = compile ps_2_0 LightShadowPS();
+    }
+}
+
+technique LightShadowTechFlatShading
+{
+    pass P0
+    {
+        // Specify the vertex and pixel shader associated with this pass.
+        vertexShader = compile vs_2_0 LightShadowVS();
+        pixelShader  = compile ps_2_0 LightShadowPSFlatShading();
     }
 }
