@@ -278,6 +278,50 @@ void Game::Update()
 
 void Game::Draw()
 {	
+	mMapsTarget->BeginScene();
+
+	// Clear the backbuffer to a blue color
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
+
+	//Draw the scene
+
+	m_SpotInterface->GetEffect()->SetTechnique("LightShadowTechFlatShading");
+	UINT mapsPasses = 1;
+	m_SpotInterface->GetEffect()->Begin(&mapsPasses, 0);
+	m_SpotInterface->GetEffect()->BeginPass(0);
+
+		SetSpotLightVariables(m_Citadel->GetWorld(), m_Citadel->GetMaterial());
+		mAOMCitadel->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+
+		SetSpotLightVariables(m_Dwarf->GetWorld(), m_Dwarf->GetMaterial());
+		mAOMDwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+
+		/*D3DXMatrixIdentity(&matWorld);
+		D3DXMATRIX matHeadTranslation, matHeadScale;
+		D3DXMatrixTranslation(&matHeadTranslation, 25.0f, 3.0f, -25.0f);
+		D3DXMatrixScaling(&matHeadScale, 2.0f, 2.0f, 2.0f);
+		matWorld = matHeadScale * matHeadTranslation;
+		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());*/
+		//mHeadSad->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+
+	m_SpotInterface->GetEffect()->EndPass();
+	m_SpotInterface->GetEffect()->End();
+	
+	m_AnimatedInterface->GetEffect()->SetTechnique("VBlend2FlatShading");
+
+	m_AnimatedInterface->GetEffect()->Begin(&mapsPasses, 0);
+	m_AnimatedInterface->GetEffect()->BeginPass(0);		
+
+		mAOMTiny->UpdateShaderVariables(&m_AnimatedContainer);
+		SetAnimatedInterfaceVariables(*m_SkinnedMesh->GetWorld());
+
+		mAOMTiny->Draw();
+
+	m_AnimatedInterface->GetEffect()->EndPass();
+	m_AnimatedInterface->GetEffect()->End();
+
+	mMapsTarget->EndScene();
+
 	pDevice->GetTransform(D3DTS_PROJECTION, m_RenderTarget->getOldProjectionPointer());
 	pDevice->GetRenderTarget(0, m_RenderTarget->getBackBufferPointer());
 
@@ -329,51 +373,7 @@ void Game::Draw()
 
 	//render scene with texture
 	//set back buffer
-	pDevice->SetRenderTarget(0, m_RenderTarget->getBackBuffer());
-
-	mMapsTarget->BeginScene();
-
-	// Clear the backbuffer to a blue color
-    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
-
-	//Draw the scene
-
-	m_SpotInterface->GetEffect()->SetTechnique("LightShadowTechFlatShading");
-	numPasses = 1;
-	m_SpotInterface->GetEffect()->Begin(&numPasses, 0);
-	m_SpotInterface->GetEffect()->BeginPass(0);
-
-		SetSpotLightVariables(m_Citadel->GetWorld(), m_Citadel->GetMaterial());
-		mAOMCitadel->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
-
-		SetSpotLightVariables(m_Dwarf->GetWorld(), m_Dwarf->GetMaterial());
-		mAOMDwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
-
-		/*D3DXMatrixIdentity(&matWorld);
-		D3DXMATRIX matHeadTranslation, matHeadScale;
-		D3DXMatrixTranslation(&matHeadTranslation, 25.0f, 3.0f, -25.0f);
-		D3DXMatrixScaling(&matHeadScale, 2.0f, 2.0f, 2.0f);
-		matWorld = matHeadScale * matHeadTranslation;
-		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());*/
-		//mHeadSad->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
-
-	m_SpotInterface->GetEffect()->EndPass();
-	m_SpotInterface->GetEffect()->End();
-	
-	m_AnimatedInterface->GetEffect()->SetTechnique("VBlend2FlatShading");
-
-	m_AnimatedInterface->GetEffect()->Begin(&numPasses, 0);
-	m_AnimatedInterface->GetEffect()->BeginPass(0);		
-
-		mAOMTiny->UpdateShaderVariables(&m_AnimatedContainer);
-		SetAnimatedInterfaceVariables(*m_SkinnedMesh->GetWorld());
-
-		mAOMTiny->Draw();
-
-	m_AnimatedInterface->GetEffect()->EndPass();
-	m_AnimatedInterface->GetEffect()->End();
-
-	mMapsTarget->EndScene();
+	pDevice->SetRenderTarget(0, m_RenderTarget->getBackBuffer());	
 
 	mViewNormal->BeginScene();
 
