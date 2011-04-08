@@ -344,10 +344,10 @@ void Game::Draw()
 	m_SpotInterface->GetEffect()->BeginPass(0);
 
 		SetSpotLightVariables(m_Citadel->GetWorld(), m_Citadel->GetMaterial());
-		m_Citadel->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+		mAOMCitadel->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
 		SetSpotLightVariables(m_Dwarf->GetWorld(), m_Dwarf->GetMaterial());
-		m_Dwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+		mAOMDwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
 		/*D3DXMatrixIdentity(&matWorld);
 		D3DXMATRIX matHeadTranslation, matHeadScale;
@@ -368,7 +368,7 @@ void Game::Draw()
 		m_SkinnedMesh->UpdateShaderVariables(&m_AnimatedContainer);
 		SetAnimatedInterfaceVariables(*m_SkinnedMesh->GetWorld());
 
-		m_SkinnedMesh->Draw();
+		mAOMTiny->Draw();
 
 	m_AnimatedInterface->GetEffect()->EndPass();
 	m_AnimatedInterface->GetEffect()->End();
@@ -458,37 +458,37 @@ void Game::Draw()
 	// Clear the backbuffer to a blue color
     pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
 
-	//m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
-	//UINT numberOfShadowPasses = 1;
-	//m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
-	//m_SpotInterface->GetEffect()->BeginPass(0);
+	m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
+	UINT numberOfShadowPasses = 1;
+	m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
+	m_SpotInterface->GetEffect()->BeginPass(0);
 
-	//	m_SpotInterface->UpdateShadowHandles(&(m_Dwarf->GetWorld() * m_LightViewProj));
+		m_SpotInterface->UpdateShadowHandles(&(m_Dwarf->GetWorld() * m_LightViewProj));
 
-	//	m_Dwarf->DrawToShadowMap();
+		m_Dwarf->DrawToShadowMap();
 
-	//	m_SpotInterface->UpdateShadowHandles(&(m_Citadel->GetWorld() * m_LightViewProj));
+		m_SpotInterface->UpdateShadowHandles(&(m_Citadel->GetWorld() * m_LightViewProj));
 
-	//	m_Citadel->DrawToShadowMap();
+		m_Citadel->DrawToShadowMap();
 
-	////End the pass
-	//m_SpotInterface->GetEffect()->EndPass();
-	//m_SpotInterface->GetEffect()->End();	
+	//End the pass
+	m_SpotInterface->GetEffect()->EndPass();
+	m_SpotInterface->GetEffect()->End();	
 
-	//UINT numOfPasses = 0;
-	//	
-	//m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
+	UINT numOfPasses = 0;
+		
+	m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
 
-	//m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
-	//m_AnimatedInterface->GetEffect()->BeginPass(0);		
+	m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
+	m_AnimatedInterface->GetEffect()->BeginPass(0);		
 
-	//	m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
-	//		m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+		m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
+			m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
 
-	//	m_SkinnedMesh->Draw();
+		m_SkinnedMesh->Draw();
 
-	//m_AnimatedInterface->GetEffect()->EndPass();
-	//m_AnimatedInterface->GetEffect()->End();
+	m_AnimatedInterface->GetEffect()->EndPass();
+	m_AnimatedInterface->GetEffect()->End();
 
 	mShadowTarget->EndScene();
 
@@ -529,20 +529,6 @@ void Game::Draw()
 		mBlurFX->EndPass();
 		mBlurFX->End();
 
-		//pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
-		
-		/*mBlurFX->Begin(&blurPasses, 0);
-		mBlurFX->BeginPass(0);
-			mBlurFX->SetTexture(mhDepthTexture, mViewNormal->getRenderTexture());
-			mBlurFX->SetTexture(mhBlurAOTexture, mSSAOTarget->getRenderTexture());
-			mBlurFX->SetValue(mhBlurDirection, new D3DXVECTOR2(0.0f, 1.0f/m_WindowHeight), sizeof(D3DXVECTOR2));
-			mBlurFX->CommitChanges();
-			
-			mBlurTarget->DrawUntextured();
-
-		mBlurFX->EndPass();
-		mBlurFX->End();*/
-
 	mBlurTarget->EndScene();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -574,7 +560,8 @@ void Game::Draw()
 				mQuadFX->SetTexture(mQuadTexture, mFinalTarget->getRenderTexture()); break;
 			case Maps : 
 				mQuadFX->SetTexture(mQuadTexture, mMapsTarget->getRenderTexture()); break;
-			default: MessageBox(0, "Unrecognised Render Target", "Render target error", 0); break;
+			default: 
+				MessageBox(0, "Unrecognised Render Target", "Render target error", 0); break;
 		}
 		
 		mQuadFX->CommitChanges();
