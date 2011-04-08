@@ -656,6 +656,11 @@ void Game::Unload()
 
 	mBlurTarget->Release();
 	mBlurFX->Release();
+
+	mMapsTarget->Release();
+	mAOMTiny->Release();
+	mAOMDwarf->Release();
+	mAOMCitadel->Release();
 }
 
 void Game::CalculateMatrices()
