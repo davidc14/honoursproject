@@ -326,6 +326,50 @@ void Game::Draw()
 	//set back buffer
 	pDevice->SetRenderTarget(0, m_RenderTarget->getBackBuffer());
 
+	mMapsTarget->BeginScene();
+
+	// Clear the backbuffer to a blue color
+    pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
+
+	//Draw the scene
+
+	m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetTechnique());
+	numPasses = 1;
+	m_SpotInterface->GetEffect()->Begin(&numPasses, 0);
+	m_SpotInterface->GetEffect()->BeginPass(0);
+
+		SetSpotLightVariables(m_Citadel->GetWorld(), m_Citadel->GetMaterial());
+		m_Citadel->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+
+		SetSpotLightVariables(m_Dwarf->GetWorld(), m_Dwarf->GetMaterial());
+		m_Dwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+
+		/*D3DXMatrixIdentity(&matWorld);
+		D3DXMATRIX matHeadTranslation, matHeadScale;
+		D3DXMatrixTranslation(&matHeadTranslation, 25.0f, 3.0f, -25.0f);
+		D3DXMatrixScaling(&matHeadScale, 2.0f, 2.0f, 2.0f);
+		matWorld = matHeadScale * matHeadTranslation;
+		SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());*/
+		//mHeadSad->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+
+	m_SpotInterface->GetEffect()->EndPass();
+	m_SpotInterface->GetEffect()->End();
+	
+	m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetTechnique());
+
+	m_AnimatedInterface->GetEffect()->Begin(&numPasses, 0);
+	m_AnimatedInterface->GetEffect()->BeginPass(0);		
+
+		m_SkinnedMesh->UpdateShaderVariables(&m_AnimatedContainer);
+		SetAnimatedInterfaceVariables(*m_SkinnedMesh->GetWorld());
+
+		m_SkinnedMesh->Draw();
+
+	m_AnimatedInterface->GetEffect()->EndPass();
+	m_AnimatedInterface->GetEffect()->End();
+
+	mMapsTarget->EndScene();
+
 	mViewNormal->BeginScene();
 
 	pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
@@ -511,13 +555,20 @@ void Game::Draw()
 
 		switch(mCurrentRenderTarget)
 		{
-			case Colour : mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture()); break;
-			case Normals : mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture()); break;
-			case Positions: mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture()); break;
-			case SSAO : mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture()); break;
-			case BlurPass : mQuadFX->SetTexture(mQuadTexture, mBlurTarget->getRenderTexture()); break;
-			case FinalPass : mQuadFX->SetTexture(mQuadTexture, mFinalTarget->getRenderTexture()); break;
-			case Maps : break;
+			case Colour : 
+				mQuadFX->SetTexture(mQuadTexture, m_RenderTarget->getRenderTexture()); break;
+			case Normals : 
+				mQuadFX->SetTexture(mQuadTexture, mViewNormal->getRenderTexture()); break;
+			case Positions: 
+				mQuadFX->SetTexture(mQuadTexture, mViewPos->getRenderTexture()); break;
+			case SSAO : 
+				mQuadFX->SetTexture(mQuadTexture, mSSAOTarget->getRenderTexture()); break;
+			case BlurPass : 
+				mQuadFX->SetTexture(mQuadTexture, mBlurTarget->getRenderTexture()); break;
+			case FinalPass : 
+				mQuadFX->SetTexture(mQuadTexture, mFinalTarget->getRenderTexture()); break;
+			case Maps : 
+				mQuadFX->SetTexture(mQuadTexture, mMapsTarget->getRenderTexture()); break;
 			default: MessageBox(0, "Unrecognised Render Target", "Render target error", 0); break;
 		}
 		
