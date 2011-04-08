@@ -95,7 +95,7 @@ bool Game::LoadContent()
 	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewNormal = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mSSAOTarget = new DrawableRenderTarget(pDevice, (UINT)(m_WindowWidth/2.0f), (UINT)(m_WindowHeight/2.0f), D3DFMT_X8R8G8B8  , D3DFMT_D24X8, m_Camera->GetFarPlane());
-	mBlurTarget = new DrawableRenderTarget(pDevice, (UINT)(m_WindowWidth/1.0f), (UINT)(m_WindowHeight/1.0f), D3DFMT_X8R8G8B8  , D3DFMT_D24X8, m_Camera->GetFarPlane());
+	mBlurTarget = new DrawableRenderTarget(pDevice, (UINT)(m_WindowWidth), (UINT)(m_WindowHeight), D3DFMT_X8R8G8B8  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mFinalTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_X8R8G8B8  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mMapsTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_X8R8G8B8  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 
@@ -495,6 +495,24 @@ void Game::Draw()
 
 		mShadowTarget->EndScene();
 
+		mBlurTarget->BeginScene();
+
+			pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+			UINT blurPasses = 0;
+			mBlurFX->Begin(&blurPasses, 0);
+			mBlurFX->BeginPass(0);
+				mBlurFX->SetTexture(mhDepthTexture, mViewNormal->getRenderTexture());
+				mBlurFX->SetTexture(mhBlurAOTexture, mSSAOTarget->getRenderTexture());
+				mBlurFX->SetValue(mhBlurDirection, new D3DXVECTOR2(1.0f/m_WindowWidth, 1.0f/m_WindowHeight), sizeof(D3DXVECTOR2));
+				mBlurFX->CommitChanges();
+
+				mBlurTarget->DrawUntextured();
+
+			mBlurFX->EndPass();
+			mBlurFX->End();
+
+		mBlurTarget->EndScene();
+
 		mFinalTarget->BeginScene();
 
 			pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
@@ -516,23 +534,7 @@ void Game::Draw()
 
 		mFinalTarget->EndScene();
 
-		mBlurTarget->BeginScene();
-
-			pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
-			UINT blurPasses = 0;
-			mBlurFX->Begin(&blurPasses, 0);
-			mBlurFX->BeginPass(0);
-				mBlurFX->SetTexture(mhDepthTexture, mViewNormal->getRenderTexture());
-				mBlurFX->SetTexture(mhBlurAOTexture, mSSAOTarget->getRenderTexture());
-				mBlurFX->SetValue(mhBlurDirection, new D3DXVECTOR2(1.0f/m_WindowWidth, 1.0f/m_WindowHeight), sizeof(D3DXVECTOR2));
-				mBlurFX->CommitChanges();
-
-				mBlurTarget->DrawUntextured();
-
-			mBlurFX->EndPass();
-			mBlurFX->End();
-
-		mBlurTarget->EndScene();
+		
 
 	}
 
