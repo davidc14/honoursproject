@@ -56,7 +56,7 @@ float4 PixelShaderFunction(PSINPUT input) : COLOR0
     float color = tex2D( baseSampler, input.TexCoord).r;
    
     float num = 1;
-    int blurSamples = 12; 
+    int blurSamples = 8; 
 	
 	for( int i = -blurSamples/2; i <= blurSamples/2; i+=1)
 	{
