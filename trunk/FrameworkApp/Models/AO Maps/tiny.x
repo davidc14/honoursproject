@@ -38324,7 +38324,7 @@ Frame Scene_Root {
       0.000000;0.000000;0.000000;;
 
       TextureFilename {
-         "Tiny_skin.bmp";
+         "BakedAO-surfaceShader1SG-Tiny_Mesh01 - Copy.tga";
       }
      }
     }

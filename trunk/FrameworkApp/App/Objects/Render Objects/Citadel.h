@@ -13,6 +13,7 @@ class Citadel
 public: //Public methods
 	Citadel();
 	Citadel(IDirect3DDevice9* Device);
+	Citadel(IDirect3DDevice9* Device, char* filePath, char* fileName);
 	~Citadel();
 
 	//Move the Citadel to any location by passing in a vector
@@ -83,6 +84,7 @@ private: //Private methods
 	void UpdateWorldMatrix();
 	
 	bool LoadModel();
+	bool LoadModel(char* filePath, char* fileName);
 };
 
 #endif

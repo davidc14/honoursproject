@@ -70,9 +70,14 @@ bool Game::LoadContent()
 	D3DXMatrixPerspectiveFovLH(&matProj, D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, 1.0f);
 
 	m_SkinnedMesh = new SkinnedMesh(pDevice, "Models/Tiny", "tiny.x", "Tiny_skin.bmp");
+	mAOMTiny = new SkinnedMesh(pDevice, "Models/AO Maps", "tiny.x", "BakedAO-surfaceShader1SG-Tiny_Mesh01 - Copy.tga");
+	
 
 	m_Dwarf = new Dwarf(pDevice);
 	m_Citadel = new Citadel(pDevice);
+
+	mAOMDwarf = new Dwarf(pDevice, "Models/AO Maps", "DwarfAOMap.x");
+	mAOMCitadel = new Citadel(pDevice, "Models/AO Maps", "MyRoom.x");
 
 	mLight.dirW    = D3DXVECTOR3(0.0f, -1.0f, 1.0f);
 	D3DXVec3Normalize(&mLight.dirW, &mLight.dirW);

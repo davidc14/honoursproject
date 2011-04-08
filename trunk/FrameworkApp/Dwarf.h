@@ -13,6 +13,7 @@ class Dwarf
 public: //Public methods
 	Dwarf();
 	Dwarf(IDirect3DDevice9* Device);
+	Dwarf(IDirect3DDevice9* Device, char* filePath, char* fileName);
 	~Dwarf();
 
 	//Move the dwarf to any location by passing in a vector
@@ -83,6 +84,7 @@ private: //Private methods
 	void UpdateWorldMatrix();
 	
 	bool LoadModel();
+	bool LoadModel(char* filePath, char* fileName);
 };
 
 #endif
