@@ -106,7 +106,7 @@ private:
 
 	void SetSpotLightVariables(D3DXMATRIX World, Mtrl* material);
 
-	enum RenderTargets{ Colour, Normals, Positions, SSAO, BlurPass, FinalPass, Maps };
+	enum RenderTargets{ Colour, Normals, Positions, SSAO, BlurPass, Maps, FinalPass };
 	RenderTargets mCurrentRenderTarget;
 
 	//void SetShaderVariables();
