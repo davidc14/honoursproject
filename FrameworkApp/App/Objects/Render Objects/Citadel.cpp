@@ -82,6 +82,57 @@ Citadel::Citadel(IDirect3DDevice9* Device)
 	mWhiteMtrl.specPower = 48.0f;
 }
 
+Citadel::Citadel(IDirect3DDevice9* Device, char* filePath, char* fileName)
+{
+	//Assign memory for the model objects
+	m_Model = new XModel(Device);
+
+	//Device->Release();
+
+	//If the model failed don't attempt to load it
+	if(m_Model != NULL)
+	{
+		//Attempt to load the model
+		if(!LoadModel(filePath, fileName))
+		{
+			//If model fails to load, freak out
+			::MessageBox(0, "Citadel model failed to load", "Ship error", 0);		
+			return;
+		}
+	}
+	else
+	{
+		//If the object can't be abstantiated, freak out
+		::MessageBox(0, "Citadel pointer failed to instantiate", "Ship error", 0);
+	}
+
+	//Zero the matrices
+	D3DXMatrixIdentity(&m_matWorld);
+	D3DXMatrixIdentity(&m_matScale);
+	D3DXMatrixIdentity(&m_matRotationY);
+	D3DXMatrixIdentity(&m_matTranslation);
+	D3DXMatrixIdentity(&m_matWorldInverseTranspose);
+
+	//Zero the vectors
+	m_Position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	ResultVelocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	ResultPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	//Zero the other variables
+	m_Angle = 0.0f;
+	m_AngularVelocity = 0.0f;
+	m_ID = 0;
+
+	m_DeadReckoningTicker = 0.0f;
+
+	mWhiteMtrl.ambient = WHITE*0.9f;
+	mWhiteMtrl.diffuse = WHITE*0.6f;
+	mWhiteMtrl.spec    = WHITE*0.6f;
+	mWhiteMtrl.specPower = 48.0f;
+}
+
 Citadel::~Citadel()
 {
 	//m_Model->Release();
@@ -187,6 +238,17 @@ bool Citadel::LoadModel()
 	//("Models/SpaceShip", "SpaceShip.x")
 	//Attempt to load the model
 	if(!m_Model->SetModel("Models/Atrium", "MyRoom.X"))
+		//Freak out if it fails
+		return false;
+
+	//No problem
+	return true;
+}
+
+bool Citadel::LoadModel(char* filePath, char* fileName)
+{
+	//Attempt to load the model
+	if(!m_Model->SetModel(filePath, fileName))
 		//Freak out if it fails
 		return false;
 

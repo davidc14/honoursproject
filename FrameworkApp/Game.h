@@ -181,6 +181,11 @@ private:
 	DrawableRenderTarget* mBlurTarget;
 
 	DrawableRenderTarget* mMapsTarget;
+
+	SkinnedMesh* mAOMTiny;
+	Citadel* mAOMCitadel;
+	Dwarf* mAOMDwarf;
+	XModel* mAOMHead;
 };
 
 #endif
