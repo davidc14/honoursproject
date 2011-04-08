@@ -360,7 +360,7 @@ void Game::Draw()
 	m_SpotInterface->GetEffect()->EndPass();
 	m_SpotInterface->GetEffect()->End();
 	
-	m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetTechnique());
+	m_AnimatedInterface->GetEffect()->SetTechnique("VBlend2FlatShading");
 
 	m_AnimatedInterface->GetEffect()->Begin(&numPasses, 0);
 	m_AnimatedInterface->GetEffect()->BeginPass(0);		
