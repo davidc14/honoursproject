@@ -338,7 +338,7 @@ void Game::Draw()
 
 	//Draw the scene
 
-	m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetTechnique());
+	m_SpotInterface->GetEffect()->SetTechnique("LightShadowTechFlatShading");
 	numPasses = 1;
 	m_SpotInterface->GetEffect()->Begin(&numPasses, 0);
 	m_SpotInterface->GetEffect()->BeginPass(0);
