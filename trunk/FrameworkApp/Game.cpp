@@ -139,7 +139,7 @@ bool Game::LoadContent()
 	mhColourTexture = mFinalFX->GetParameterByName(0, "colourTexture");
 	mhSSAOTexture = mFinalFX->GetParameterByName(0, "ssaoTexture");
 
-	mCurrentRenderTarget = FinalPass;
+	mCurrentRenderTarget = this->SSAO;
 	
 	m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/BlurEffect.fx", 0, 0, D3DXSHADER_DEBUG,0, &mBlurFX, &m_Error);
@@ -501,6 +501,7 @@ void Game::Draw()
 			UINT blurPasses = 0;
 			mBlurFX->Begin(&blurPasses, 0);
 			mBlurFX->BeginPass(0);
+
 				mBlurFX->SetTexture(mhDepthTexture, mViewNormal->getRenderTexture());
 				mBlurFX->SetTexture(mhBlurAOTexture, mSSAOTarget->getRenderTexture());
 				mBlurFX->SetValue(mhBlurDirection, new D3DXVECTOR2(1.0f/m_WindowWidth, 1.0f/m_WindowHeight), sizeof(D3DXVECTOR2));
@@ -594,7 +595,7 @@ void Game::SetSSAOHandles()
 	mSSAOContainer.mFarClip = m_Camera->GetFarPlane();
 	mSSAOContainer.mIntensity = 4.0f;
 	mSSAOContainer.mInverseScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);
-	mSSAOContainer.mJitter = 1.0f;
+	mSSAOContainer.mJitter = 0.5f;
 	mSSAOContainer.mNearClip = 1.0f;
 	mSSAOContainer.mNormalBuffer = mViewNormal->getRenderTexture();
 	mSSAOContainer.mPositionBuffer = mViewPos->getRenderTexture();
