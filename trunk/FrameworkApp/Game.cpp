@@ -378,164 +378,166 @@ void Game::Draw()
 		//set back buffer
 		pDevice->SetRenderTarget(0, m_RenderTarget->getBackBuffer());	
 
-		mViewNormal->BeginScene();
-
-		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
-
-			mViewInterface->SetTechnique(mViewInterface->Normals);
-
-			mViewInterface->Begin();
-
-				SetViewSpaceVariables(m_Citadel->GetWorld(), 0, 0);
-				m_Citadel->Draw(mViewInterface->GetEffect(), 0);
-
-				SetViewSpaceVariables(m_Dwarf->GetWorld(), 0, 0);
-				m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
-
-				SetViewSpaceVariables(matWorld, 0, 0);
-				//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
-
-			mViewInterface->End();
-
-			mViewInterface->SetTechnique(mViewInterface->NormalsAnimated);
-
-			mViewInterface->Begin();
-			
-				SetViewSpaceVariables(*m_SkinnedMesh->GetWorld(), m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-				m_SkinnedMesh->Draw();
-
-			mViewInterface->End();
-			
-		mViewNormal->EndScene();
-
-		mViewPos->BeginScene();
+		if(mCurrentRenderTarget != Colour)
+		{
+			mViewNormal->BeginScene();
 
 			pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+
+				mViewInterface->SetTechnique(mViewInterface->Normals);
+
+				mViewInterface->Begin();
+
+					SetViewSpaceVariables(m_Citadel->GetWorld(), 0, 0);
+					m_Citadel->Draw(mViewInterface->GetEffect(), 0);
+
+					SetViewSpaceVariables(m_Dwarf->GetWorld(), 0, 0);
+					m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
+
+					SetViewSpaceVariables(matWorld, 0, 0);
+					//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
+
+				mViewInterface->End();
+
+				mViewInterface->SetTechnique(mViewInterface->NormalsAnimated);
+
+				mViewInterface->Begin();
+				
+					SetViewSpaceVariables(*m_SkinnedMesh->GetWorld(), m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+					m_SkinnedMesh->Draw();
+
+				mViewInterface->End();
+				
+			mViewNormal->EndScene();
+
+			mViewPos->BeginScene();
+
+				pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+				
+				mViewInterface->SetTechnique(mViewInterface->Position);
+
+				mViewInterface->Begin();
+
+					SetViewSpaceVariables(m_Citadel->GetWorld(), 0, 0);
+					m_Citadel->Draw(mViewInterface->GetEffect(), 0);
+
+					SetViewSpaceVariables(m_Dwarf->GetWorld(), 0, 0);
+					m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
+
+					SetViewSpaceVariables(matWorld, 0, 0);
+					//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
+
+				mViewInterface->End();
+
+				mViewInterface->SetTechnique(mViewInterface->PositionAnimated);
+
+				mViewInterface->Begin();
 			
-			mViewInterface->SetTechnique(mViewInterface->Position);
+					SetViewSpaceVariables(*m_SkinnedMesh->GetWorld(), m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+					m_SkinnedMesh->Draw();
 
-			mViewInterface->Begin();
+				mViewInterface->End();
+				
+			mViewPos->EndScene();
 
-				SetViewSpaceVariables(m_Citadel->GetWorld(), 0, 0);
-				m_Citadel->Draw(mViewInterface->GetEffect(), 0);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-				SetViewSpaceVariables(m_Dwarf->GetWorld(), 0, 0);
-				m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
-
-				SetViewSpaceVariables(matWorld, 0, 0);
-				//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
-
-			mViewInterface->End();
-
-			mViewInterface->SetTechnique(mViewInterface->PositionAnimated);
-
-			mViewInterface->Begin();
-		
-				SetViewSpaceVariables(*m_SkinnedMesh->GetWorld(), m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-				m_SkinnedMesh->Draw();
-
-			mViewInterface->End();
-			
-		mViewPos->EndScene();
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		mSSAOTarget->BeginScene();
-
-		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
-		mSSAOInterface->SetTechnique();
-		mSSAOInterface->Begin();
-
-			SetSSAOHandles();
-
-			mSSAOTarget->DrawUntextured();
-
-		mSSAOInterface->End();
-
-		mSSAOTarget->EndScene();
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		mShadowTarget->BeginScene();
-
-		// Clear the backbuffer to a blue color
-		pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
-
-		m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
-		UINT numberOfShadowPasses = 1;
-		m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
-		m_SpotInterface->GetEffect()->BeginPass(0);
-
-			m_SpotInterface->UpdateShadowHandles(&(m_Dwarf->GetWorld() * m_LightViewProj));
-
-			m_Dwarf->DrawToShadowMap();
-
-			m_SpotInterface->UpdateShadowHandles(&(m_Citadel->GetWorld() * m_LightViewProj));
-
-			m_Citadel->DrawToShadowMap();
-
-		//End the pass
-		m_SpotInterface->GetEffect()->EndPass();
-		m_SpotInterface->GetEffect()->End();	
-
-		UINT numOfPasses = 0;
-			
-		m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
-
-		m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
-		m_AnimatedInterface->GetEffect()->BeginPass(0);		
-
-			m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
-				m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-
-			m_SkinnedMesh->Draw();
-
-		m_AnimatedInterface->GetEffect()->EndPass();
-		m_AnimatedInterface->GetEffect()->End();
-
-		mShadowTarget->EndScene();
-
-		mBlurTarget->BeginScene();
-
-			pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
-			UINT blurPasses = 0;
-			mBlurFX->Begin(&blurPasses, 0);
-			mBlurFX->BeginPass(0);
-
-				mBlurFX->SetTexture(mhDepthTexture, mViewNormal->getRenderTexture());
-				mBlurFX->SetTexture(mhBlurAOTexture, mSSAOTarget->getRenderTexture());
-				mBlurFX->SetValue(mhBlurDirection, new D3DXVECTOR2(1.0f/m_WindowWidth, 1.0f/m_WindowHeight), sizeof(D3DXVECTOR2));
-				mBlurFX->CommitChanges();
-
-				mBlurTarget->DrawUntextured();
-
-			mBlurFX->EndPass();
-			mBlurFX->End();
-
-		mBlurTarget->EndScene();
-
-		mFinalTarget->BeginScene();
+			mSSAOTarget->BeginScene();
 
 			pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
+			mSSAOInterface->SetTechnique();
+			mSSAOInterface->Begin();
 
-			UINT finalPasses = 0;
-			mFinalFX->Begin(&finalPasses, 0);
-			mFinalFX->BeginPass(0);
-			
-			mFinalFX->SetTexture(mhColourTexture, m_RenderTarget->getRenderTexture());
-			//mFinalFX->SetTexture(mhSSAOTexture, mSSAOTarget->getRenderTexture());
-			mFinalFX->SetTexture(mhSSAOTexture, mBlurTarget->getRenderTexture());
+				SetSSAOHandles();
 
-			mFinalFX->CommitChanges();
+				mSSAOTarget->DrawUntextured();
 
-			mFinalTarget->DrawUntextured();
+			mSSAOInterface->End();
 
-			mFinalFX->EndPass();
-			mFinalFX->End();
+			mSSAOTarget->EndScene();
 
-		mFinalTarget->EndScene();
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		
+			mShadowTarget->BeginScene();
+
+			// Clear the backbuffer to a blue color
+			pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+
+			m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
+			UINT numberOfShadowPasses = 1;
+			m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
+			m_SpotInterface->GetEffect()->BeginPass(0);
+
+				m_SpotInterface->UpdateShadowHandles(&(m_Dwarf->GetWorld() * m_LightViewProj));
+
+				m_Dwarf->DrawToShadowMap();
+
+				m_SpotInterface->UpdateShadowHandles(&(m_Citadel->GetWorld() * m_LightViewProj));
+
+				m_Citadel->DrawToShadowMap();
+
+			//End the pass
+			m_SpotInterface->GetEffect()->EndPass();
+			m_SpotInterface->GetEffect()->End();	
+
+			UINT numOfPasses = 0;
+				
+			m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
+
+			m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
+			m_AnimatedInterface->GetEffect()->BeginPass(0);		
+
+				m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
+					m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+
+				m_SkinnedMesh->Draw();
+
+			m_AnimatedInterface->GetEffect()->EndPass();
+			m_AnimatedInterface->GetEffect()->End();
+
+			mShadowTarget->EndScene();
+
+			mBlurTarget->BeginScene();
+
+				pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+				UINT blurPasses = 0;
+				mBlurFX->Begin(&blurPasses, 0);
+				mBlurFX->BeginPass(0);
+
+					mBlurFX->SetTexture(mhDepthTexture, mViewNormal->getRenderTexture());
+					mBlurFX->SetTexture(mhBlurAOTexture, mSSAOTarget->getRenderTexture());
+					mBlurFX->SetValue(mhBlurDirection, new D3DXVECTOR2(1.0f/m_WindowWidth, 1.0f/m_WindowHeight), sizeof(D3DXVECTOR2));
+					mBlurFX->CommitChanges();
+
+					mBlurTarget->DrawUntextured();
+
+				mBlurFX->EndPass();
+				mBlurFX->End();
+
+			mBlurTarget->EndScene();
+
+			mFinalTarget->BeginScene();
+
+				pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(100, 149, 237), 1.0f, 0 );
+
+				UINT finalPasses = 0;
+				mFinalFX->Begin(&finalPasses, 0);
+				mFinalFX->BeginPass(0);
+				
+				mFinalFX->SetTexture(mhColourTexture, m_RenderTarget->getRenderTexture());
+				//mFinalFX->SetTexture(mhSSAOTexture, mSSAOTarget->getRenderTexture());
+				mFinalFX->SetTexture(mhSSAOTexture, mBlurTarget->getRenderTexture());
+
+				mFinalFX->CommitChanges();
+
+				mFinalTarget->DrawUntextured();
+
+				mFinalFX->EndPass();
+				mFinalFX->End();
+
+			mFinalTarget->EndScene();
+
+		}
 
 	}
 
