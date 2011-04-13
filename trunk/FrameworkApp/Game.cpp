@@ -612,6 +612,7 @@ void Game::SetSSAOHandles()
 	mSSAOContainer.mUseLighting = false;
 	mSSAOContainer.mSampleRadius = 75.0;
 
+	mSSAOContainer.mIterations = 16.0f;
 	/*mSSAOContainer.mSampleRadius = 19.80624f;
 	mSSAOContainer.mIntensity = 2.0f;
 	mSSAOContainer.mScale = 23.0f;*/

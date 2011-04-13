@@ -28,17 +28,26 @@ void D3DFont::Update(float deltaTime, float width, float height)
 	rect.right = (LONG)width;
 	rect.top = 0;
 	rect.left = 0;
-	sprintf_s(m_DeltaTimeString, sizeof(m_DeltaTimeString), "%f", deltaTime);
-	
-	//sprintf_s (infoString,sizeof(infoString)," ms per frame ");
+	float fps = 1/deltaTime;
+	sprintf_s(m_DeltaTimeString, sizeof(m_DeltaTimeString) + 50, "%f ms per frame \n%f frames per second", deltaTime, fps);
+}
 
-	//strcat_s(m_DeltaTimeString, sizeof(m_DeltaTimeString) + sizeof(infoString), infoString);
+void D3DFont::Update(float deltaTime, float width, float height, float samples)
+{
+	rect.bottom = (LONG)height;
+	rect.right = (LONG)width;
+	rect.top = 0;
+	rect.left = 0;
+	float fps = 1/deltaTime;
+	sprintf_s(m_DeltaTimeString, sizeof(m_DeltaTimeString) + 50, 
+		"%f ms per frame \n%f frames per second \n Current Samples: %f", 
+		deltaTime, fps, samples);
 }
 
 void D3DFont::Draw()
 {
 	//Draw the font last so it is above everything
-	m_Font->DrawText(0, m_DeltaTimeString, -1, &rect, DT_TOP | DT_LEFT /*draw in the top left corner*/, D3DCOLOR_ARGB(255,0,0,0));// yellow text
+	m_Font->DrawText(0, m_DeltaTimeString, -1, &rect, DT_TOP | DT_LEFT /*draw in the top left corner*/, D3DCOLOR_ARGB(255,255,255,0));// yellow text
 }
 
 void D3DFont::Release()
