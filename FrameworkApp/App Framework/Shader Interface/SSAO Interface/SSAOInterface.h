@@ -17,6 +17,8 @@ typedef struct SSAOContainer
 	//The vectors
 	D3DXVECTOR2 mScreenSize, mInverseScreenSize;
 
+	float mIterations;
+
 	SSAOContainer()
 	{
 		mUseAO = mUseColour = true;
@@ -92,6 +94,7 @@ private://Private members
 	D3DXHANDLE mhInvScreenSize;
 	//The scene texture for merging
 	D3DXHANDLE mhSceneTex;
+	D3DXHANDLE mhIterations;
 	
 };
 

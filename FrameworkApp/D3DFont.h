@@ -12,6 +12,7 @@ public:
 	void CreateFont();
 
 	void Update(float deltaTime, float width, float height);
+	void Update(float deltaTime, float width, float height, float samples);
 
 	void Draw();
 

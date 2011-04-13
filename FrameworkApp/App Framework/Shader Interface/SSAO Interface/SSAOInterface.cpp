@@ -47,6 +47,7 @@ bool SSAOInterface::SetupHandles()
 	mhInvScreenSize = mSSAOFX->GetParameterByName(0, "g_inv_screen_size");
 	//mhSceneTex = mSSAOFX->GetParameterByName(0, "sceneBuffer");
 	mhUseColour = mSSAOFX->GetParameterByName(0, "useColour");
+	mhIterations = mSSAOFX->GetParameterByName(0, "sampleIterations");
 
 	return true;
 }
@@ -86,6 +87,7 @@ void SSAOInterface::UpdateHandles(SSAOContainer *input)
 	mSSAOFX->SetBool(mhUseColour, input->mUseColour);
 	mSSAOFX->SetValue(mhScreenSize, &(input->mScreenSize), sizeof(D3DXVECTOR2));
 	mSSAOFX->SetValue(mhInvScreenSize, &(input->mInverseScreenSize), sizeof(D3DXVECTOR2));
+	mSSAOFX->SetFloat(mhIterations, input->mIterations);
 	//mSSAOFX->SetTexture(mhSceneTex, input->mColourBuffer);
 
 	mSSAOFX->CommitChanges();
