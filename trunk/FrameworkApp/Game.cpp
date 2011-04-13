@@ -139,7 +139,7 @@ bool Game::LoadContent()
 	mhColourTexture = mFinalFX->GetParameterByName(0, "colourTexture");
 	mhSSAOTexture = mFinalFX->GetParameterByName(0, "ssaoTexture");
 
-	mCurrentRenderTarget = this->SSAO;
+	mCurrentRenderTarget = FinalPass;
 	
 	m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/BlurEffect.fx", 0, 0, D3DXSHADER_DEBUG,0, &mBlurFX, &m_Error);
