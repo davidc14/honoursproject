@@ -41,10 +41,11 @@ public:
 	void Strafe(D3DXVECTOR3 acceleration);
 	void Move(float xAcceleration, float yAcceleration, float zAcceleration);
 	void Strafe(float xAcceleration, float yAcceleration, float zAcceleration);
+	void Raise(float x, float y, float z);
 
 	//The mouse movement functions
-	void mouseMove(Mouse *MousePos, POINT mousePos, int window_width, int window_height);
-	void mouseMove();
+	void Rotate(Mouse *MousePos, POINT mousePos, int window_width, int window_height);
+	void Rotate();
 	//The angle test collision detection test
 	bool angleTest(Mouse* MousePos);
 
