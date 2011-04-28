@@ -4,7 +4,6 @@
 #include <d3d9.h>
 #include <queue>
 #include "NetworkDefines.h"
-
 #include "XModel.h"
 #include "D3DFont.h"
 #include "BasicLightingInterface.h"
@@ -186,6 +185,8 @@ private:
 	Citadel* mAOMCitadel;
 	Dwarf* mAOMDwarf;
 	XModel* mAOMHead;
+
+	
 };
 
 #endif
