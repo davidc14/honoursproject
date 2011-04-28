@@ -186,7 +186,8 @@ private:
 	Dwarf* mAOMDwarf;
 	XModel* mAOMHead;
 
-	
+	LPD3DXSPRITE mSprite;
+	LPDIRECT3DTEXTURE9 mSpriteTexture;
 };
 
 #endif

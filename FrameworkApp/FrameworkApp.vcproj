@@ -592,26 +592,6 @@
 					>
 				</File>
 			</Filter>
-			<Filter
-				Name="GUI"
-				>
-				<File
-					RelativePath=".\App\GUI\UIElement.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\App\GUI\UIElement.h"
-					>
-				</File>
-				<File
-					RelativePath=".\App\GUI\UserInterface.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\App\GUI\UserInterface.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Models"
