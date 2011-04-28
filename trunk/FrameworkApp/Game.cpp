@@ -171,10 +171,10 @@ void Game::HandleInput()
 	//Update direct input
 	m_DInput->Update();
 
-	//if(m_DInput->GetMouseState(0))		
-		m_Camera->mouseMove();		
-	//else
-	//	m_Camera->First(true);
+	if(m_DInput->GetMouseState(1))		
+		m_Camera->Rotate();		
+	else
+		m_Camera->First(true);
 
 	//Check the key presses
 	//W
@@ -192,6 +192,12 @@ void Game::HandleInput()
 	//D
 	if(pNewDigitalControlMap[DIK_D])
 		m_Camera->Strafe(-camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime, -camSpeed*m_DeltaTime);	
+
+	if(pNewDigitalControlMap[DIK_Q])
+		m_Camera->Raise(camSpeed* -5, camSpeed* -5, camSpeed* -5);
+
+	if(pNewDigitalControlMap[DIK_E])
+		m_Camera->Raise(camSpeed*5, camSpeed*5, camSpeed*5);
 	
 	if(pNewDigitalControlMap[DIK_P] && !pDigitalControlMap[DIK_P])
 		mSSAOContainer.mUseColour = !mSSAOContainer.mUseColour;
@@ -199,8 +205,8 @@ void Game::HandleInput()
 		mSSAOContainer.mUseAO = !mSSAOContainer.mUseAO;	
 
 	//if(m_DInput->GetKeyState(DIK_SPACE))
-	if(pNewDigitalControlMap[DIK_SPACE] && !pDigitalControlMap[DIK_SPACE])
-		m_Camera->SetActiveFlag(!m_Camera->GetActiveFlag());
+	/*if(pNewDigitalControlMap[DIK_SPACE] && !pDigitalControlMap[DIK_SPACE])
+		m_Camera->SetActiveFlag(!m_Camera->GetActiveFlag());*/
 
 	if(pNewDigitalControlMap[DIK_RIGHT] && !pDigitalControlMap[DIK_RIGHT])
 	{

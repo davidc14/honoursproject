@@ -183,6 +183,16 @@ void FPCamera::Move(float x, float y, float z)
 	m_Position.z -= m_Forward.z * z;
 }
 
+void FPCamera::Raise(float x, float y, float z)
+{
+	//Adding the forward vector to the Position vector moves the FPCamera
+	//The multipliers at the end of the calculation define speed
+	//I.E. The larger the multiplier the faster it goes
+	m_Position.x -= m_Up.x * x;
+	m_Position.y -= m_Up.y * y;
+	m_Position.z -= m_Up.z * z;
+}
+
 void FPCamera::Strafe(float x, float y, float z)
 {
 	D3DXVec3Cross(&m_Right, &m_Forward, &m_Up);
@@ -195,7 +205,7 @@ void FPCamera::Strafe(float x, float y, float z)
 	m_Position.z -= m_Right.z * z;
 }
 
-void FPCamera::mouseMove(Mouse *MousePos, POINT mousePos, int window_width, int window_height)
+void FPCamera::Rotate(Mouse *MousePos, POINT mousePos, int window_width, int window_height)
 {
 	//Turning off the cursor
 	//ShowCursor(false);
@@ -232,9 +242,9 @@ void FPCamera::mouseMove(Mouse *MousePos, POINT mousePos, int window_width, int 
 		first = false;
 }
 
-void FPCamera::mouseMove()
+void FPCamera::Rotate()
 {
-	if(mActive)
+	//if(mActive)
 	{
 		//Turning off the cursor
 		//ShowCursor(false);
