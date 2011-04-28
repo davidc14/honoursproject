@@ -590,7 +590,7 @@ void Game::Draw()
 
 		mQuadFX->EndPass();
 		mQuadFX->End();
-
+		
 		mSprite->Begin(0);
 		mSprite->Draw(mSpriteTexture, NULL, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3(10,10,0), 0xFFFFFFFF);
 		mSprite->End();
