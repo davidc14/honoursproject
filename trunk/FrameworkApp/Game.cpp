@@ -54,6 +54,10 @@ bool Game::LoadContent()
 	m_DInput = new DirectInput();
 
 	m_Font = new D3DFont(pDevice);
+
+	//mSprite = new LPD3DXSPRITE(
+	D3DXCreateSprite(pDevice, &mSprite);
+	D3DXCreateTextureFromFile(pDevice, "Textures/cloudMap.jpg", &mSpriteTexture);
 	
 	//m_PhongInterface = new PhongLightingInterface(pDevice);
 	m_AnimatedInterface = new AnimatedInterface(pDevice);
@@ -586,6 +590,10 @@ void Game::Draw()
 
 		mQuadFX->EndPass();
 		mQuadFX->End();
+
+		mSprite->Begin(0);
+		mSprite->Draw(mSpriteTexture, NULL, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3(10,10,0), 0xFFFFFFFF);
+		mSprite->End();
 
 		m_Font->Draw();	
 
