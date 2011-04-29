@@ -9,7 +9,7 @@ using namespace std;
 class UserInterface
 {
 public:
-	UserInterface(IDirect3DDevice9* pDevice);
+	UserInterface(IDirect3DDevice9* pDevice,  int ScreenWidth, int ScreenHeight);
 	~UserInterface();
 
 	void Initialise();
@@ -24,6 +24,8 @@ private:
 	list<UIElement*> mUIElements;
 
 	IDirect3DDevice9* pDevice;
+
+	int mScreenWidth, mScreenHeight;
 };
 
 

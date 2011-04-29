@@ -1,13 +1,16 @@
 #include "UserInterface.h"
 
-UserInterface::UserInterface(IDirect3DDevice9* Device)
+UserInterface::UserInterface(IDirect3DDevice9* Device, int ScreenWidth, int ScreenHeight)
 {
 	pDevice = Device;
+
+	mScreenWidth = ScreenWidth;
+	mScreenHeight = ScreenHeight;
 }
 
 void UserInterface::Initialise()
 {
-	test = new UIElement(pDevice, 0, 0, 100, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3(0,0,0));
+	test = new UIElement(pDevice, 0, 0, 100, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3(mScreenWidth - 100 ,0,0));
 
 	mUIElements.push_back(test);
 }

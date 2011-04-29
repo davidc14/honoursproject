@@ -154,7 +154,7 @@ bool Game::LoadContent()
 	mhDepthTexture = mBlurFX->GetParameterByName(0, "depthTexture");
 	mhBlurAOTexture = mBlurFX->GetParameterByName(0, "SSAOTexture");
 
-	mUI = new UserInterface(pDevice);
+	mUI = new UserInterface(pDevice, (int)m_WindowWidth, (int)m_WindowHeight);
 	mUI->Initialise();
 
 	return true;
