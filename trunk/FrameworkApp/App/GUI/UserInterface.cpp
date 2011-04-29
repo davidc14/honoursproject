@@ -26,3 +26,11 @@ void UserInterface::Draw()
 		(*i)->Draw();
 	}
 }
+
+void UserInterface::Release()
+{
+	for(list<UIElement*>::iterator i = mUIElements.begin(); i != mUIElements.end(); i++)
+	{
+		(*i)->Release();
+	}
+}
