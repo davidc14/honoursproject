@@ -22,6 +22,7 @@
 #include "App\Render Targets\DrawableTex2D.h"
 #include "App\Objects\Render Objects\Citadel.h"
 #include "d3dTexturedCube.h"
+#include "App\GUI\UserInterface.h"
 
 using namespace std;
 
@@ -188,6 +189,8 @@ private:
 
 	LPD3DXSPRITE mSprite;
 	LPDIRECT3DTEXTURE9 mSpriteTexture;
+
+	UserInterface* mUI;
 };
 
 #endif
