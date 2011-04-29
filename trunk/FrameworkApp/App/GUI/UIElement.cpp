@@ -1,5 +1,13 @@
 #include "UIElement.h"
 
+UIElement::UIElement()
+{
+}
+
+UIElement::~UIElement()
+{
+}
+
 UIElement::UIElement(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, LONG bottom, D3DXVECTOR3* center, D3DXVECTOR3* position)
 {
 	//Set up the device

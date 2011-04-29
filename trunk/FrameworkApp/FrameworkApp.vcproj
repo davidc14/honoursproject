@@ -596,6 +596,14 @@
 				Name="GUI"
 				>
 				<File
+					RelativePath=".\App\GUI\UIButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App\GUI\UIButton.h"
+					>
+				</File>
+				<File
 					RelativePath=".\App\GUI\UIElement.cpp"
 					>
 				</File>
