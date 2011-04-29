@@ -672,6 +672,8 @@ void Game::Unload()
 	mAOMTiny->Release();
 	mAOMDwarf->Release();
 	mAOMCitadel->Release();
+
+	mUI->Release();
 }
 
 void Game::CalculateMatrices()

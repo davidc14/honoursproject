@@ -18,10 +18,10 @@ public:
 		D3DXVECTOR3* center, D3DXVECTOR3* position);
 	~UIElement();
 	
-	void Initialise();
-	void Update();
-	void Draw();
-	void Release();
+	virtual void Initialise();
+	virtual void Update();
+	virtual void Draw();
+	virtual void Release();
 
 	bool GetClicked() { return mClicked; }
 	void SetClicked(bool Clicked) { mClicked = Clicked; }

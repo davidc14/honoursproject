@@ -50,4 +50,6 @@ void UIElement::Draw()
 
 void UIElement::Release()
 {
+	mSprite->mSprite->Release();
+	mSprite->mSpriteTexture->Release();
 }
