@@ -10,6 +10,14 @@ public:
 		D3DXVECTOR3* center, D3DXVECTOR3* position, char* string);
 	~UIButton();
 
+	bool IsHovered(float mouseX, float mouseY);
+	bool IsClicked(float mouseX, float mouseY, bool isButtonClicked);
+
+	/*bool GetClicked() { return mClicked; }
+	void SetClicked(bool Clicked) { mClicked = Clicked; }
+	bool GetHovered() { return mHovered; }
+	void SetHovered(bool Hovered) { mHovered = Hovered; }*/
+
 private:
 
 	ID3DXFont* mFont;
