@@ -20,7 +20,8 @@ public:
 
 private:
 
-	UIButton* test;
+	UIButton* mNextButton;
+	UIButton* mLastButton;
 
 	list<UIElement*> mUIElements;
 

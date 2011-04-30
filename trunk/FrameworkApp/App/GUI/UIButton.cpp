@@ -31,6 +31,7 @@ void UIButton::Initialise()
 
 void UIButton::Update()
 {
+	UIElement::Update();
 }
 
 void UIButton::Draw()
