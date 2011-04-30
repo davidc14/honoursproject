@@ -17,8 +17,9 @@ void UserInterface::Initialise()
 	mUIElements.push_back(mLastButton);
 }
 
-void UserInterface::Update()
+void UserInterface::Update(float mouseX, float mouseY, bool isButtonClicked)
 {
+	bool nextbuttonclicked = mNextButton->IsClicked(mouseX, mouseY, isButtonClicked);
 }
 
 void UserInterface::Draw()

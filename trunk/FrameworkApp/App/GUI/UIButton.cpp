@@ -24,6 +24,31 @@ UIButton::~UIButton()
 {
 }
 
+bool UIButton::IsHovered(float mouseX, float mouseY)
+{
+	if(mouseX < mFontRect->left)
+		return false;
+	if(mouseX > mFontRect->right)
+		return false;
+	if(mouseY < mFontRect->top)
+		return false;
+	if(mouseY > mFontRect->bottom)
+		return false;
+    
+    return true;
+}
+
+bool UIButton::IsClicked(float mouseX, float mouseY, bool isButtonClicked)
+{
+	if(!isButtonClicked)
+		return false;
+
+	if(!IsHovered(mouseX, mouseY))    
+		return false;
+
+	return true;
+}
+
 void UIButton::Initialise()
 {
 	UIElement::Initialise();

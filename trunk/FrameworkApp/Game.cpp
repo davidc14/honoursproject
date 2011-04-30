@@ -179,6 +179,8 @@ void Game::HandleInput()
 	else
 		m_Camera->First(true);
 
+	mUI->Update(690,0,m_DInput->GetMouseState(0));
+
 	//Check the key presses
 	//W
 	if(pNewDigitalControlMap[DIK_W])
@@ -228,7 +230,6 @@ void Game::HandleInput()
 
 void Game::Update()
 {
-	mUI->Update();
 
 	m_Camera->Update(m_DeltaTime);
 	

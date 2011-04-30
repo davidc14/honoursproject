@@ -14,7 +14,7 @@ public:
 	~UserInterface();
 
 	void Initialise();
-	void Update();
+	void Update(float mouseX, float mouseY, bool isButtonClicked);
 	void Draw();
 	void Release();
 
