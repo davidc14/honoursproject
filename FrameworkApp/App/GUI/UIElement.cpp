@@ -44,7 +44,7 @@ void UIElement::Draw()
 {
 	//Begin, draw and end 
 	mSprite->mSprite->Begin(0);
-	mSprite->mSprite->Draw(mSprite->mSpriteTexture, mRect, mCenter, mPosition, 0xFFFFFFFF);
+	mSprite->mSprite->Draw(mSprite->mSpriteTexture, mRect, mCenter, mPosition, 0x000000FF);
 	mSprite->mSprite->End();
 }
 
