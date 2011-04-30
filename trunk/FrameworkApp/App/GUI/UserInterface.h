@@ -2,7 +2,8 @@
 #define _USERINTERFACE_H
 
 #include <list>
-#include "UIElement.h"
+//#include "UIElement.h"
+#include "UIButton.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ public:
 
 private:
 
-	UIElement* test;
+	UIButton* test;
 
 	list<UIElement*> mUIElements;
 

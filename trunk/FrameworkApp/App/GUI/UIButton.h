@@ -10,6 +10,14 @@ public:
 		D3DXVECTOR3* center, D3DXVECTOR3* position);
 	~UIButton();
 
+private:
+
+
+
+	/*virtual void Initialise();
+	virtual void Update();
+	virtual void Draw();
+	virtual void Release();*/
 
 };
 
