@@ -10,9 +10,11 @@ UserInterface::UserInterface(IDirect3DDevice9* Device, int ScreenWidth, int Scre
 
 void UserInterface::Initialise()
 {
-	test = new UIButton(pDevice, 0, 0, 100, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 ,0,0), "Hello");
+	mNextButton = new UIButton(pDevice, 0, 0, 100, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 ,0,0), "Next");
+	mLastButton = new UIButton(pDevice, 0, 0, 100, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 ,26,0), "Last");
 
-	mUIElements.push_back(test);
+	mUIElements.push_back(mNextButton);
+	mUIElements.push_back(mLastButton);
 }
 
 void UserInterface::Update()
