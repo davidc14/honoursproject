@@ -163,8 +163,10 @@ bool Game::LoadContent()
 const float camSpeed = 0.1f;
 bool* pDigitalControlMap = new bool[DIGITALCONTROLMAPS];
 bool* pNewDigitalControlMap = new bool[DIGITALCONTROLMAPS];
+LPPOINT mMousePosition = new POINT(); 
 void Game::HandleInput()
 {
+	GetCursorPos(mMousePosition);
 	//if(*pDigitalControlMap != *pNewDigitalControlMap)
 	for(int i = 0; i < DIGITALCONTROLMAPS; i++)
 		pDigitalControlMap[i] = pNewDigitalControlMap[i];
@@ -179,7 +181,7 @@ void Game::HandleInput()
 	else
 		m_Camera->First(true);
 
-	mUI->Update(690,0,m_DInput->GetMouseState(0));
+	mUI->Update((float)mMousePosition->x, (float)mMousePosition->y, m_DInput->GetMouseState(0));
 
 	//Check the key presses
 	//W
