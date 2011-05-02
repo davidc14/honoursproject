@@ -22,7 +22,7 @@ UISlider::UISlider(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, LO
 	//Initialise the font rectangle
 	mFontRect = new RECT();
 	mFontRect->bottom = bottom + (LONG)position->y;
-	mFontRect->right = right + (LONG)position->x + 50;
+	mFontRect->right = right + stringPos + 150;
 	mFontRect->top = (LONG)position->y;
 	mFontRect->left = (LONG)stringPos;
 
@@ -149,25 +149,28 @@ void UISlider::Update(float MouseX)
 	//Move the cursor
 	if(mIsClicked)
 	{
-		if(UIElement::mPosition->x >= mMinX && UIElement::mPosition->x <= mMaxX)
+		if(MouseX > mMinX && MouseX < mMaxX)
 		{
-			UIElement::mPosition->x = MouseX - mCursorWidth/2;
-			//Remember to move the rectangle along for collision detection
-			mPosRect->right = (LONG)(mCursorWidth + UIElement::mPosition->x);
-			mPosRect->left = (LONG)UIElement::mPosition->x;	
-		}
-		//if it's out of range, reset it
-		else if (UIElement::mPosition->x >= mMinX)
-		{
-			UIElement::mPosition->x = mMaxX - 1;
-			mPosRect->right = (LONG)(mCursorWidth + UIElement::mPosition->x);
-			mPosRect->left = (LONG)UIElement::mPosition->x;
-		}
-		else if (UIElement::mPosition->x <= mMaxX)
-		{
-			UIElement::mPosition->x = mMinX + 1;
-			mPosRect->right = (LONG)(mCursorWidth + UIElement::mPosition->x);
-			mPosRect->left = (LONG)UIElement::mPosition->x;			
+			if(UIElement::mPosition->x > mMinX && UIElement::mPosition->x < mMaxX)
+			{
+				UIElement::mPosition->x = MouseX - mCursorWidth/2;
+				//Remember to move the rectangle along for collision detection
+				mPosRect->right = (LONG)(mCursorWidth + UIElement::mPosition->x);
+				mPosRect->left = (LONG)UIElement::mPosition->x;	
+			}
+			//if it's out of range, reset it
+			else if (UIElement::mPosition->x > mMinX)
+			{
+				UIElement::mPosition->x = mMaxX - 1 - mCursorWidth/2;
+				mPosRect->right = (LONG)(mCursorWidth + UIElement::mPosition->x);
+				mPosRect->left = (LONG)UIElement::mPosition->x;
+			}
+			else if (UIElement::mPosition->x < mMaxX)
+			{
+				UIElement::mPosition->x = mMinX + 1;
+				mPosRect->right = (LONG)(mCursorWidth + UIElement::mPosition->x);
+				mPosRect->left = (LONG)UIElement::mPosition->x;			
+			}
 		}
 	}
 }

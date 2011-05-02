@@ -14,18 +14,19 @@ void UserInterface::Initialise()
 	mNextButton = new UIButton(pDevice, 0, 0, 48, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 50 , 26, 0), "Next");
 	mLastButton = new UIButton(pDevice, 0, 0, 48, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 , 26, 0), "Last");
 
+	mScaleSlider = new UISlider(pDevice, 0, 0, 24, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 125, 202, 0),
+		"Scale", (FLOAT)mScreenWidth - 150,
+		(FLOAT)mScreenWidth - 150, (FLOAT)mScreenWidth, 0, 5);
 	mRadiusSlider = new UISlider(pDevice, 0, 0, 24, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 75, 124, 0),
 		"Sample Radius", (FLOAT)mScreenWidth - 150,
 		(FLOAT)mScreenWidth - 150, (FLOAT)mScreenWidth, 25, 100);
-	mIntensitySlider = new UISlider(pDevice, 0, 0, 24, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 75, 150, 0),
+	mIntensitySlider = new UISlider(pDevice, 0, 0, 24, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100, 150, 0),
 		"Intensity", (FLOAT)mScreenWidth - 150,
 		(FLOAT)mScreenWidth - 150, (FLOAT)mScreenWidth, 0, 10);
 	mJitterSlider = new UISlider(pDevice, 0, 0, 24, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 75, 176, 0),
 		"Jitter", (FLOAT)mScreenWidth - 150,
 		(FLOAT)mScreenWidth - 150, (FLOAT)mScreenWidth, 0, 1);
-	mScaleSlider = new UISlider(pDevice, 0, 0, 24, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 75, 202, 0),
-		"Scale", (FLOAT)mScreenWidth - 150,
-		(FLOAT)mScreenWidth - 150, (FLOAT)mScreenWidth, 0, 5);
+	
 
 	//Push all the elements onto the list for rendering
 	mUIElements.push_back(mExitButton);
