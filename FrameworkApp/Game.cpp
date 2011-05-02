@@ -239,6 +239,9 @@ void Game::HandleInput()
 		PostQuitMessage(0);
 
 	mAOValues.mSampleRadius = mUI->GetRadiusSliderValue();
+	mAOValues.mIntensity = mUI->GetIntensitySliderValue();
+	mAOValues.mScale = mUI->GetScaleSliderValue();
+	mAOValues.mJitter = mUI->GetJitterSliderValue();
 }
 
 void Game::Update()
