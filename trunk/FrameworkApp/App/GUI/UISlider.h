@@ -46,6 +46,9 @@ private:
 
 	float PercentageOnScreen, PercentageOnSlider;
 
+	Sprite* mBackground;
+	RECT* mBackgroundRect;
+	D3DXVECTOR3* mBackgroundPosition;
 };
 
 #endif

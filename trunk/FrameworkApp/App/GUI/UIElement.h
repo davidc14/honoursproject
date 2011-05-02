@@ -32,7 +32,6 @@ public:
 protected:
 
 	Sprite* mSprite;
-
 	RECT* mRect;
 	bool mClicked, mHovered;
 
