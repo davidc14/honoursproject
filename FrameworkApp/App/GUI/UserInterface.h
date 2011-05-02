@@ -23,7 +23,7 @@ public:
 	void Draw();
 	void Release();
 
-	bool* GetClicked() { return Clicked; }
+	bool* GetButtonsClicked() { return ButtonsClicked; }
 
 private:
 
@@ -37,7 +37,7 @@ private:
 
 	int mScreenWidth, mScreenHeight;
 
-	bool Clicked[UIMAXBUTTONS];
+	bool ButtonsClicked[UIMAXBUTTONS];
 };
 
 

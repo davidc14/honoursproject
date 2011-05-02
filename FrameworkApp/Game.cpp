@@ -177,7 +177,7 @@ void Game::HandleInput()
 		mOldButtonsClicked[i] = mCurrentButtonsClicked[i];
 	
 	pNewDigitalControlMap = m_DInput->GetKeyboardState();
-	mCurrentButtonsClicked = mUI->GetClicked();
+	mCurrentButtonsClicked = mUI->GetButtonsClicked();
 
 	//Update direct input
 	m_DInput->Update();
@@ -227,6 +227,9 @@ void Game::HandleInput()
 		if(mCurrentRenderTarget < Colour)
 			mCurrentRenderTarget = FinalPass;
 	}
+
+	if(mCurrentButtonsClicked[UI_EXIT])
+		PostQuitMessage(0);
 }
 
 void Game::Update()
@@ -361,13 +364,13 @@ void Game::Draw()
 			SetSpotLightVariables(m_Dwarf->GetWorld(), m_Dwarf->GetMaterial());
 			m_Dwarf->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
 
-			D3DXMatrixIdentity(&matWorld);
+			/*D3DXMatrixIdentity(&matWorld);
 			D3DXMATRIX matHeadTranslation, matHeadScale;
 			D3DXMatrixTranslation(&matHeadTranslation, 25.0f, 3.0f, -25.0f);
 			D3DXMatrixScaling(&matHeadScale, 2.0f, 2.0f, 2.0f);
 			matWorld = matHeadScale * matHeadTranslation;
 			SetSpotLightVariables(matWorld, m_Dwarf->GetMaterial());
-			//mHeadSad->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());
+			mHeadSad->Draw(m_SpotInterface->GetEffect(), m_SpotInterface->GetTextureHandle());*/
 
 		m_SpotInterface->GetEffect()->EndPass();
 		m_SpotInterface->GetEffect()->End();
@@ -407,7 +410,7 @@ void Game::Draw()
 					SetViewSpaceVariables(m_Dwarf->GetWorld(), 0, 0);
 					m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
 
-					SetViewSpaceVariables(matWorld, 0, 0);
+					//SetViewSpaceVariables(matWorld, 0, 0);
 					//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
 
 				mViewInterface->End();
@@ -437,7 +440,7 @@ void Game::Draw()
 					SetViewSpaceVariables(m_Dwarf->GetWorld(), 0, 0);
 					m_Dwarf->Draw(mViewInterface->GetEffect(), 0);
 
-					SetViewSpaceVariables(matWorld, 0, 0);
+					//SetViewSpaceVariables(matWorld, 0, 0);
 					//mHeadSad->Draw(mViewInterface->GetEffect(), 0);
 
 				mViewInterface->End();
