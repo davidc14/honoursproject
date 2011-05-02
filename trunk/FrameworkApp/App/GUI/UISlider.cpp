@@ -1,16 +1,29 @@
 #include "UISlider.h"
 
 UISlider::UISlider(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, LONG bottom, 
-		D3DXVECTOR3* center, D3DXVECTOR3* position, float minX, float maxX, float minRange, float maxRange)
+		D3DXVECTOR3* center, D3DXVECTOR3* position, char* string, float stringPos, float minX, float maxX, float minRange, float maxRange)
 		: UIElement(Device, top, left, right, bottom, 
 		center, position)
 {
-	mFontRect = new RECT();
+	mString = string;
+	//Create the font used to render the frame counter
+	D3DXCreateFont( pDevice, 18, 0, 
+		FW_BOLD, 0, FALSE, DEFAULT_CHARSET, 
+		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, 
+		DEFAULT_PITCH | FF_DONTCARE, TEXT("Courier New"), &mFont );
 
+	mPosRect = new RECT();
+
+	mPosRect->bottom = bottom + (LONG)position->y;
+	mPosRect->right = right + (LONG)position->x;
+	mPosRect->top = (LONG)position->y;
+	mPosRect->left = (LONG)position->x;
+
+	mFontRect = new RECT();
 	mFontRect->bottom = bottom + (LONG)position->y;
-	mFontRect->right = right + (LONG)position->x;
+	mFontRect->right = right + (LONG)position->x + 50;
 	mFontRect->top = (LONG)position->y;
-	mFontRect->left = (LONG)position->x;
+	mFontRect->left = stringPos;
 
 	mWidth = right;
 
@@ -32,13 +45,13 @@ UISlider::~UISlider()
 
 bool UISlider::IsHovered(float mouseX, float mouseY)
 {
-	if(mouseX < mFontRect->left - 25)
+	if(mouseX < mPosRect->left - 25)
 		return false;
-	if(mouseX > mFontRect->right + 25)
+	if(mouseX > mPosRect->right + 25)
 		return false;
-	if(mouseY < mFontRect->top)
+	if(mouseY < mPosRect->top)
 		return false;
-	if(mouseY > mFontRect->bottom)
+	if(mouseY > mPosRect->bottom)
 		return false;
     
     return true;
@@ -110,20 +123,20 @@ void UISlider::Update(float MouseX)
 		if(UIElement::mPosition->x >= mMinX && UIElement::mPosition->x <= mMaxX)
 		{
 			UIElement::mPosition->x = MouseX - mWidth/2;
-			mFontRect->right = (LONG)(mWidth + UIElement::mPosition->x);
-			mFontRect->left = (LONG)UIElement::mPosition->x;	
+			mPosRect->right = (LONG)(mWidth + UIElement::mPosition->x);
+			mPosRect->left = (LONG)UIElement::mPosition->x;	
 		}
 		else if (UIElement::mPosition->x >= mMinX)
 		{
 			UIElement::mPosition->x = mMaxX - 1;
-			mFontRect->right = (LONG)(mWidth + UIElement::mPosition->x);
-			mFontRect->left = (LONG)UIElement::mPosition->x;
+			mPosRect->right = (LONG)(mWidth + UIElement::mPosition->x);
+			mPosRect->left = (LONG)UIElement::mPosition->x;
 		}
 		else if (UIElement::mPosition->x <= mMaxX)
 		{
 			UIElement::mPosition->x = mMinX + 1;
-			mFontRect->right = (LONG)(mWidth + UIElement::mPosition->x);
-			mFontRect->left = (LONG)UIElement::mPosition->x;			
+			mPosRect->right = (LONG)(mWidth + UIElement::mPosition->x);
+			mPosRect->left = (LONG)UIElement::mPosition->x;			
 		}
 	}
 }
@@ -131,6 +144,7 @@ void UISlider::Update(float MouseX)
 void UISlider::Draw()
 {
 	UIElement::Draw(mIsClicked);
+	mFont->DrawText(0, mString, -1, mFontRect, DT_TOP | DT_LEFT /*draw in the top left corner*/, 0xFFFFFF00);// yellow text
 }
 
 void UISlider::Release()
