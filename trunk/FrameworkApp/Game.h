@@ -191,6 +191,8 @@ private:
 	LPDIRECT3DTEXTURE9 mSpriteTexture;
 
 	UserInterface* mUI;
+	bool* mCurrentButtonsClicked;
+	bool* mOldButtonsClicked;
 };
 
 #endif

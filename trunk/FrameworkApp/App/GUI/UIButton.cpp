@@ -18,6 +18,8 @@ UIButton::UIButton(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, LO
 	mFontRect->right = right + (LONG)position->x;
 	mFontRect->top = (LONG)position->y;
 	mFontRect->left = (LONG)position->x;
+
+	mIsClicked = false;
 }
 
 UIButton::~UIButton()
@@ -41,11 +43,18 @@ bool UIButton::IsHovered(float mouseX, float mouseY)
 bool UIButton::IsClicked(float mouseX, float mouseY, bool isButtonClicked)
 {
 	if(!isButtonClicked)
+	{
+		mIsClicked = false;
 		return false;
+	}
 
-	if(!IsHovered(mouseX, mouseY))    
+	if(!IsHovered(mouseX, mouseY)) 
+	{
+		mIsClicked = false;
 		return false;
+	}
 
+	mIsClicked = true;
 	return true;
 }
 
@@ -61,7 +70,7 @@ void UIButton::Update()
 
 void UIButton::Draw()
 {
-	UIElement::Draw();
+	UIElement::Draw(mIsClicked);
 	//Draw the font last so it is above everything
 	mFont->DrawText(0, mString, -1, mFontRect, DT_TOP | DT_LEFT /*draw in the top left corner*/, 0xFFFFFF00);// yellow text
 }

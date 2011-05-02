@@ -7,6 +7,11 @@
 
 using namespace std;
 
+#define UIMAXBUTTONS 10
+#define UI_EXIT 0
+#define UI_NEXT 1
+#define UI_LAST 2
+
 class UserInterface
 {
 public:
@@ -18,16 +23,21 @@ public:
 	void Draw();
 	void Release();
 
+	bool* GetClicked() { return Clicked; }
+
 private:
 
+	UIButton* mExitButton;
 	UIButton* mNextButton;
-	UIButton* mLastButton;
+	UIButton* mLastButton;	
 
 	list<UIElement*> mUIElements;
 
 	IDirect3DDevice9* pDevice;
 
 	int mScreenWidth, mScreenHeight;
+
+	bool Clicked[UIMAXBUTTONS];
 };
 
 
