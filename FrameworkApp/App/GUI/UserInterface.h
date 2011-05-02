@@ -4,6 +4,7 @@
 #include <list>
 //#include "UIElement.h"
 #include "UIButton.h"
+#include "UISlider.h"
 
 using namespace std;
 
@@ -37,6 +38,9 @@ private:
 	UIButton* mExitButton;
 	UIButton* mNextButton;
 	UIButton* mLastButton;	
+
+	//The sliders
+	UISlider* mRadiusSlider;
 
 	//The list of elements
 	list<UIElement*> mUIElements;
