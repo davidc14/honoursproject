@@ -1,4 +1,5 @@
 #include "UISlider.h"
+#include <stdio.h>
 
 UISlider::UISlider(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, LONG bottom, 
 		D3DXVECTOR3* center, D3DXVECTOR3* position, char* string, float stringPos, float minX, float maxX, float minRange, float maxRange)
@@ -22,7 +23,7 @@ UISlider::UISlider(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, LO
 	//Initialise the font rectangle
 	mFontRect = new RECT();
 	mFontRect->bottom = bottom + (LONG)position->y;
-	mFontRect->right = right + stringPos + 150;
+	mFontRect->right = right + (LONG)stringPos + 150;
 	mFontRect->top = (LONG)position->y;
 	mFontRect->left = (LONG)stringPos;
 
@@ -127,7 +128,7 @@ float UISlider::CalculatePercentageOnSlider()
 
 	//Return that value
 	PercentageOnSlider = PercentageValue + mMinRange;
-	return PercentageValue;
+	return PercentageOnSlider;
 }
 
 void UISlider::Initialise()
@@ -138,6 +139,7 @@ void UISlider::Initialise()
 	D3DXCreateSprite(pDevice, &mBackground->mSprite);
 	D3DXCreateTextureFromFile(pDevice, "Textures/template.jpg", &mBackground->mSpriteTexture);
 }	
+
 
 void UISlider::Update(float MouseX)
 {
@@ -173,7 +175,10 @@ void UISlider::Update(float MouseX)
 			}
 		}
 	}
+
+	sprintf_s(mFinalString, sizeof(mFinalString), "%s: %f", mString, CalculatePercentageOnSlider());
 }
+
 
 void UISlider::Draw()
 {	
@@ -184,7 +189,7 @@ void UISlider::Draw()
 
 	UIElement::Draw(mIsClicked);	
 
-	mFont->DrawText(0, mString, -1, mFontRect, DT_TOP | DT_LEFT /*draw in the top left corner*/, 0xFFFFFF00);// yellow text
+	mFont->DrawText(0, mFinalString, -1, mFontRect, DT_TOP | DT_LEFT /*draw in the top left corner*/, 0xFFFFFF00);// yellow text
 }
 
 void UISlider::Release()

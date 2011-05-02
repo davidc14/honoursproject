@@ -36,6 +36,7 @@ private:
 	RECT* mFontRect;
 	ID3DXFont* mFont;
 	char* mString;
+	char mFinalString[50];
 
 	int mCursorWidth;
 	
