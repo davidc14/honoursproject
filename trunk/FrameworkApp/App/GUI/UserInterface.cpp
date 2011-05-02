@@ -14,10 +14,13 @@ void UserInterface::Initialise()
 	mNextButton = new UIButton(pDevice, 0, 0, 48, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 50 , 26, 0), "Next");
 	mLastButton = new UIButton(pDevice, 0, 0, 48, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 , 26, 0), "Last");
 
+	mRadiusSlider = new UISlider(pDevice, 0, 0, 24, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 150 , 52, 0));
+
 	//Push all the elements onto the list for rendering
 	mUIElements.push_back(mExitButton);
 	mUIElements.push_back(mNextButton);
 	mUIElements.push_back(mLastButton);
+	mUIElements.push_back(mRadiusSlider);
 }
 
 void UserInterface::Update(float mouseX, float mouseY, bool isButtonClicked)
@@ -25,6 +28,9 @@ void UserInterface::Update(float mouseX, float mouseY, bool isButtonClicked)
 	ButtonsClicked[UI_EXIT] = mExitButton->IsClicked(mouseX, mouseY, isButtonClicked);
 	ButtonsClicked[UI_NEXT] = mNextButton->IsClicked(mouseX, mouseY, isButtonClicked);
 	ButtonsClicked[UI_LAST] = mLastButton->IsClicked(mouseX, mouseY, isButtonClicked);
+	mRadiusSlider->IsClicked(mouseX, mouseY, isButtonClicked);
+
+	mRadiusSlider->Update(mouseX);
 }
 
 void UserInterface::Draw()

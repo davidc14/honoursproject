@@ -612,6 +612,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\App\GUI\UISlider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App\GUI\UISlider.h"
+					>
+				</File>
+				<File
 					RelativePath=".\App\GUI\UserInterface.cpp"
 					>
 				</File>
