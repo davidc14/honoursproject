@@ -14,6 +14,7 @@ void UserInterface::Initialise()
 	mNextButton = new UIButton(pDevice, 0, 0, 100, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 , 26, 0), "Next");
 	mLastButton = new UIButton(pDevice, 0, 0, 100, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 , 52, 0), "Last");
 
+	//Push all the elements onto the list for rendering
 	mUIElements.push_back(mExitButton);
 	mUIElements.push_back(mNextButton);
 	mUIElements.push_back(mLastButton);
@@ -28,16 +29,14 @@ void UserInterface::Update(float mouseX, float mouseY, bool isButtonClicked)
 
 void UserInterface::Draw()
 {
+	//Render all the items in the list
 	for(list<UIElement*>::iterator i = mUIElements.begin(); i != mUIElements.end(); i++)
-	{
 		(*i)->Draw();
-	}
 }
 
 void UserInterface::Release()
 {
+	//Free all the memory for items on the list
 	for(list<UIElement*>::iterator i = mUIElements.begin(); i != mUIElements.end(); i++)
-	{
 		(*i)->Release();
-	}
 }
