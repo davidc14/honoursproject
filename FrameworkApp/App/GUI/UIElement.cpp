@@ -48,6 +48,17 @@ void UIElement::Draw()
 	mSprite->mSprite->End();
 }
 
+void UIElement::Draw(bool ButtonIsClicked)
+{
+	//Begin, draw and end 
+	mSprite->mSprite->Begin(0);
+	if(ButtonIsClicked)
+		mSprite->mSprite->Draw(mSprite->mSpriteTexture, mRect, mCenter, mPosition, 0x00FF0000);
+	else
+		mSprite->mSprite->Draw(mSprite->mSpriteTexture, mRect, mCenter, mPosition, 0x000000FF);
+	mSprite->mSprite->End();
+}
+
 void UIElement::Release()
 {
 	mSprite->mSprite->Release();

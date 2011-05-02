@@ -21,6 +21,7 @@ public:
 	virtual void Initialise();
 	virtual void Update();
 	virtual void Draw();
+	virtual void Draw(bool ButtonIsClicked);
 	virtual void Release();
 
 	bool GetClicked() { return mClicked; }

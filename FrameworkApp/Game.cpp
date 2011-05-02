@@ -156,6 +156,8 @@ bool Game::LoadContent()
 
 	mUI = new UserInterface(pDevice, (int)m_WindowWidth, (int)m_WindowHeight);
 	mUI->Initialise();
+	mCurrentButtonsClicked = new bool[UIMAXBUTTONS];
+	mOldButtonsClicked = new bool[UIMAXBUTTONS];
 
 	return true;
 }
@@ -170,8 +172,12 @@ void Game::HandleInput()
 	//if(*pDigitalControlMap != *pNewDigitalControlMap)
 	for(int i = 0; i < DIGITALCONTROLMAPS; i++)
 		pDigitalControlMap[i] = pNewDigitalControlMap[i];
+
+	for(int i = 0; i < UIMAXBUTTONS; i++)
+		mOldButtonsClicked[i] = mCurrentButtonsClicked[i];
 	
 	pNewDigitalControlMap = m_DInput->GetKeyboardState();
+	mCurrentButtonsClicked = mUI->GetClicked();
 
 	//Update direct input
 	m_DInput->Update();
@@ -205,24 +211,17 @@ void Game::HandleInput()
 
 	if(pNewDigitalControlMap[DIK_E])
 		m_Camera->Raise(camSpeed*5, camSpeed*5, camSpeed*5);
-	
-	if(pNewDigitalControlMap[DIK_P] && !pDigitalControlMap[DIK_P])
-		mSSAOContainer.mUseColour = !mSSAOContainer.mUseColour;
-	if(pNewDigitalControlMap[DIK_O] && !pDigitalControlMap[DIK_O])
-		mSSAOContainer.mUseAO = !mSSAOContainer.mUseAO;	
 
-	//if(m_DInput->GetKeyState(DIK_SPACE))
-	/*if(pNewDigitalControlMap[DIK_SPACE] && !pDigitalControlMap[DIK_SPACE])
-		m_Camera->SetActiveFlag(!m_Camera->GetActiveFlag());*/
-
-	if(pNewDigitalControlMap[DIK_RIGHT] && !pDigitalControlMap[DIK_RIGHT])
+	if((pNewDigitalControlMap[DIK_RIGHT] && !pDigitalControlMap[DIK_RIGHT]) 
+		|| mCurrentButtonsClicked[UI_NEXT] && !mOldButtonsClicked[UI_NEXT])
 	{
 		mCurrentRenderTarget = (RenderTargets)(mCurrentRenderTarget + (RenderTargets)1);
 		if(mCurrentRenderTarget > FinalPass)
 			mCurrentRenderTarget = Colour;
 	}
 
-	if(pNewDigitalControlMap[DIK_LEFT] && !pDigitalControlMap[DIK_LEFT])
+	if(pNewDigitalControlMap[DIK_LEFT] && !pDigitalControlMap[DIK_LEFT] 
+		|| mCurrentButtonsClicked[UI_LAST] && !mOldButtonsClicked[UI_LAST])
 	{
 		mCurrentRenderTarget = (RenderTargets)(mCurrentRenderTarget - (RenderTargets)1);
 		if(mCurrentRenderTarget < Colour)

@@ -29,6 +29,8 @@ private:
 	virtual void Draw();
 	virtual void Release();
 
+	bool mIsClicked;
+
 };
 
 #endif

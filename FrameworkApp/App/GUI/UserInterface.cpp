@@ -10,16 +10,20 @@ UserInterface::UserInterface(IDirect3DDevice9* Device, int ScreenWidth, int Scre
 
 void UserInterface::Initialise()
 {
-	mNextButton = new UIButton(pDevice, 0, 0, 100, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 ,0,0), "Next");
-	mLastButton = new UIButton(pDevice, 0, 0, 100, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 ,26,0), "Last");
+	mExitButton = new UIButton(pDevice, 0, 0, 100, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 , 0, 0), "Exit");
+	mNextButton = new UIButton(pDevice, 0, 0, 100, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 , 26, 0), "Next");
+	mLastButton = new UIButton(pDevice, 0, 0, 100, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 , 54, 0), "Last");
 
+	mUIElements.push_back(mExitButton);
 	mUIElements.push_back(mNextButton);
 	mUIElements.push_back(mLastButton);
 }
 
 void UserInterface::Update(float mouseX, float mouseY, bool isButtonClicked)
 {
-	bool nextbuttonclicked = mNextButton->IsClicked(mouseX, mouseY, isButtonClicked);
+	Clicked[UI_EXIT] = mExitButton->IsClicked(mouseX, mouseY, isButtonClicked);
+	Clicked[UI_NEXT] = mNextButton->IsClicked(mouseX, mouseY, isButtonClicked);
+	Clicked[UI_LAST] = mLastButton->IsClicked(mouseX, mouseY, isButtonClicked);
 }
 
 void UserInterface::Draw()
