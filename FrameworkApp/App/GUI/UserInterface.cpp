@@ -14,9 +14,9 @@ void UserInterface::Initialise()
 	mNextButton = new UIButton(pDevice, 0, 0, 48, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 50 , 26, 0), "Next");
 	mLastButton = new UIButton(pDevice, 0, 0, 48, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 100 , 26, 0), "Last");
 
-	mRadiusSlider = new UISlider(pDevice, 0, 0, 24, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 75, 52, 0),
+	mRadiusSlider = new UISlider(pDevice, 0, 0, 24, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 75, 124, 0),
 		"Sample Radius", (FLOAT)mScreenWidth - 150,
-		(FLOAT)mScreenWidth - 150, (FLOAT)mScreenWidth, 50, 100);
+		(FLOAT)mScreenWidth - 150, (FLOAT)mScreenWidth, 25, 100);
 
 	//Push all the elements onto the list for rendering
 	mUIElements.push_back(mExitButton);
