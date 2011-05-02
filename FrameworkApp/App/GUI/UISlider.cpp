@@ -150,4 +150,5 @@ void UISlider::Draw()
 void UISlider::Release()
 {
 	UIElement::Release();
+	mFont->Release();
 }
