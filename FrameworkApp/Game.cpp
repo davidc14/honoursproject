@@ -59,19 +59,23 @@ bool Game::LoadContent()
 	m_AnimatedInterface = new AnimatedInterface(pDevice);
 	m_SpotInterface = new SpotLightingInterface(pDevice);
 
+	//Set the network state
 	ConnectionStatus = false;
 
+	//Initialise the camera
 	D3DXVECTOR3 vEyePt( 0.0f, 5.0f,-20.0f );
     D3DXVECTOR3 vLookatPt( 0.0f, 0.0f, 0.0f );
     D3DXVECTOR3 vUpVec( 0.0f, 1.0f, 0.0f );
 
+	//Load the camera
 	m_Camera = new FPCamera(vEyePt,	vLookatPt, vUpVec, (int)m_WindowWidth, (int)m_WindowHeight);	
 
+	//Initialise the projection matrix
 	D3DXMatrixPerspectiveFovLH(&matProj, D3DX_PI / 4.0f, m_WindowWidth/m_WindowHeight , 1.0f, 1.0f);
 
+	//Load the various models
 	m_SkinnedMesh = new SkinnedMesh(pDevice, "Models/Tiny", "tiny.x", "Tiny_skin.bmp");
 	mAOMTiny = new SkinnedMesh(pDevice, "Models/AO Maps", "tiny.x", "BakedAO-surfaceShader1SG-Tiny_Mesh01 - Copy.tga");
-	
 
 	m_Dwarf = new Dwarf(pDevice);
 	m_Citadel = new Citadel(pDevice);
@@ -79,17 +83,7 @@ bool Game::LoadContent()
 	mAOMDwarf = new Dwarf(pDevice, "Models/AO Maps", "DwarfAOMap.x");
 	mAOMCitadel = new Citadel(pDevice, "Models/AO Maps", "MyRoom.x");
 
-	mLight.dirW    = D3DXVECTOR3(0.0f, -1.0f, 1.0f);
-	D3DXVec3Normalize(&mLight.dirW, &mLight.dirW);
-	mLight.ambient = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
-	mLight.diffuse = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
-	mLight.spec    = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
-
-	mWhiteMtrl.ambient = WHITE*0.9f;
-	mWhiteMtrl.diffuse = WHITE*0.6f;
-	mWhiteMtrl.spec    = WHITE*0.6f;
-	mWhiteMtrl.specPower = 48.0f;
-
+	//Load all the render targets
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, m_Camera->GetFarPlane());
 	mShadowTarget = new DrawableRenderTarget(pDevice, (UINT)512, (UINT)512, D3DFMT_R32F, D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mViewPos = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_A16B16G16R16F  , D3DFMT_D24X8, m_Camera->GetFarPlane());
@@ -99,6 +93,7 @@ bool Game::LoadContent()
 	mFinalTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_X8R8G8B8  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 	mMapsTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, D3DFMT_X8R8G8B8  , D3DFMT_D24X8, m_Camera->GetFarPlane());
 
+	//Load the general use textures
 	D3DXCreateTextureFromFile(pDevice, "whitetex.dds", &m_WhiteTexture);
 	D3DXCreateTextureFromFile(pDevice, "Textures/random.png", &mRandomTexture);
 
@@ -109,6 +104,7 @@ bool Game::LoadContent()
 	mSpotLight.spec      = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	mSpotLight.spotPower = 6.0f;
 
+	//Load the shader files with the different effects
 	ID3DXBuffer *m_Error = 0;
 	D3DXCreateEffectFromFile(pDevice, "Shaders/DrawQuad.fx", 0, 0, D3DXSHADER_DEBUG,0, &mQuadFX, &m_Error);
 	if(m_Error)
@@ -154,16 +150,20 @@ bool Game::LoadContent()
 	mhDepthTexture = mBlurFX->GetParameterByName(0, "depthTexture");
 	mhBlurAOTexture = mBlurFX->GetParameterByName(0, "SSAOTexture");
 
+	//Initialise the UI and it's control maps
 	mUI = new UserInterface(pDevice, (int)m_WindowWidth, (int)m_WindowHeight);
 	mUI->Initialise();
 	mCurrentButtonsClicked = new bool[UIMAXBUTTONS];
 	mOldButtonsClicked = new bool[UIMAXBUTTONS];
 
-	mAOValues.mIntensity = 4.0f;
+	//Initialise the base values
+	//These are overriden by the sliders initial values
+	/*mAOValues.mIntensity = 4.0f;
 	mAOValues.mJitter = 0.5f;
 	mAOValues.mScale = 1.0f;
-	mAOValues.mSampleRadius = 75.0f;
+	mAOValues.mSampleRadius = 75.0f;*/
 
+	//Initialise the input maps and mouse position struct
 	pDigitalControlMap = new bool[DIGITALCONTROLMAPS];
 	pNewDigitalControlMap = new bool[DIGITALCONTROLMAPS];
 	mMousePosition = new POINT(); 
