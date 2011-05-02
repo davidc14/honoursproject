@@ -133,7 +133,7 @@ float UISlider::CalculatePercentageOnSlider()
 void UISlider::Initialise()
 {
 	//Initialise the base sprite
-	//UIElement::Initialise();
+	//UIElement::Initialise(); //Don't need to call the base initialise, this is handled by the UI
 	//Load the background sprite unique to the slider
 	D3DXCreateSprite(pDevice, &mBackground->mSprite);
 	D3DXCreateTextureFromFile(pDevice, "Textures/template.jpg", &mBackground->mSpriteTexture);
@@ -152,9 +152,11 @@ void UISlider::Update(float MouseX)
 		if(UIElement::mPosition->x >= mMinX && UIElement::mPosition->x <= mMaxX)
 		{
 			UIElement::mPosition->x = MouseX - mCursorWidth/2;
+			//Remember to move the rectangle along for collision detection
 			mPosRect->right = (LONG)(mCursorWidth + UIElement::mPosition->x);
 			mPosRect->left = (LONG)UIElement::mPosition->x;	
 		}
+		//if it's out of range, reset it
 		else if (UIElement::mPosition->x >= mMinX)
 		{
 			UIElement::mPosition->x = mMaxX - 1;
@@ -184,9 +186,9 @@ void UISlider::Draw()
 
 void UISlider::Release()
 {
+	//Make sure to release everything, not just what's in the base class
 	UIElement::Release();
 	mFont->Release();
 	mBackground->mSprite->Release();
-	mBackground->mSpriteTexture->Release();
-	
+	mBackground->mSpriteTexture->Release();	
 }

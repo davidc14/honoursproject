@@ -43,6 +43,9 @@ private:
 
 	//The sliders
 	UISlider* mRadiusSlider;
+	UISlider* mIntensitySlider;
+	UISlider* mJitterSlider;
+	UISlider* mScaleSlider;
 
 	//The list of elements
 	list<UIElement*> mUIElements;
