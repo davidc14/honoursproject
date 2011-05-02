@@ -32,6 +32,8 @@ public:
 	//This returns which buttons have been clicked
 	bool* GetButtonsClicked() { return ButtonsClicked; }
 
+	float GetRadiusSliderValue() { return mRadiusSlider->GetFinalValue(); } 
+
 private:
 
 	//The buttons
