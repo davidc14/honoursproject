@@ -33,7 +33,7 @@ UIElement::UIElement(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, 
 void UIElement::Initialise()
 {
 	D3DXCreateSprite(pDevice, &mSprite->mSprite);
-	D3DXCreateTextureFromFile(pDevice, "Textures/button.jpg", &mSprite->mSpriteTexture);
+	D3DXCreateTextureFromFile(pDevice, "Textures/template.jpg", &mSprite->mSpriteTexture);
 }
 
 void UIElement::Update()
