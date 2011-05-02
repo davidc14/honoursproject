@@ -106,8 +106,8 @@ float doAmbientOcclusion(in float2 tcoord,in float2 uv, in float3 p, in float3 c
   const float  d = length(diff)*0.1;
 
   return
-    (1.0-saturate(dot(n, -v)-0.30)) *
-    saturate(dot(cnorm, v)-0.30) *
+    (1.0-saturate(dot(n, -v)-0.35)) *
+    saturate(dot(cnorm, v)-0.35) *
     (1.0f - 1.0f / sqrt(0.2f / (d * d * g_scale) + 1.0f));
 }
 
