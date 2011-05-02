@@ -12,38 +12,47 @@ UISlider::UISlider(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, LO
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, 
 		DEFAULT_PITCH | FF_DONTCARE, TEXT("Courier New"), &mFont );
 
+	//Initialise the position of the slider
 	mPosRect = new RECT();
-
 	mPosRect->bottom = bottom + (LONG)position->y;
 	mPosRect->right = right + (LONG)position->x;
 	mPosRect->top = (LONG)position->y;
 	mPosRect->left = (LONG)position->x;
 
+	//Initialise the font rectangle
 	mFontRect = new RECT();
 	mFontRect->bottom = bottom + (LONG)position->y;
 	mFontRect->right = right + (LONG)position->x + 50;
 	mFontRect->top = (LONG)position->y;
 	mFontRect->left = (LONG)stringPos;
 
-	mWidth = right;
+	//Set the width and the cursor
+	mCursorWidth = right;
 
+	//Zero the clicked variable
 	mIsClicked = false;
 
+	//Set the minimum and maximum screen positions for the cursor
 	mMinX = minX;
 	mMaxX = maxX;
 
+	//Set the minimum and maximum range values that the slider can go between
 	mMinRange = minRange;
 	mMaxRange = maxRange;
 
+	//Zero the two results of the slider
 	PercentageOnScreen = 0; 
 	PercentageOnSlider = 0;
 
+	//Set up the background sprite and rectangle
 	mBackground = new Sprite();
 	mBackgroundRect = new RECT();
 
+	//The background has the same positions as the font
 	*mBackgroundRect = *mFontRect;
 	mBackgroundPosition = new D3DXVECTOR3((float)mBackgroundRect->left, (float)mBackgroundRect->top, 0);
 
+	//Load the font
 	Initialise();
 }
 
@@ -53,10 +62,12 @@ UISlider::~UISlider()
 
 bool UISlider::IsHovered(float mouseX, float mouseY)
 {
+	//If the mouse is around the range of the cursor, this is done to give the cursor a little room to maneuvre 
 	if(mouseX < mPosRect->left - 25)
 		return false;
 	if(mouseX > mPosRect->right + 25)
 		return false;
+	//If the mouse is within the boundaries of the cursor
 	if(mouseY < mPosRect->top)
 		return false;
 	if(mouseY > mPosRect->bottom)
@@ -67,18 +78,21 @@ bool UISlider::IsHovered(float mouseX, float mouseY)
 
 bool UISlider::IsClicked(float mouseX, float mouseY, bool isButtonClicked)
 {
+	//If the button is being held down
 	if(!isButtonClicked)
 	{
 		mIsClicked = false;
 		return false;
 	}
 
+	//If the cursor is in position
 	if(!IsHovered(mouseX, mouseY)) 
 	{
 		mIsClicked = false;
 		return false;
 	}
 
+	//Set the click to true
 	mIsClicked = true;
 	return true;
 }
@@ -118,34 +132,39 @@ float UISlider::CalculatePercentageOnSlider()
 
 void UISlider::Initialise()
 {
-	UIElement::Initialise();
+	//Initialise the base sprite
+	//UIElement::Initialise();
+	//Load the background sprite unique to the slider
 	D3DXCreateSprite(pDevice, &mBackground->mSprite);
 	D3DXCreateTextureFromFile(pDevice, "Textures/template.jpg", &mBackground->mSpriteTexture);
 }	
 
 void UISlider::Update(float MouseX)
 {
+	//Calculate the values the slider is at 
 	CalculatePercentageOnScreen();
 	CalculatePercentageOnSlider();
+	//Update the base
 	UIElement::Update();
+	//Move the cursor
 	if(mIsClicked)
 	{
 		if(UIElement::mPosition->x >= mMinX && UIElement::mPosition->x <= mMaxX)
 		{
-			UIElement::mPosition->x = MouseX - mWidth/2;
-			mPosRect->right = (LONG)(mWidth + UIElement::mPosition->x);
+			UIElement::mPosition->x = MouseX - mCursorWidth/2;
+			mPosRect->right = (LONG)(mCursorWidth + UIElement::mPosition->x);
 			mPosRect->left = (LONG)UIElement::mPosition->x;	
 		}
 		else if (UIElement::mPosition->x >= mMinX)
 		{
 			UIElement::mPosition->x = mMaxX - 1;
-			mPosRect->right = (LONG)(mWidth + UIElement::mPosition->x);
+			mPosRect->right = (LONG)(mCursorWidth + UIElement::mPosition->x);
 			mPosRect->left = (LONG)UIElement::mPosition->x;
 		}
 		else if (UIElement::mPosition->x <= mMaxX)
 		{
 			UIElement::mPosition->x = mMinX + 1;
-			mPosRect->right = (LONG)(mWidth + UIElement::mPosition->x);
+			mPosRect->right = (LONG)(mCursorWidth + UIElement::mPosition->x);
 			mPosRect->left = (LONG)UIElement::mPosition->x;			
 		}
 	}
@@ -167,4 +186,7 @@ void UISlider::Release()
 {
 	UIElement::Release();
 	mFont->Release();
+	mBackground->mSprite->Release();
+	mBackground->mSpriteTexture->Release();
+	
 }
