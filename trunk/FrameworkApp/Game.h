@@ -202,6 +202,10 @@ private:
 	bool* mOldButtonsClicked;
 
 	AOValues mAOValues;
+
+	bool* pDigitalControlMap;
+	bool* pNewDigitalControlMap;
+	LPPOINT mMousePosition;
 };
 
 #endif

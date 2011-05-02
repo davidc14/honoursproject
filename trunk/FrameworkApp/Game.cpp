@@ -164,13 +164,15 @@ bool Game::LoadContent()
 	mAOValues.mScale = 1.0f;
 	mAOValues.mSampleRadius = 75.0f;
 
+	pDigitalControlMap = new bool[DIGITALCONTROLMAPS];
+	pNewDigitalControlMap = new bool[DIGITALCONTROLMAPS];
+	mMousePosition = new POINT(); 
+
+	//Lots of initialisation
 	return true;
 }
 
 const float camSpeed = 0.1f;
-bool* pDigitalControlMap = new bool[DIGITALCONTROLMAPS];
-bool* pNewDigitalControlMap = new bool[DIGITALCONTROLMAPS];
-LPPOINT mMousePosition = new POINT(); 
 void Game::HandleInput()
 {
 	GetCursorPos(mMousePosition);
@@ -637,7 +639,7 @@ void Game::SetSSAOHandles()
 	mSSAOContainer.mUseLighting = false;
 	mSSAOContainer.mSampleRadius = mAOValues.mSampleRadius;
 
-	mSSAOContainer.mIterations = 16.0f;
+	//mSSAOContainer.mIterations = 16.0f;
 	/*mSSAOContainer.mSampleRadius = 19.80624f;
 	mSSAOContainer.mIntensity = 2.0f;
 	mSSAOContainer.mScale = 23.0f;*/
@@ -647,9 +649,9 @@ void Game::SetSSAOHandles()
 
 void Game::Unload()
 {
+	//Release all the objects
 	m_Font->Release();
 
-	//m_PhongInterface->Release();
 	m_AnimatedInterface->Release();
 	m_Dwarf->Release();
 
@@ -669,7 +671,7 @@ void Game::Unload()
 	mViewNormal->Release();
 
 	mSSAOInterface->Release();
-	if(mSSAOTarget != NULL) mSSAOTarget->Release();
+	mSSAOTarget->Release();
 
 	mQuadFX->Release();
 	mHeadSad->Release();
