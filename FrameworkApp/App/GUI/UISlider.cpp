@@ -23,7 +23,7 @@ UISlider::UISlider(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, LO
 	mFontRect->bottom = bottom + (LONG)position->y;
 	mFontRect->right = right + (LONG)position->x + 50;
 	mFontRect->top = (LONG)position->y;
-	mFontRect->left = stringPos;
+	mFontRect->left = (LONG)stringPos;
 
 	mWidth = right;
 
@@ -37,6 +37,14 @@ UISlider::UISlider(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, LO
 
 	PercentageOnScreen = 0; 
 	PercentageOnSlider = 0;
+
+	mBackground = new Sprite();
+	mBackgroundRect = new RECT();
+
+	*mBackgroundRect = *mFontRect;
+	mBackgroundPosition = new D3DXVECTOR3((float)mBackgroundRect->left, (float)mBackgroundRect->top, 0);
+
+	Initialise();
 }
 
 UISlider::~UISlider()
@@ -111,7 +119,9 @@ float UISlider::CalculatePercentageOnSlider()
 void UISlider::Initialise()
 {
 	UIElement::Initialise();
-}
+	D3DXCreateSprite(pDevice, &mBackground->mSprite);
+	D3DXCreateTextureFromFile(pDevice, "Textures/template.jpg", &mBackground->mSpriteTexture);
+}	
 
 void UISlider::Update(float MouseX)
 {
@@ -142,8 +152,14 @@ void UISlider::Update(float MouseX)
 }
 
 void UISlider::Draw()
-{
-	UIElement::Draw(mIsClicked);
+{	
+	//Begin, draw and end 
+	mBackground->mSprite->Begin(0);
+	mBackground->mSprite->Draw(mBackground->mSpriteTexture, mBackgroundRect, mCenter, mBackgroundPosition, 0x006495ED);
+	mBackground->mSprite->End();
+
+	UIElement::Draw(mIsClicked);	
+
 	mFont->DrawText(0, mString, -1, mFontRect, DT_TOP | DT_LEFT /*draw in the top left corner*/, 0xFFFFFF00);// yellow text
 }
 
