@@ -26,6 +26,13 @@
 
 using namespace std;
 
+struct AOValues{
+	float mIntensity;
+	float mJitter;
+	float mScale;
+	float mSampleRadius;
+};
+
 class Game
 {
 public:
@@ -193,6 +200,8 @@ private:
 	UserInterface* mUI;
 	bool* mCurrentButtonsClicked;
 	bool* mOldButtonsClicked;
+
+	AOValues mAOValues;
 };
 
 #endif

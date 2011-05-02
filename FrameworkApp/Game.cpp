@@ -159,6 +159,11 @@ bool Game::LoadContent()
 	mCurrentButtonsClicked = new bool[UIMAXBUTTONS];
 	mOldButtonsClicked = new bool[UIMAXBUTTONS];
 
+	mAOValues.mIntensity = 4.0f;
+	mAOValues.mJitter = 0.5f;
+	mAOValues.mScale = 1.0f;
+	mAOValues.mSampleRadius = 75.0f;
+
 	return true;
 }
 
@@ -230,6 +235,8 @@ void Game::HandleInput()
 
 	if(mCurrentButtonsClicked[UI_EXIT])
 		PostQuitMessage(0);
+
+	mAOValues.mSampleRadius = mUI->GetRadiusSliderValue();
 }
 
 void Game::Update()
@@ -613,9 +620,9 @@ void Game::SetSSAOHandles()
 {
 	//mSSAOContainer.mColourBuffer = m_RenderTarget->getRenderTexture();
 	mSSAOContainer.mFarClip = m_Camera->GetFarPlane();
-	mSSAOContainer.mIntensity = 4.0f;
+	mSSAOContainer.mIntensity = mAOValues.mIntensity;
 	mSSAOContainer.mInverseScreenSize = D3DXVECTOR2(1/m_WindowWidth, 1/m_WindowHeight);
-	mSSAOContainer.mJitter = 0.5f;
+	mSSAOContainer.mJitter = mAOValues.mJitter;
 	mSSAOContainer.mNearClip = 1.0f;
 	mSSAOContainer.mNormalBuffer = mViewNormal->getRenderTexture();
 	mSSAOContainer.mPositionBuffer = mViewPos->getRenderTexture();
@@ -623,12 +630,12 @@ void Game::SetSSAOHandles()
 	D3DXMatrixInverse(&matProjInv, 0, m_RenderTarget->getProjectionPointer());
 	mSSAOContainer.mProjectionInverse = matProjInv;
 	mSSAOContainer.mRandomBuffer = mRandomTexture;
-	mSSAOContainer.mScale = 1.0f;
+	mSSAOContainer.mScale = mAOValues.mScale;
 	mSSAOContainer.mScreenSize = D3DXVECTOR2(m_WindowWidth, m_WindowHeight);
 	//mSSAOContainer.mUseAO = mUseAO;
 	//mSSAOContainer.mUseColour = mUseColour;
 	mSSAOContainer.mUseLighting = false;
-	mSSAOContainer.mSampleRadius = 75.0;
+	mSSAOContainer.mSampleRadius = mAOValues.mSampleRadius;
 
 	mSSAOContainer.mIterations = 16.0f;
 	/*mSSAOContainer.mSampleRadius = 19.80624f;

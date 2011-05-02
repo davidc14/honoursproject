@@ -23,6 +23,8 @@ public:
 	virtual void Draw();
 	virtual void Release();
 
+	float GetFinalValue() { return PercentageOnSlider; }
+
 private:
 
 	float CalculatePercentageOnScreen();
