@@ -37,7 +37,7 @@ private:
 	ID3DXFont* mFont;
 	char* mString;
 
-	int mWidth;
+	int mCursorWidth;
 	
 	bool mIsClicked;
 
