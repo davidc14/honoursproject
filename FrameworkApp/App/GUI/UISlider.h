@@ -7,7 +7,8 @@ class UISlider : public UIElement
 {
 public:
 	UISlider(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, LONG bottom, 
-		D3DXVECTOR3* center, D3DXVECTOR3* position, float minX, float maxX, float minRange, float maxRange);
+		D3DXVECTOR3* center, D3DXVECTOR3* position, char* string, float stringPos,
+		float minX, float maxX, float minRange, float maxRange);
 	~UISlider();
 
 	bool IsHovered(float mouseX, float mouseY);
@@ -30,7 +31,12 @@ private:
 	float CalculatePercentageOnScreen();
 	float CalculatePercentageOnSlider();
 
+	RECT* mPosRect;
+
 	RECT* mFontRect;
+	ID3DXFont* mFont;
+	char* mString;
+
 	int mWidth;
 	
 	bool mIsClicked;
