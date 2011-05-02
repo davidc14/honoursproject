@@ -33,6 +33,9 @@ public:
 	bool* GetButtonsClicked() { return ButtonsClicked; }
 
 	float GetRadiusSliderValue() { return mRadiusSlider->GetFinalValue(); } 
+	float GetIntensitySliderValue() { return mIntensitySlider->GetFinalValue(); }
+	float GetJitterSliderValue() { return mJitterSlider->GetFinalValue(); } 
+	float GetScaleSliderValue() { return mScaleSlider->GetFinalValue(); } 
 
 private:
 
