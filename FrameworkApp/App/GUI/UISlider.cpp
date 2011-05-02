@@ -104,7 +104,7 @@ float UISlider::CalculatePercentageOnSlider()
 	PercentageValue = PercentageOnScreen / 100 * SliderRange;
 
 	//Return that value
-	PercentageOnSlider = PercentageValue;
+	PercentageOnSlider = PercentageValue + mMinRange;
 	return PercentageValue;
 }
 

@@ -16,7 +16,7 @@ void UserInterface::Initialise()
 
 	mRadiusSlider = new UISlider(pDevice, 0, 0, 24, 24, new D3DXVECTOR3(0,0,0), new D3DXVECTOR3((FLOAT)mScreenWidth - 50, 52, 0),
 		"Sample Radius", (FLOAT)mScreenWidth - 150,
-		(FLOAT)mScreenWidth - 150, (FLOAT)mScreenWidth, 0, 100);
+		(FLOAT)mScreenWidth - 150, (FLOAT)mScreenWidth, 50, 100);
 
 	//Push all the elements onto the list for rendering
 	mUIElements.push_back(mExitButton);
