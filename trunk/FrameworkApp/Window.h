@@ -19,6 +19,9 @@ public: //Public functions
 	int getWindowWidth() { return WindowWidth; }
 	int getWindowHeight() { return WindowHeight; }
 
+	int GetMouseX() { return mMouseX; }
+	int GetMouseY() { return mMouseY; }
+	
 public: //Public members
 
 	HINSTANCE   g_hInst;	//Set to NULL in constructor
@@ -36,6 +39,7 @@ private: //Private members
 	//const int sWindowHeight;
 
 	int WindowWidth, WindowHeight;
+	int mMouseX, mMouseY;
 
 protected:
 

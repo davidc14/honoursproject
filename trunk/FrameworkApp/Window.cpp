@@ -2,6 +2,7 @@
 #include "Resource.h"
 #include "GameDefines.h"
 #include "NetworkDefines.h"
+#include <windowsx.h>
 #include <cassert>
 
 
@@ -49,6 +50,8 @@ Window::Window()//:sWindowWidth(800),sWindowHeight(600)
 
 	WindowWidth = 800;
 	WindowHeight = 600;
+
+	mMouseX = mMouseY = 0;
 }
 
 Window::~Window()
@@ -104,8 +107,8 @@ HRESULT Window::InitWindow( HINSTANCE hInstance, int nCmdShow )
 								WS_EX_APPWINDOW | WS_EX_WINDOWEDGE,								
 							"WindowClass", 
 							"Direct3D 9 Window", 
-							WS_EX_TOPMOST | WS_POPUP,
-							//WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 
+							//WS_EX_TOPMOST | WS_POPUP,
+							WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 
 							0, 
 							0,
 							WindowWidth,
@@ -156,6 +159,12 @@ LRESULT CALLBACK Window::WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		case WM_SIZE:
 			WindowWidth = LOWORD(lParam);
 			WindowHeight = HIWORD(lParam);
+			break;
+
+		case WM_MOUSEMOVE:
+			mMouseX = GET_X_LPARAM(lParam); 
+			mMouseY = GET_Y_LPARAM(lParam); 
+
 			break;
 
         default:

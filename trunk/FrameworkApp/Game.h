@@ -64,6 +64,12 @@ public:
 		RecordWindowHeight(height);
 	}
 
+	void RecordMousePosition(int x, int y)
+	{
+		mMouseX = x;
+		mMouseY = y;
+	}
+
 	void SetNetworkState(NetworkState netState) { m_CurrentNetworkState = netState; }
 	NetworkState GetNetworkState(){ return m_CurrentNetworkState; }
 
@@ -104,6 +110,8 @@ private: //Private members
 	float m_PacketTicker;
 
 	bool ConnectionStatus;
+
+	int mMouseX, mMouseY;
 
 private:
 
@@ -205,7 +213,7 @@ private:
 
 	bool* pDigitalControlMap;
 	bool* pNewDigitalControlMap;
-	LPPOINT mMousePosition;
+	//LPPOINT mMousePosition;
 };
 
 #endif
