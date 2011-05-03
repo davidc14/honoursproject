@@ -91,7 +91,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 				timeBeginPeriod(1);
 				startTime = endTime;
 				endTime = timeGetTime();
-				//Multiply by 0.001f to get it into seconds
+				//Multiply by 0.001f to convert the value into seconds
 				pGame->setDeltaTime((float)(endTime - startTime)*0.001f);
 				pGame->RecordWindowSize((float)pWindow->getWindowWidth(),(float)pWindow->getWindowHeight());
 				pGame->RecordMousePosition(pWindow->GetMouseX(), pWindow->GetMouseY());
