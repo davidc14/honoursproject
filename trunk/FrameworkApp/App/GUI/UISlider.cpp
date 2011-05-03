@@ -54,7 +54,7 @@ UISlider::UISlider(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, LO
 	mBackgroundPosition = new D3DXVECTOR3((float)mBackgroundRect->left, (float)mBackgroundRect->top, 0);
 
 	//Load the font
-	Initialise();
+	//Initialise();
 }
 
 UISlider::~UISlider()
@@ -134,7 +134,7 @@ float UISlider::CalculatePercentageOnSlider()
 void UISlider::Initialise()
 {
 	//Initialise the base sprite
-	//UIElement::Initialise(); //Don't need to call the base initialise, this is handled by the UI
+	UIElement::Initialise(); 
 	//Load the background sprite unique to the slider
 	D3DXCreateSprite(pDevice, &mBackground->mSprite);
 	D3DXCreateTextureFromFile(pDevice, "Textures/template.jpg", &mBackground->mSpriteTexture);

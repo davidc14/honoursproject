@@ -36,6 +36,10 @@ void UserInterface::Initialise()
 	mUIElements.push_back(mIntensitySlider);
 	mUIElements.push_back(mJitterSlider);
 	mUIElements.push_back(mScaleSlider);
+
+	//Render all the items in the list
+	for(list<UIElement*>::iterator i = mUIElements.begin(); i != mUIElements.end(); i++)
+		(*i)->Initialise();
 }
 
 void UserInterface::Update(float mouseX, float mouseY, bool isButtonClicked)
