@@ -27,7 +27,7 @@ UIElement::UIElement(IDirect3DDevice9* Device, LONG top, LONG left, LONG right, 
 
 	mSprite = new Sprite();
 
-	Initialise();
+	//Initialise();
 }
 
 void UIElement::Initialise()
