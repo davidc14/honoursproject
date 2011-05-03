@@ -166,7 +166,7 @@ bool Game::LoadContent()
 	//Initialise the input maps and mouse position struct
 	pDigitalControlMap = new bool[DIGITALCONTROLMAPS];
 	pNewDigitalControlMap = new bool[DIGITALCONTROLMAPS];
-	mMousePosition = new POINT(); 
+	//mMousePosition = new POINT(); 
 
 	//Lots of initialisation
 	return true;
@@ -175,7 +175,7 @@ bool Game::LoadContent()
 const float camSpeed = 0.1f;
 void Game::HandleInput()
 {
-	GetCursorPos(mMousePosition);
+	//GetCursorPos(mMousePosition);
 	//if(*pDigitalControlMap != *pNewDigitalControlMap)
 	for(int i = 0; i < DIGITALCONTROLMAPS; i++)
 		pDigitalControlMap[i] = pNewDigitalControlMap[i];
@@ -194,7 +194,7 @@ void Game::HandleInput()
 	else
 		m_Camera->First(true);
 
-	mUI->Update((float)mMousePosition->x, (float)mMousePosition->y, m_DInput->GetMouseState(0));
+	mUI->Update((float)mMouseX, (float)mMouseY, m_DInput->GetMouseState(0));
 
 	//Check the key presses
 	//W
