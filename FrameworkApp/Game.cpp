@@ -406,6 +406,48 @@ void Game::Draw()
 		//set back buffer
 		pDevice->SetRenderTarget(0, m_RenderTarget->getBackBuffer());	
 
+		if(mCurrentRenderTarget == Colour || mCurrentRenderTarget == FinalPass)
+		{
+		mShadowTarget->BeginScene();
+
+			// Clear the backbuffer to a blue color
+			pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
+
+			m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
+			UINT numberOfShadowPasses = 1;
+			m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
+			m_SpotInterface->GetEffect()->BeginPass(0);
+
+				m_SpotInterface->UpdateShadowHandles(&(m_Dwarf->GetWorld() * m_LightViewProj));
+
+				m_Dwarf->DrawToShadowMap();
+
+				m_SpotInterface->UpdateShadowHandles(&(m_Citadel->GetWorld() * m_LightViewProj));
+
+				m_Citadel->DrawToShadowMap();
+
+			//End the pass
+			m_SpotInterface->GetEffect()->EndPass();
+			m_SpotInterface->GetEffect()->End();	
+
+			UINT numOfPasses = 0;
+				
+			m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
+
+			m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
+			m_AnimatedInterface->GetEffect()->BeginPass(0);		
+
+				m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
+					m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
+
+				m_SkinnedMesh->Draw();
+
+			m_AnimatedInterface->GetEffect()->EndPass();
+			m_AnimatedInterface->GetEffect()->End();
+
+			mShadowTarget->EndScene();
+			}
+
 		if(mCurrentRenderTarget != Colour)
 		{
 			mViewNormal->BeginScene();
@@ -484,46 +526,7 @@ void Game::Draw()
 
 			mSSAOTarget->EndScene();
 
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-			mShadowTarget->BeginScene();
-
-			// Clear the backbuffer to a blue color
-			pDevice->Clear( 0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0 );
-
-			m_SpotInterface->GetEffect()->SetTechnique(m_SpotInterface->GetShadowTechnique());
-			UINT numberOfShadowPasses = 1;
-			m_SpotInterface->GetEffect()->Begin(&numberOfShadowPasses, 0);
-			m_SpotInterface->GetEffect()->BeginPass(0);
-
-				m_SpotInterface->UpdateShadowHandles(&(m_Dwarf->GetWorld() * m_LightViewProj));
-
-				m_Dwarf->DrawToShadowMap();
-
-				m_SpotInterface->UpdateShadowHandles(&(m_Citadel->GetWorld() * m_LightViewProj));
-
-				m_Citadel->DrawToShadowMap();
-
-			//End the pass
-			m_SpotInterface->GetEffect()->EndPass();
-			m_SpotInterface->GetEffect()->End();	
-
-			UINT numOfPasses = 0;
-				
-			m_AnimatedInterface->GetEffect()->SetTechnique(m_AnimatedInterface->GetShadowTechnique());
-
-			m_AnimatedInterface->GetEffect()->Begin(&numOfPasses, 0);
-			m_AnimatedInterface->GetEffect()->BeginPass(0);		
-
-				m_AnimatedInterface->UpdateShadowVariables(&(*m_SkinnedMesh->GetWorld() * m_LightViewProj),
-					m_SkinnedMesh->getFinalXFormArray(), m_SkinnedMesh->numBones());
-
-				m_SkinnedMesh->Draw();
-
-			m_AnimatedInterface->GetEffect()->EndPass();
-			m_AnimatedInterface->GetEffect()->End();
-
-			mShadowTarget->EndScene();
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 
 			mBlurTarget->BeginScene();
 
