@@ -81,7 +81,7 @@ bool Game::LoadContent()
 	m_Citadel = new Citadel(pDevice);
 
 	mAOMDwarf = new Dwarf(pDevice, "Models/AO Maps", "DwarfAOMap.x");
-	mAOMCitadel = new Citadel(pDevice, "Models/AO Maps", "MyRoom.x");
+	mAOMCitadel = new Citadel(pDevice, "Models/AO Maps", "NewRoomAOMap.x");
 
 	//Load all the render targets
 	m_RenderTarget = new DrawableRenderTarget(pDevice, (UINT)m_WindowWidth, (UINT)m_WindowHeight, m_Camera->GetFarPlane());
